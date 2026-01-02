@@ -33,10 +33,13 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
     const originalText = children;
     container.innerHTML = ''; 
     
-    // Use Intl.Segmenter or Array.from for proper emoji/grapheme splitting
-    const chars = Array.from(originalText).map(char => {
+    // Use Intl.Segmenter for proper emoji/grapheme splitting
+    const segmenter = new Intl.Segmenter('en', { granularity: 'grapheme' });
+    const graphemes = Array.from(segmenter.segment(originalText)).map(g => g.segment);
+    
+    const chars = graphemes.map(grapheme => {
       const span = document.createElement('span');
-      span.textContent = char === ' ' ? '\u00A0' : char;
+      span.textContent = grapheme === ' ' ? '\u00A0' : grapheme;
       span.className = 'inline-block';
       container.appendChild(span);
       return span;
