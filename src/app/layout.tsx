@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Inter, Space_Grotesk, Poppins } from 'next/font/google';
 import './globals.css';
@@ -54,8 +55,8 @@ export default function RootLayout({
         >
           <div className="fixed top-0 left-0 w-full h-screen -z-10">
             <LightPillar
-              topColor="#4B0082"
-              bottomColor="#8F00FF"
+              topColor="#0b66f9"
+              bottomColor="#fb0909"
               intensity={1}
               rotationSpeed={0.3}
               interactive={false}
@@ -69,8 +70,8 @@ export default function RootLayout({
           <PillNav
             logo={logoUrl}
             items={navLinks}
-            baseColor="#FFFFFF"
-            pillColor="#000000"
+            baseColor="#000000"
+            pillColor="#FFFFFF"
             hoveredPillTextColor="#000000"
             pillTextColor="#FFFFFF"
           />
