@@ -13,9 +13,9 @@ export function Hero() {
           text="Hi, I’m Sarthak 👋"
           className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-white"
         />
-        <div className="w-full max-w-4xl text-lg md:text-xl animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+        <div className="w-full max-w-4xl text-lg md:text-xl text-white animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
           <RotatingText
-            texts={['Creative Coder', 'Web Explorer', 'React Developer']}
+            texts={['React', 'Bits', 'Is', 'Cool!']}
             mainClassName="px-2 sm:px-2 md:px-3 bg-cyan-300 text-black overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center rounded-lg"
             staggerFrom={"last"}
             initial={{ y: "100%" }}
