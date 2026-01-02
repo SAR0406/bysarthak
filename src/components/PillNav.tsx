@@ -327,7 +327,7 @@ const PillNav: React.FC<PillNavProps> = ({
                   <span
                     className="hover-circle absolute left-1/2 bottom-0 rounded-full z-[1] block pointer-events-none"
                     style={{
-                      background: 'var(--pill-bg)',
+                      background: 'var(--base, #fff)',
                       willChange: 'transform'
                     }}
                     aria-hidden="true"
