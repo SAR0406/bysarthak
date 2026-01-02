@@ -15,7 +15,7 @@ export function Hero() {
           showCursor={false}
           className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-white"
         />
-        <div className="max-w-2xl text-lg md:text-xl text-foreground/80 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+        <div className="max-w-2xl text-lg md:text-xl text-muted-foreground animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
           <TextType 
             text={["Creative Coder", "Explorer of Modern Web Experiences"]}
             typingSpeed={75}
