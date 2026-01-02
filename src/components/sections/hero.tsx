@@ -1,3 +1,4 @@
+
 import { Button } from "@/components/ui/button";
 import { AnimatedText } from "../animated-text";
 import Link from "next/link";
@@ -26,10 +27,7 @@ export function Hero() {
           />
           <div className="w-full max-w-4xl text-lg md:text-xl text-white animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
             <RotatingText
-              texts={[
-                'I build intelligent systems that see, think, and automate.',
-                'Turning ambitious ideas into working AI systems.'
-              ]}
+              texts={['I build intelligent systems that see, think, and automate.', 'Turning ambitious ideas into working AI systems.']}
               staggerFrom={"last"}
               initial={{ y: "100%", opacity: 0 }}
               animate={{ y: "0%", opacity: 1 }}
