@@ -1,15 +1,18 @@
 import type { Metadata } from 'next';
 import './globals.css';
 import { ThemeProvider } from '@/components/theme-provider';
-import { Header } from '@/components/header';
+import PillNav from '@/components/PillNav';
 import { Toaster } from '@/components/ui/toaster';
 import { Footer } from '@/components/footer';
 import LightPillar from '@/components/LightPillar';
+import { navLinks } from '@/lib/data';
 
 export const metadata: Metadata = {
   title: "Sarthak's Spectrum",
   description: 'Creative Coder & Explorer of Modern Web Experiences',
 };
+
+const logoUrl = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">✨</text></svg>`;
 
 export default function RootLayout({
   children,
@@ -36,8 +39,8 @@ export default function RootLayout({
         >
           <div className="fixed top-0 left-0 w-full h-screen -z-10">
             <LightPillar
-              topColor="#491dfc"
-              bottomColor="#ff0000"
+              topColor="#4B0082"
+              bottomColor="#8F00FF"
               intensity={1}
               rotationSpeed={0.3}
               interactive={false}
@@ -48,7 +51,14 @@ export default function RootLayout({
               pillarRotation={25}
             />
           </div>
-          <Header />
+          <PillNav
+            logo={logoUrl}
+            items={navLinks}
+            baseColor="hsl(var(--card))"
+            pillColor="hsl(var(--primary))"
+            hoveredPillTextColor="hsl(var(--primary-foreground))"
+            pillTextColor="hsl(var(--primary-foreground))"
+          />
           <main>{children}</main>
           <Footer />
           <Toaster />
