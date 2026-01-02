@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: 'Creative Coder & Explorer of Modern Web Experiences',
 };
 
-const logoUrl = `data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><text y=".9em" font-size="90">✨</text></svg>`;
+const logoUrl = `https://i.ibb.co/wrMzQqD/IMG-20251229-190558-670-2.jpg`;
 
 export default function RootLayout({
   children,
