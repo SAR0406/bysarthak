@@ -1,7 +1,9 @@
+'use client';
 import Image from 'next/image';
 import { Card } from '@/components/ui/card';
 import { SkillProgress } from '../skill-progress';
 import { skills } from '@/lib/data';
+import PixelCard from '../PixelCard';
 
 const profileImageUrl = "https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg";
 
@@ -10,14 +12,14 @@ export function About() {
     <section id="about" className="container mx-auto py-16">
       <div className="grid md:grid-cols-2 gap-12 items-center">
         <div className="flex justify-center">
-          <Card className="w-[300px] h-[300px] md:w-[400px] md:h-[400px] p-2 rounded-full overflow-hidden relative group">
-            <Image
+          <PixelCard variant="pink" className='rounded-full'>
+             <Image
               src={profileImageUrl}
               alt="Sarthak"
               fill
-              className="object-cover rounded-full transition-transform duration-300 group-hover:scale-105"
+              className="object-cover rounded-full absolute inset-0 z-0"
             />
-          </Card>
+          </PixelCard>
         </div>
         <div className="space-y-6">
           <h2 className="font-headline text-3xl md:text-4xl font-bold">About Me</h2>
