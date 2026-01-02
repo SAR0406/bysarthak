@@ -293,7 +293,7 @@ const PillNav: React.FC<PillNavProps> = ({
             style={{
               width: 'var(--nav-h)',
               height: 'var(--nav-h)',
-              background: 'var(--pill-bg)'
+              background: 'var(--base)'
             }}
           >
             <img src={logo} alt={logoAlt} ref={logoImgRef} className="w-full h-full object-cover block" />
