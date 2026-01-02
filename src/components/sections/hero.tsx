@@ -15,8 +15,7 @@ export function Hero() {
         />
         <div className="w-full max-w-4xl text-lg md:text-xl text-white animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
           <RotatingText
-            texts={['React', 'Bits', 'Is', 'Cool!']}
-            mainClassName="px-2 sm:px-2 md:px-3 bg-cyan-300 text-black overflow-hidden py-0.5 sm:py-1 md:py-2 justify-center rounded-lg"
+            texts={['Creative Coder', 'Explorer of Modern Web Experiences']}
             staggerFrom={"last"}
             initial={{ y: "100%" }}
             animate={{ y: 0 }}
