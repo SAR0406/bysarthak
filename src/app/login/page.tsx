@@ -57,7 +57,7 @@ export default function LoginPage() {
 
   const signUpForm = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
-    defaultValues: { email: '', password: '', name: '', username: '' },
+    defaultValues: { email: '', password: '', name: '', username: '', age: '' as any },
   });
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
