@@ -77,6 +77,7 @@ export default function LoginPage() {
       const userCredential = await signInWithPopup(auth, provider);
       const user = userCredential.user;
 
+      // Ensure a Firestore document is created or merged for OAuth users
       await setDoc(doc(firestore, 'users', user.uid), {
         email: user.email,
         name: user.displayName,
@@ -159,214 +160,228 @@ export default function LoginPage() {
   );
 
   const renderLogin = () => (
-    <Stepper initialStep={1} onFinalStepCompleted={() => loginForm.handleSubmit(handleLogin)()} backButtonText='Back' nextButtonText='Done'>
-      <Step>
-        <CardHeader>
-          <CardTitle>Login</CardTitle>
-          <CardDescription>Enter your credentials or sign in with a provider.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...loginForm}>
-            <form className="space-y-4">
-              <FormField
-                control={loginForm.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl><Input placeholder="your.email@example.com" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={loginForm.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
-          <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+    <Card className="w-full max-w-md">
+      <Stepper
+        initialStep={1}
+        onFinalStepCompleted={loginForm.handleSubmit(handleLogin)}
+        backButtonText='Back'
+        nextButtonText='Done'
+      >
+        <Step>
+          <CardHeader>
+            <CardTitle>Login</CardTitle>
+            <CardDescription>Enter your credentials or sign in with a provider.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...loginForm}>
+              <form className="space-y-4">
+                <FormField
+                  control={loginForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl><Input placeholder="your.email@example.com" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={loginForm.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+            <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+              </div>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" onClick={() => handleOAuth(new GoogleAuthProvider())}>
-              <ToyBrick className="mr-2 h-4 w-4" /> Google
-            </Button>
-            <Button variant="outline" onClick={() => handleOAuth(new GithubAuthProvider())}>
-              <Github className="mr-2 h-4 w-4" /> GitHub
-            </Button>
-          </div>
-        </CardContent>
-      </Step>
-      <Step>
-        <CardHeader>
-          <CardTitle>Complete Login</CardTitle>
-          <CardDescription>You're one click away from logging in.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>Press the "Done" button to complete the login process.</p>
-        </CardContent>
-      </Step>
-    </Stepper>
+            <div className="grid grid-cols-2 gap-4">
+              <Button variant="outline" onClick={() => handleOAuth(new GoogleAuthProvider())}>
+                <ToyBrick className="mr-2 h-4 w-4" /> Google
+              </Button>
+              <Button variant="outline" onClick={() => handleOAuth(new GithubAuthProvider())}>
+                <Github className="mr-2 h-4 w-4" /> GitHub
+              </Button>
+            </div>
+          </CardContent>
+        </Step>
+        <Step>
+          <CardHeader>
+            <CardTitle>Complete Login</CardTitle>
+            <CardDescription>You're one click away from logging in.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>Press the "Done" button to complete the login process.</p>
+          </CardContent>
+        </Step>
+      </Stepper>
+    </Card>
   );
 
   const renderSignup = () => (
-    <Stepper initialStep={1} onFinalStepCompleted={() => signUpForm.handleSubmit(handleSignUp)()} backButtonText='Back' nextButtonText='Next'>
-      <Step>
-        <CardHeader>
-          <CardTitle>Sign Up - Step 1</CardTitle>
-          <CardDescription>Enter your email and password or sign up with a provider.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...signUpForm}>
-            <form className="space-y-4">
-              <FormField
-                control={signUpForm.control}
-                name="email"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Email</FormLabel>
-                    <FormControl><Input placeholder="your.email@example.com" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-              <FormField
-                control={signUpForm.control}
-                name="password"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Password</FormLabel>
-                    <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
-           <div className="relative my-4">
-            <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
-            <div className="relative flex justify-center text-xs uppercase">
-              <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+    <Card className="w-full max-w-md">
+      <Stepper
+        initialStep={1}
+        onFinalStepCompleted={signUpForm.handleSubmit(handleSignUp)}
+        backButtonText='Back'
+        nextButtonText='Next'
+      >
+        <Step>
+          <CardHeader>
+            <CardTitle>Sign Up - Step 1</CardTitle>
+            <CardDescription>Enter your email and password or sign up with a provider.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...signUpForm}>
+              <form className="space-y-4">
+                <FormField
+                  control={signUpForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl><Input placeholder="your.email@example.com" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={signUpForm.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl><Input type="password" placeholder="••••••••" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+             <div className="relative my-4">
+              <div className="absolute inset-0 flex items-center"><span className="w-full border-t" /></div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-card px-2 text-muted-foreground">Or continue with</span>
+              </div>
             </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <Button variant="outline" onClick={() => handleOAuth(new GoogleAuthProvider())}>
-              <ToyBrick className="mr-2 h-4 w-4" /> Google
-            </Button>
-            <Button variant="outline" onClick={() => handleOAuth(new GithubAuthProvider())}>
-              <Github className="mr-2 h-4 w-4" /> GitHub
-            </Button>
-          </div>
-        </CardContent>
-      </Step>
-      <Step>
-        <CardHeader>
-          <CardTitle>Sign Up - Step 2</CardTitle>
-          <CardDescription>Let's get to know you.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <Form {...signUpForm}>
-            <form className="space-y-4">
-              <FormField
-                control={signUpForm.control}
-                name="name"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Name</FormLabel>
-                    <FormControl><Input placeholder="Your Name" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
-        </CardContent>
-      </Step>
-      <Step>
-         <CardHeader>
-          <CardTitle>Sign Up - Step 3</CardTitle>
-          <CardDescription>A few more details.</CardDescription>
-        </CardHeader>
-        <CardContent>
-           <Form {...signUpForm}>
-            <form className="space-y-4">
-               <FormField
-                control={signUpForm.control}
-                name="username"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Username</FormLabel>
-                    <FormControl><Input placeholder="your_username" {...field} /></FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-               <FormField
-                control={signUpForm.control}
-                name="dob"
-                render={({ field }) => (
-                  <FormItem className="flex flex-col">
-                    <FormLabel>Date of birth</FormLabel>
-                    <Popover>
-                      <PopoverTrigger asChild>
-                        <FormControl>
-                          <Button
-                            variant={"outline"}
-                            className={cn(
-                              "w-full pl-3 text-left font-normal",
-                              !field.value && "text-muted-foreground"
-                            )}
-                          >
-                            {field.value ? (
-                              format(field.value, "PPP")
-                            ) : (
-                              <span>Pick a date</span>
-                            )}
-                            <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                          </Button>
-                        </FormControl>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-0" align="start">
-                        <Calendar
-                          mode="single"
-                          selected={field.value}
-                          onSelect={field.onChange}
-                          disabled={(date) =>
-                            date > new Date() || date < new Date("1900-01-01")
-                          }
-                          initialFocus
-                        />
-                      </PopoverContent>
-                    </Popover>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-            </form>
-          </Form>
-        </CardContent>
-      </Step>
-       <Step>
-        <CardHeader>
-          <CardTitle>Sign Up Complete</CardTitle>
-          <CardDescription>You're all set!</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <p>Press the "Done" button to complete your registration.</p>
-        </CardContent>
-      </Step>
-    </Stepper>
+            <div className="grid grid-cols-2 gap-4">
+              <Button variant="outline" onClick={() => handleOAuth(new GoogleAuthProvider())}>
+                <ToyBrick className="mr-2 h-4 w-4" /> Google
+              </Button>
+              <Button variant="outline" onClick={() => handleOAuth(new GithubAuthProvider())}>
+                <Github className="mr-2 h-4 w-4" /> GitHub
+              </Button>
+            </div>
+          </CardContent>
+        </Step>
+        <Step>
+          <CardHeader>
+            <CardTitle>Sign Up - Step 2</CardTitle>
+            <CardDescription>Let's get to know you.</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <Form {...signUpForm}>
+              <form className="space-y-4">
+                <FormField
+                  control={signUpForm.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Name</FormLabel>
+                      <FormControl><Input placeholder="Your Name" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+          </CardContent>
+        </Step>
+        <Step>
+           <CardHeader>
+            <CardTitle>Sign Up - Step 3</CardTitle>
+            <CardDescription>A few more details.</CardDescription>
+          </CardHeader>
+          <CardContent>
+             <Form {...signUpForm}>
+              <form className="space-y-4">
+                 <FormField
+                  control={signUpForm.control}
+                  name="username"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Username</FormLabel>
+                      <FormControl><Input placeholder="your_username" {...field} /></FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                 <FormField
+                  control={signUpForm.control}
+                  name="dob"
+                  render={({ field }) => (
+                    <FormItem className="flex flex-col">
+                      <FormLabel>Date of birth</FormLabel>
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <FormControl>
+                            <Button
+                              variant={"outline"}
+                              className={cn(
+                                "w-full pl-3 text-left font-normal",
+                                !field.value && "text-muted-foreground"
+                              )}
+                            >
+                              {field.value ? (
+                                format(field.value, "PPP")
+                              ) : (
+                                <span>Pick a date</span>
+                              )}
+                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
+                            </Button>
+                          </FormControl>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0" align="start">
+                          <Calendar
+                            mode="single"
+                            selected={field.value}
+                            onSelect={field.onChange}
+                            disabled={(date) =>
+                              date > new Date() || date < new Date("1900-01-01")
+                            }
+                            initialFocus
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </form>
+            </Form>
+          </CardContent>
+        </Step>
+         <Step>
+          <CardHeader>
+            <CardTitle>Sign Up Complete</CardTitle>
+            <CardDescription>You're all set!</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <p>Press the "Done" button to complete your registration.</p>
+          </CardContent>
+        </Step>
+      </Stepper>
+    </Card>
   );
 
   return (
