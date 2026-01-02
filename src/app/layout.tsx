@@ -67,14 +67,16 @@ export default function RootLayout({
               pillarRotation={25}
             />
           </div>
-          <PillNav
-            logo={logoUrl}
-            items={navLinks}
-            baseColor="#000000"
-            pillColor="#FFFFFF"
-            hoveredPillTextColor="#FFFFFF"
-            pillTextColor="#000000"
-          />
+          <div className='fixed top-0 left-0 z-[1000] w-full py-2 bg-background/30 backdrop-blur-sm'>
+            <PillNav
+              logo={logoUrl}
+              items={navLinks}
+              baseColor="#FFFFFF"
+              pillColor="#000000"
+              hoveredPillTextColor="#FFFFFF"
+              pillTextColor="#000000"
+            />
+          </div>
           <main>{children}</main>
           <Footer />
           <Toaster />

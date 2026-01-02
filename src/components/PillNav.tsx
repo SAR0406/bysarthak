@@ -264,13 +264,12 @@ const PillNav: React.FC<PillNavProps> = ({
 
 
   return (
-    <div className="fixed top-0 left-0 z-[1000] w-full py-2">
     <div
       className={`relative w-[95%] md:w-auto mx-auto ${className}`}
       style={cssVars}
     >
       <nav
-        className="w-full md:w-max flex items-center justify-between md:justify-start box-border px-4 md:px-2 py-1.5 mx-auto rounded-full backdrop-blur-sm bg-black/10"
+        className="w-full md:w-max flex items-center justify-between md:justify-start box-border px-4 md:px-2 py-1.5 mx-auto rounded-full"
         aria-label="Primary"
       >
         <Link
@@ -424,7 +423,6 @@ const PillNav: React.FC<PillNavProps> = ({
         </ul>
       </div>
       </div>
-    </div>
   );
 };
 
