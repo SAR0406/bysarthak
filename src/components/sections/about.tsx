@@ -4,6 +4,7 @@ import { Card } from '@/components/ui/card';
 import { SkillProgress } from '../skill-progress';
 import { skills } from '@/lib/data';
 import PixelCard from '../PixelCard';
+import ScrollFloat from '../ScrollFloat';
 
 const profileImageUrl = "https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg";
 
@@ -22,17 +23,17 @@ export function About() {
           </PixelCard>
         </div>
         <div className="space-y-6">
-          <h2 className="font-headline text-3xl md:text-4xl font-bold">About Me</h2>
-          <p className="text-lg text-muted-foreground">
+          <ScrollFloat className="font-headline text-3xl md:text-4xl font-bold text-white">About Me</ScrollFloat>
+          <ScrollFloat className="text-lg text-white">
             I'm a passionate and results-driven developer with a knack for building beautiful, functional, and scalable web applications. My journey into code began with a simple "Hello, World!" and has since evolved into a full-fledged obsession with crafting seamless digital experiences.
-          </p>
-          <p className="text-lg text-muted-foreground">
+          </ScrollFloat>
+           <ScrollFloat className="text-lg text-white">
             When I'm not coding, you can find me exploring new technologies, contributing to open-source projects, or brewing the perfect cup of coffee. I believe in lifelong learning and the power of collaboration to create amazing things.
-          </p>
+          </ScrollFloat>
         </div>
       </div>
       <div id="skills" className="mt-24">
-         <h3 className="text-center font-headline text-2xl md:text-3xl font-bold mb-12">My Tech Stack</h3>
+         <ScrollFloat className="text-center font-headline text-2xl md:text-3xl font-bold mb-12 text-white">My Tech Stack</ScrollFloat>
          <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-6 max-w-4xl mx-auto">
             {skills.map(skill => (
                 <SkillProgress key={skill.name} name={skill.name} level={skill.level} />
