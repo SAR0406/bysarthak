@@ -2,6 +2,7 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { gsap } from 'gsap';
 
 export type PillNavItem = {
@@ -235,16 +236,6 @@ const PillNav: React.FC<PillNavProps> = ({
 
     onMobileMenuClick?.();
   };
-
-  const isExternalLink = (href: string) =>
-    href.startsWith('http://') ||
-    href.startsWith('https://') ||
-    href.startsWith('//') ||
-    href.startsWith('mailto:') ||
-    href.startsWith('tel:') ||
-    href.startsWith('#');
-
-  const isRouterLink = (href?: string) => href && !isExternalLink(href);
   
   const handleLinkClick = (href:string) => (e: React.MouseEvent) => {
     if (href.startsWith('#')) {
@@ -276,7 +267,7 @@ const PillNav: React.FC<PillNavProps> = ({
   const isLogoUrl = logo.startsWith('http') || logo.startsWith('/');
 
   return (
-    <div className="fixed top-[1em] z-[1000] w-full left-0 md:w-auto md:left-1/2 md:-translate-x-1/2">
+    <div className="fixed top-[1em] z-[1000] w-full left-1/2 -translate-x-1/2 md:w-auto">
       <nav
         className={`w-full md:w-max flex items-center justify-between md:justify-start box-border px-4 md:px-0 ${className}`}
         aria-label="Primary"
@@ -291,17 +282,17 @@ const PillNav: React.FC<PillNavProps> = ({
               if (el) logoRef.current = el;
             }}
             onClick={handleLinkClick(items?.[0]?.href || '/')}
-            className="rounded-full p-2 inline-flex items-center justify-center overflow-hidden"
+            className="rounded-full p-1 inline-flex items-center justify-center overflow-hidden"
             style={{
               width: 'var(--nav-h)',
               height: 'var(--nav-h)',
-              background: 'var(--base)'
+              background: 'var(--pill-bg)'
             }}
           >
             {isLogoUrl ? (
-              <img src={logo} alt={logoAlt} ref={logoImgRef} className="w-full h-full object-cover block" />
+              <Image src={logo} alt={logoAlt} ref={logoImgRef} width={32} height={32} className="w-full h-full object-cover block" />
             ) : (
-              <span className="text-xl" ref={logoImgRef as any}>{logo}</span>
+              <span className="text-xl leading-none" ref={logoImgRef as any} style={{color: 'var(--pill-text)'}}>{logo}</span>
             )}
           </Link>
 
@@ -333,7 +324,7 @@ const PillNav: React.FC<PillNavProps> = ({
                   <span
                     className="hover-circle absolute left-1/2 bottom-0 rounded-full z-[1] block pointer-events-none"
                     style={{
-                      background: 'var(--pill-bg)',
+                      background: 'var(--base)',
                       willChange: 'transform'
                     }}
                     aria-hidden="true"
