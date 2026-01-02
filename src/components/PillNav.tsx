@@ -2,7 +2,6 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import Link from 'next/link';
-import Image from 'next/image';
 import { gsap } from 'gsap';
 
 export type PillNavItem = {
@@ -265,11 +264,14 @@ const PillNav: React.FC<PillNavProps> = ({
 
 
   return (
-    <div className="fixed top-[1em] z-[1000] w-full left-1/2 -translate-x-1/2 md:w-auto">
+    <div className="fixed top-0 left-0 z-[1000] w-full py-2">
+    <div
+      className={`relative w-[95%] md:w-auto mx-auto ${className}`}
+      style={cssVars}
+    >
       <nav
-        className={`w-full md:w-max flex items-center justify-between md:justify-start box-border px-4 md:px-0 ${className} backdrop-blur-sm bg-black/10 rounded-full`}
+        className="w-full md:w-max flex items-center justify-between md:justify-start box-border px-4 md:px-2 py-1.5 mx-auto rounded-full backdrop-blur-sm bg-black/10"
         aria-label="Primary"
-        style={cssVars}
       >
         <Link
             href={items?.[0]?.href || '/'}
@@ -284,10 +286,11 @@ const PillNav: React.FC<PillNavProps> = ({
             style={{
               width: 'var(--nav-h)',
               height: 'var(--nav-h)',
-              background: 'var(--pill-bg)'
+              background: 'var(--pill-bg)',
+              color: 'var(--pill-text)',
             }}
           >
-            <span className="text-lg leading-none" style={{color: 'var(--pill-text)'}}>{logo}</span>
+            <span className="text-lg leading-none">{logo}</span>
           </Link>
 
         <div
@@ -391,26 +394,21 @@ const PillNav: React.FC<PillNavProps> = ({
         >
           <span
             className="hamburger-line w-4 h-0.5 rounded origin-center transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)]"
-            style={{ background: 'var(--base)' }}
+            style={{ background: 'var(--pill-text)' }}
           />
           <span
             className="hamburger-line w-4 h-0.5 rounded origin-center transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)]"
-            style={{ background: 'var(--base)' }}
+            style={{ background: 'var(--pill-text)' }}
           />
         </button>
       </nav>
 
       <div
         ref={mobileMenuRef}
-        className="md:hidden absolute top-[calc(var(--nav-h)_+_1em)] left-4 right-4 rounded-[27px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-[998] origin-top bg-background"
+        className="md:hidden absolute top-full mt-2 left-0 right-0 rounded-[27px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-[998] origin-top bg-background"
       >
         <ul className="list-none m-0 p-[3px] flex flex-col gap-[3px]">
           {items.map(item => {
-            const defaultStyle: React.CSSProperties = {
-              background: 'var(--pill-bg)',
-              color: 'var(--pill-text)'
-            };
-            
             return (
               <li key={item.href}>
                   <Link
@@ -424,6 +422,7 @@ const PillNav: React.FC<PillNavProps> = ({
             );
           })}
         </ul>
+      </div>
       </div>
     </div>
   );
