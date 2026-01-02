@@ -27,7 +27,7 @@ export function Hero() {
           />
         </div>
         <div className="animate-fade-in-up" style={{ animationDelay: '1s' }}>
-          <Button asChild size="lg">
+          <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent text-white shadow-lg hover:shadow-2xl hover:-translate-y-1 transition-all duration-300">
             <Link href="#work">Explore My World</Link>
           </Button>
         </div>
