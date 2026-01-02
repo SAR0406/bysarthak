@@ -56,10 +56,9 @@
           "type": "string",
           "description": "The user's full name."
         },
-        "dob": {
-          "type": "string",
-          "format": "date",
-          "description": "The user's date of birth."
+        "age": {
+          "type": "number",
+          "description": "The user's age."
         },
         "username": {
           "type": "string",
@@ -71,7 +70,7 @@
         "createdAt",
         "name",
         "username",
-        "dob"
+        "age"
       ]
     }
   },

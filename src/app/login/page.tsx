@@ -34,19 +34,12 @@ import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import Stepper, { Step } from '@/components/ui/stepper';
 import { Github, ToyBrick } from 'lucide-react';
-import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { CalendarIcon } from 'lucide-react';
-import { Calendar } from '@/components/ui/calendar';
-import { cn } from '@/lib/utils';
-import { format } from 'date-fns';
 
 const signUpSchema = z.object({
   email: z.string().email('Invalid email address.'),
   password: z.string().min(6, 'Password must be at least 6 characters.'),
   name: z.string().min(2, "Name must be at least 2 characters."),
-  dob: z.date({
-    required_error: "A date of birth is required.",
-  }),
+  age: z.coerce.number().min(1, "Age is required."),
   username: z.string().min(3, "Username must be at least 3 characters."),
 });
 
@@ -110,7 +103,7 @@ export default function LoginPage() {
       await setDoc(doc(firestore, 'users', user.uid), {
         email: user.email,
         name: values.name,
-        dob: values.dob,
+        age: values.age,
         username: values.username,
         createdAt: serverTimestamp(),
       });
@@ -326,43 +319,15 @@ export default function LoginPage() {
                     </FormItem>
                   )}
                 />
-                 <FormField
+                <FormField
                   control={signUpForm.control}
-                  name="dob"
+                  name="age"
                   render={({ field }) => (
-                    <FormItem className="flex flex-col">
-                      <FormLabel>Date of birth</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
-                          <FormControl>
-                            <Button
-                              variant={"outline"}
-                              className={cn(
-                                "w-full pl-3 text-left font-normal",
-                                !field.value && "text-muted-foreground"
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, "PPP")
-                              ) : (
-                                <span>Pick a date</span>
-                              )}
-                              <CalendarIcon className="ml-auto h-4 w-4 opacity-50" />
-                            </Button>
-                          </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-0" align="start">
-                          <Calendar
-                            mode="single"
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date("1900-01-01")
-                            }
-                            initialFocus
-                          />
-                        </PopoverContent>
-                      </Popover>
+                    <FormItem>
+                      <FormLabel>Age</FormLabel>
+                      <FormControl>
+                        <Input type="number" placeholder="Your Age" {...field} />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
