@@ -4,6 +4,7 @@ import { ThemeProvider } from '@/components/theme-provider';
 import { Header } from '@/components/header';
 import { Toaster } from '@/components/ui/toaster';
 import { Footer } from '@/components/footer';
+import LightPillar from '@/components/light-pillar';
 
 export const metadata: Metadata = {
   title: "Sarthak's Spectrum",
@@ -32,6 +33,9 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
+          <div className="fixed top-0 left-0 w-full h-screen -z-10">
+            <LightPillar topColor="#4B0082" bottomColor="#8F00FF" />
+          </div>
           <Header />
           <main>{children}</main>
           <Footer />

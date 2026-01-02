@@ -1,14 +1,10 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { AnimatedText } from "@/components/animated-text";
-import LightPillar from "../light-pillar";
 
 export function Hero() {
   return (
     <section id="home" className="relative h-screen w-full flex items-center justify-center text-center overflow-hidden">
-      <div className="absolute inset-0">
-         <LightPillar topColor="#4B0082" bottomColor="#8F00FF" />
-      </div>
       <div className="absolute pointer-events-none inset-0 flex items-center justify-center bg-background [mask-image:radial-gradient(ellipse_at_center,transparent_20%,black)]"></div>
      
       <div className="relative z-10 flex flex-col items-center gap-6 px-4">
