@@ -13,7 +13,7 @@ export function Hero() {
           typingSpeed={150}
           loop={false}
           showCursor={false}
-          className="font-headline text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter"
+          className="font-headline text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-white"
         />
         <div className="max-w-2xl text-lg md:text-xl text-foreground/80 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
           <TextType 
