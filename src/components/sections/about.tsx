@@ -1,10 +1,9 @@
 import Image from 'next/image';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
-import { Card, CardContent } from '@/components/ui/card';
+import { Card } from '@/components/ui/card';
 import { SkillProgress } from '../skill-progress';
 import { skills } from '@/lib/data';
 
-const profileImage = PlaceHolderImages.find(p => p.id === 'profile');
+const profileImageUrl = "https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg";
 
 export function About() {
   return (
@@ -13,11 +12,10 @@ export function About() {
         <div className="flex justify-center">
           <Card className="w-[300px] h-[300px] md:w-[400px] md:h-[400px] p-2 rounded-full overflow-hidden relative group">
             <Image
-              src={profileImage?.imageUrl || ''}
+              src={profileImageUrl}
               alt="Sarthak"
               fill
               className="object-cover rounded-full transition-transform duration-300 group-hover:scale-105"
-              data-ai-hint={profileImage?.imageHint}
             />
           </Card>
         </div>

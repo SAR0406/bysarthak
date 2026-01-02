@@ -23,12 +23,6 @@
       "description": "An interactive data visualization dashboard.",
       "imageUrl": "https://images.unsplash.com/photo-1691643158804-d3f02eb456a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxkYXRhJTIwY2hhcnRzfGVufDB8fHx8MTc2NzIxNDUwMXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "data charts"
-    },
-    {
-      "id": "profile",
-      "description": "A profile picture of a developer.",
-      "imageUrl": "https://images.unsplash.com/photo-1522556189639-b150ed9c4330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjcyMjcxOTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "man portrait"
     }
   ]
 }
