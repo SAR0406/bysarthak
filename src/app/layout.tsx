@@ -54,10 +54,10 @@ export default function RootLayout({
           <PillNav
             logo={logoUrl}
             items={navLinks}
-            baseColor="hsl(var(--card))"
-            pillColor="hsl(var(--primary))"
-            hoveredPillTextColor="hsl(var(--primary-foreground))"
-            pillTextColor="hsl(var(--primary-foreground))"
+            baseColor="#FFFFFF"
+            pillColor="#000000"
+            hoveredPillTextColor="#FFFFFF"
+            pillTextColor="#000000"
           />
           <main>{children}</main>
           <Footer />
