@@ -49,42 +49,33 @@ export default function Stepper({
   const isLastStep = currentStep === totalSteps;
 
   const updateStep = (newStep: number) => {
-    setCurrentStep(newStep);
-    if (newStep > totalSteps) {
-      onFinalStepCompleted();
-    } else {
-      onStepChange(newStep);
+    if (newStep > 0 && newStep <= totalSteps + 1) {
+      setDirection(newStep > currentStep ? 1 : -1);
+      setCurrentStep(newStep);
+      if (newStep > totalSteps) {
+        onFinalStepCompleted();
+      } else {
+        onStepChange(newStep);
+      }
     }
   };
 
   const handleBack = () => {
-    if (currentStep > 1) {
-      setDirection(-1);
-      updateStep(currentStep - 1);
-    }
+    updateStep(currentStep - 1);
   };
 
   const handleNext = () => {
-    if (!isLastStep) {
-      setDirection(1);
-      updateStep(currentStep + 1);
-    }
-  };
-
-  const handleComplete = () => {
-    setDirection(1);
-    updateStep(totalSteps + 1);
+    updateStep(currentStep + 1);
   };
   
   const handleStepClick = (clicked: number) => {
       if (disableStepIndicators) return;
-      setDirection(clicked > currentStep ? 1 : -1);
       updateStep(clicked);
   }
 
   return (
     <div
-      className="flex min-h-full flex-1 flex-col items-center justify-center p-4"
+      className="flex min-h-full flex-1 flex-col items-center justify-center p-4 w-full"
       {...rest}
     >
       <div
@@ -127,26 +118,22 @@ export default function Stepper({
 
         {!isCompleted && (
           <div className={`px-8 pb-8 ${footerClassName}`}>
-            <div className={`mt-10 flex ${currentStep !== 1 ? 'justify-between' : 'justify-end'}`}>
-              {currentStep !== 1 && (
+            <div className={`mt-10 flex ${currentStep > 1 ? 'justify-between' : 'justify-end'}`}>
+              {currentStep > 1 && (
                 <button
                   onClick={handleBack}
-                  className={`rounded px-2 py-1 transition duration-300 ${
-                    currentStep === 1
-                      ? 'pointer-events-none opacity-50 text-muted-foreground'
-                      : 'text-muted-foreground hover:text-foreground'
-                  }`}
+                  className={`rounded px-2 py-1 transition duration-300 text-muted-foreground hover:text-foreground`}
                   {...backButtonProps}
                 >
                   {backButtonText}
                 </button>
               )}
                <button
-                onClick={isLastStep ? handleComplete : handleNext}
+                onClick={handleNext}
                 className="flex items-center justify-center rounded-full bg-primary py-1.5 px-3.5 font-medium tracking-tight text-primary-foreground transition hover:bg-primary/90 active:bg-primary/80"
                 {...nextButtonProps}
               >
-                {isLastStep ? 'Sign Up' : nextButtonText}
+                {isLastStep ? 'Done' : nextButtonText}
               </button>
             </div>
           </div>
@@ -172,18 +159,19 @@ function StepContentWrapper({
   className = ''
 }: StepContentWrapperProps) {
   const [parentHeight, setParentHeight] = useState<number | string>('auto');
+  const stepContent = isCompleted ? null : stepsArray[currentStep - 1];
 
   return (
     <motion.div
       style={{ position: 'relative', overflow: 'hidden' }}
-      animate={{ height: isCompleted ? 0 : parentHeight }}
+      animate={{ height: parentHeight }}
       transition={{ type: 'spring', duration: 0.4 }}
       className={className}
     >
       <AnimatePresence initial={false} mode="wait" custom={direction}>
-        {!isCompleted && (
+         {stepContent && (
           <SlideTransition key={currentStep} direction={direction} onHeightReady={h => setParentHeight(h)}>
-            {children}
+            {stepContent}
           </SlideTransition>
         )}
       </AnimatePresence>
@@ -196,6 +184,8 @@ interface SlideTransitionProps {
   direction: number;
   onHeightReady: (height: number) => void;
 }
+
+const stepsArray: ReactNode[] = [];
 
 function SlideTransition({ children, direction, onHeightReady }: SlideTransitionProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
@@ -215,7 +205,7 @@ function SlideTransition({ children, direction, onHeightReady }: SlideTransition
       animate="center"
       exit="exit"
       transition={{ type: 'spring', stiffness: 300, damping: 30, mass: 0.5 }}
-      style={{ position: 'absolute', left: 0, right: 0, top: 0 }}
+      style={{ position: 'absolute', left: 0, right: 0, top: 0, width: '100%' }}
     >
       {children}
     </motion.div>
@@ -256,7 +246,7 @@ function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators =
   const status = currentStep === step ? 'active' : currentStep < step ? 'inactive' : 'complete';
 
   const handleClick = () => {
-    if (step !== currentStep && !disableStepIndicators) {
+    if (step < currentStep && !disableStepIndicators) {
       onClickStep(step);
     }
   };
@@ -264,7 +254,7 @@ function StepIndicator({ step, currentStep, onClickStep, disableStepIndicators =
   return (
     <motion.div
       onClick={handleClick}
-      className={`relative ${disableStepIndicators ? 'cursor-default' : 'cursor-pointer'} outline-none focus:outline-none`}
+      className={`relative ${disableStepIndicators || step >= currentStep ? 'cursor-default' : 'cursor-pointer'} outline-none focus:outline-none`}
       animate={status}
       initial={false}
     >

@@ -51,18 +51,36 @@
           "type": "string",
           "format": "date-time",
           "description": "The timestamp when the user profile was created."
+        },
+        "name": {
+          "type": "string",
+          "description": "The user's full name."
+        },
+        "dob": {
+          "type": "string",
+          "format": "date",
+          "description": "The user's date of birth."
+        },
+        "username": {
+          "type": "string",
+          "description": "The user's unique username."
         }
       },
       "required": [
         "email",
-        "createdAt"
+        "createdAt",
+        "name",
+        "username",
+        "dob"
       ]
     }
   },
   "auth": {
     "providers": [
       "password",
-      "anonymous"
+      "anonymous",
+      "google.com",
+      "github.com"
     ]
   },
   "firestore": {
