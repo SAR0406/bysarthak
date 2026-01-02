@@ -45,7 +45,6 @@ const PillNav: React.FC<PillNavProps> = ({
   const circleRefs = useRef<Array<HTMLSpanElement | null>>([]);
   const tlRefs = useRef<Array<gsap.core.Timeline | null>>([]);
   const activeTweenRefs = useRef<Array<gsap.core.Tween | null>>([]);
-  const logoImgRef = useRef<HTMLImageElement | null>(null);
   const logoTweenRef = useRef<gsap.core.Tween | null>(null);
   const hamburgerRef = useRef<HTMLButtonElement | null>(null);
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
@@ -174,11 +173,11 @@ const PillNav: React.FC<PillNavProps> = ({
   };
 
   const handleLogoEnter = () => {
-    const img = logoImgRef.current;
-    if (!img) return;
+    const logoEl = logoRef.current;
+    if (!logoEl) return;
     logoTweenRef.current?.kill();
-    gsap.set(img, { rotate: 0 });
-    logoTweenRef.current = gsap.to(img, {
+    gsap.set(logoEl, { rotate: 0 });
+    logoTweenRef.current = gsap.to(logoEl, {
       rotate: 360,
       duration: 0.2,
       ease,
@@ -258,18 +257,17 @@ const PillNav: React.FC<PillNavProps> = ({
     ['--pill-bg']: pillColor,
     ['--hover-text']: hoveredPillTextColor,
     ['--pill-text']: resolvedPillTextColor,
-    ['--nav-h']: '38px',
+    ['--nav-h']: '34px',
     ['--logo']: '32px',
-    ['--pill-pad-x']: '14px',
+    ['--pill-pad-x']: '12px',
     ['--pill-gap']: '3px'
   } as React.CSSProperties;
 
-  const isLogoUrl = logo.startsWith('http') || logo.startsWith('/');
 
   return (
     <div className="fixed top-[1em] z-[1000] w-full left-1/2 -translate-x-1/2 md:w-auto">
       <nav
-        className={`w-full md:w-max flex items-center justify-between md:justify-start box-border px-4 md:px-0 ${className}`}
+        className={`w-full md:w-max flex items-center justify-between md:justify-start box-border px-4 md:px-0 ${className} backdrop-blur-sm bg-black/10 rounded-full`}
         aria-label="Primary"
         style={cssVars}
       >
@@ -289,11 +287,7 @@ const PillNav: React.FC<PillNavProps> = ({
               background: 'var(--pill-bg)'
             }}
           >
-            {isLogoUrl ? (
-              <Image src={logo} alt={logoAlt} ref={logoImgRef} width={32} height={32} className="w-full h-full object-cover block" />
-            ) : (
-              <span className="text-xl leading-none" ref={logoImgRef as any} style={{color: 'var(--pill-text)'}}>{logo}</span>
-            )}
+            <span className="text-lg leading-none" style={{color: 'var(--pill-text)'}}>{logo}</span>
           </Link>
 
         <div
@@ -334,13 +328,13 @@ const PillNav: React.FC<PillNavProps> = ({
                   />
                   <span className="label-stack relative inline-block leading-[1] z-[2]">
                     <span
-                      className="pill-label relative z-[2] inline-block leading-[1]"
+                      className="pill-label relative z-[2] inline-block leading-[1] text-xs"
                       style={{ willChange: 'transform', color: 'var(--pill-text)' }}
                     >
                       {item.label}
                     </span>
                     <span
-                      className="pill-label-hover absolute left-0 top-0 z-[3] inline-block"
+                      className="pill-label-hover absolute left-0 top-0 z-[3] inline-block text-xs"
                       style={{
                         color: 'var(--hover-text)',
                         willChange: 'transform, opacity'
