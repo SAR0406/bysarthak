@@ -1,4 +1,4 @@
-"use client";
+'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
@@ -370,5 +370,3 @@ const LightPillar: React.FC<LightPillarProps> = ({
 };
 
 export default LightPillar;
-
-    
