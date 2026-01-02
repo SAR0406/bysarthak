@@ -32,7 +32,9 @@ const ScrollFloat: React.FC<ScrollFloatProps> = ({
 
     const originalText = children;
     container.innerHTML = ''; 
-    const chars = originalText.split('').map(char => {
+    
+    // Use Intl.Segmenter or Array.from for proper emoji/grapheme splitting
+    const chars = Array.from(originalText).map(char => {
       const span = document.createElement('span');
       span.textContent = char === ' ' ? '\u00A0' : char;
       span.className = 'inline-block';

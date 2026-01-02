@@ -26,7 +26,10 @@ export function Hero() {
           />
           <div className="w-full max-w-4xl text-lg md:text-xl text-white animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
             <RotatingText
-              texts={['I build intelligent systems that see, think, and automate.', 'Turning ambitious ideas into working AI systems.']}
+              texts={[
+                'I build intelligent systems that see, think, and automate.',
+                'Turning ambitious ideas into working AI systems.'
+              ]}
               staggerFrom={"last"}
               initial={{ y: "100%", opacity: 0 }}
               animate={{ y: "0%", opacity: 1 }}
@@ -38,7 +41,7 @@ export function Hero() {
             />
           </div>
           <div className="animate-fade-in-up" style={{ animationDelay: '1s' }}>
-            <Button asChild size="lg" className="bg-black text-white shadow-lg hover:bg-white hover:text-black hover:shadow-2xl hover:shadow-primary/50 hover:-translate-y-1 transition-all duration-300">
+             <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent text-primary-foreground font-bold shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-primary/50">
               <Link href="#work">Explore My World</Link>
             </Button>
           </div>
