@@ -31,7 +31,7 @@ export function Header() {
     >
       <div className="container mx-auto flex h-16 items-center justify-between">
         <Link href="/" className="font-headline text-xl font-bold text-primary">
-          Sarthak
+          It's Sarthal
         </Link>
         <nav className="hidden md:flex items-center gap-6">
           {navLinks.map((link) => (
