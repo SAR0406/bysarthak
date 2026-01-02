@@ -11,7 +11,7 @@ export function Hero() {
       <div className="relative z-10 flex flex-col items-center gap-6 px-4">
         <AnimatedText
           text="Hi, I’m Sarthak 👋"
-          className="font-display text-4xl md:text-5xl lg:text-6xl font-bold tracking-tighter text-white"
+          className="font-display text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white"
         />
         <div className="w-full max-w-4xl text-lg md:text-xl text-white animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
           <RotatingText
