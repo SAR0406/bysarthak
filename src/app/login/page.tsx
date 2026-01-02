@@ -21,7 +21,6 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useAuth, useFirestore } from '@/firebase';
 import {
   createUserWithEmailAndPassword,
@@ -29,6 +28,7 @@ import {
 } from 'firebase/auth';
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
+import Stepper, { Step } from '@/components/ui/stepper';
 
 const signUpSchema = z.object({
   email: z.string().email('Invalid email address.'),
@@ -65,7 +65,6 @@ export default function LoginPage() {
       );
       const user = userCredential.user;
 
-      // Create user profile in Firestore
       await setDoc(doc(firestore, 'users', user.uid), {
         email: user.email,
         createdAt: serverTimestamp(),
@@ -101,17 +100,21 @@ export default function LoginPage() {
       });
     }
   };
+  
+  const handleFinalStep = () => {
+    signUpForm.handleSubmit(handleSignUp)();
+  };
 
   return (
-    <div className="container mx-auto flex h-screen items-center justify-center">
-      <Tabs defaultValue="login" className="w-[400px]">
-        <TabsList className="grid w-full grid-cols-2">
-          <TabsTrigger value="login">Login</TabsTrigger>
-          <TabsTrigger value="signup">Sign Up</TabsTrigger>
-        </TabsList>
-        <TabsContent value="login">
-          <Card>
-            <CardHeader>
+    <div className="container mx-auto flex min-h-screen items-center justify-center">
+      <Stepper 
+        initialStep={1} 
+        onFinalStepCompleted={handleFinalStep}
+        nextButtonText='Sign Up'
+        backButtonText='Login'
+        >
+        <Step>
+           <CardHeader>
               <CardTitle>Login</CardTitle>
               <CardDescription>
                 Access your account to see who wants to collaborate.
@@ -168,10 +171,8 @@ export default function LoginPage() {
                 </form>
               </Form>
             </CardContent>
-          </Card>
-        </TabsContent>
-        <TabsContent value="signup">
-          <Card>
+        </Step>
+        <Step>
             <CardHeader>
               <CardTitle>Sign Up</CardTitle>
               <CardDescription>
@@ -217,21 +218,11 @@ export default function LoginPage() {
                       </FormItem>
                     )}
                   />
-                  <Button
-                    type="submit"
-                    className="w-full"
-                    disabled={signUpForm.formState.isSubmitting}
-                  >
-                    {signUpForm.formState.isSubmitting
-                      ? 'Creating Account...'
-                      : 'Create Account'}
-                  </Button>
                 </form>
               </Form>
             </CardContent>
-          </Card>
-        </TabsContent>
-      </Tabs>
+        </Step>
+      </Stepper>
     </div>
   );
 }
