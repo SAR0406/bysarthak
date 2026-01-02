@@ -9,11 +9,11 @@ export function Hero() {
       <div className="relative z-10 flex flex-col items-center gap-6 px-4">
         <TextType
           as="h1"
-          text="Sarthak"
-          typingSpeed={150}
+          text="Hi, I’m Sarthak 👋"
+          typingSpeed={100}
           loop={false}
           showCursor={false}
-          className="font-display text-6xl md:text-8xl lg:text-9xl font-bold tracking-tighter text-white"
+          className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-white"
         />
         <div className="max-w-2xl text-lg md:text-xl text-foreground/80 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
           <TextType 
