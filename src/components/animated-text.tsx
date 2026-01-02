@@ -10,7 +10,7 @@ type AnimatedTextProps = {
 export function AnimatedText({ text, className }: AnimatedTextProps) {
   return (
     <div className={cn("flex flex-wrap justify-center", className)}>
-      {text.split("").map((char, index) => (
+      {Array.from(text).map((char, index) => (
         <span
           key={`${char}-${index}`}
           className="animate-char-in"
