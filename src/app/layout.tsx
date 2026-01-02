@@ -75,8 +75,8 @@ export default function RootLayout({
                 items={navLinks}
                 baseColor="#FFFFFF"
                 pillColor="#000000"
-                hoveredPillTextColor="#FFFFFF"
-                pillTextColor="#000000"
+                hoveredPillTextColor="#000000"
+                pillTextColor="#FFFFFF"
               />
             </div>
             <main>{children}</main>
