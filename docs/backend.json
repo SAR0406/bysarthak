@@ -1,0 +1,68 @@
+{
+  "entities": {
+    "ContactMessage": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "ContactMessage",
+      "type": "object",
+      "description": "Represents a contact message sent by a visitor.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the contact message."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the person sending the message."
+        },
+        "email": {
+          "type": "string",
+          "description": "Email address of the sender.",
+          "format": "email"
+        },
+        "message": {
+          "type": "string",
+          "description": "The content of the message."
+        },
+        "sentAt": {
+          "type": "string",
+          "description": "Timestamp indicating when the message was sent.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "email",
+        "message",
+        "sentAt"
+      ]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/contact_messages/{contactMessageId}",
+        "definition": {
+          "entityName": "ContactMessage",
+          "schema": {
+            "$ref": "#/backend/entities/ContactMessage"
+          },
+          "description": "Stores contact messages sent by visitors. No denormalized authorization fields are required as access is managed at the collection level, potentially restricted to administrators.",
+          "params": [
+            {
+              "name": "contactMessageId",
+              "description": "Unique identifier for the contact message document."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "This design prioritizes security and scalability for storing contact messages. A top-level collection `/contact_messages` is used. This approach avoids hierarchical authorization complexities and allows for simple, robust security rules. Each document within the collection represents a contact message. There is no user-specific data, so we don't need user-scoped collections.  All documents share the same security profile.\n\n**Authorization Independence:** There is no need for authorization independence via denormalization because access control is managed at the collection level, assuming all contact messages are accessible to authorized administrators (potentially checked via a separate mechanism like Cloud Functions or a dedicated admin role, which could be implemented with a `/roles_admin/{uid}` collection, existence-based check).\n\n**QAPs:** The structure supports `list` operations securely because all documents within the `/contact_messages` collection share the same security requirements. Rules can easily restrict access to this collection based on the presence of a specific admin role, using an existence check against the `/roles_admin/{uid}` collection.\n"
+  }
+}

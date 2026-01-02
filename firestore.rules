@@ -1,0 +1,68 @@
+/**
+ * This ruleset implements a secure "dropbox" model for a public contact form.
+ *
+ * Core Philosophy:
+ * The security model is designed to be write-once, read-never from the client.
+ * Any visitor, authenticated or not, can submit a message. Once submitted, the
+ * data is protected from being read, listed, updated, or deleted by any user
+ * via the client SDKs. This ensures the privacy and integrity of submitted
+ * messages, which are intended to be processed by a trusted backend or admin panel.
+ *
+ * Data Structure:
+ * All data is stored in a single, top-level collection: /contact_messages. Each
+ * document in this collection represents one message submitted through the form.
+ * There are no user-specific subcollections.
+ *
+ * Key Security Decisions:
+ * - Public Create: To allow the "get in touch" feature to work for all website
+ *   visitors, the `create` operation is publicly allowed.
+ * - No Reads or Lists: To protect the privacy of senders, `get` and `list`
+ *   operations are disabled for everyone. This prevents any client from browsing
+ *   or accessing submitted messages.
+ * - Immutability: Messages are immutable. `update` and `delete` operations are
+ *   disabled to ensure that a submitted record cannot be altered or removed
+*    by any client-side user.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // Helper Functions
+
+    /**
+     * Returns true if the user is signed in.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description
+     *   Implements a public 'dropbox'. Anyone can create a contact message,
+     *   but no one can read, update, or delete them through the client SDKs. This
+     *   is designed for write-once scenarios where data is processed by a
+     *   backend service or an administrator with elevated privileges.
+     * @path
+     *   /contact_messages/{contactMessageId}
+     * @allow
+     *   (create): An unauthenticated visitor submitting the contact form.
+     * @deny
+     *   (get): Any user, authenticated or not, trying to read a message by ID.
+     *   (list): Any user attempting to see a list of all submitted messages.
+     *   (update): Any user trying to change a message after it has been sent.
+     * @principle
+     *   Secures submitted data by making it write-once for the public and
+     *   inaccessible for all other operations, preventing data leakage.
+     */
+    match /contact_messages/{contactMessageId} {
+      // READ operations are completely disallowed to protect message privacy.
+      allow get: if false;
+      allow list: if false;
+
+      // WRITE operations: Allow anyone to create, but no one to modify or delete.
+      allow create: if true;
+      allow update: if false;
+      allow delete: if false;
+    }
+  }
+}
