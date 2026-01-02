@@ -52,11 +52,7 @@ export default function Stepper({
     if (newStep > 0 && newStep <= totalSteps + 1) {
       setDirection(newStep > currentStep ? 1 : -1);
       setCurrentStep(newStep);
-      if (newStep > totalSteps) {
-        onFinalStepCompleted();
-      } else {
-        onStepChange(newStep);
-      }
+      onStepChange(newStep);
     }
   };
 
@@ -65,13 +61,19 @@ export default function Stepper({
   };
 
   const handleNext = () => {
-    updateStep(currentStep + 1);
+    if (isLastStep) {
+      onFinalStepCompleted();
+    } else {
+      updateStep(currentStep + 1);
+    }
   };
   
   const handleStepClick = (clicked: number) => {
       if (disableStepIndicators) return;
       updateStep(clicked);
   }
+
+  const stepContent = isCompleted ? null : stepsArray[currentStep - 1];
 
   return (
     <div
@@ -108,12 +110,12 @@ export default function Stepper({
         </div>
 
         <StepContentWrapper
-          isCompleted={isCompleted}
           currentStep={currentStep}
           direction={direction}
           className={`px-8 ${contentClassName}`}
+          steps={stepsArray}
         >
-          {stepsArray[currentStep - 1]}
+          {stepContent}
         </StepContentWrapper>
 
         {!isCompleted && (
@@ -144,22 +146,23 @@ export default function Stepper({
 }
 
 interface StepContentWrapperProps {
-  isCompleted: boolean;
   currentStep: number;
   direction: number;
   children: ReactNode;
   className?: string;
+  steps: ReactNode[];
 }
 
 function StepContentWrapper({
-  isCompleted,
   currentStep,
   direction,
   children,
-  className = ''
+  className = '',
+  steps
 }: StepContentWrapperProps) {
   const [parentHeight, setParentHeight] = useState<number | string>('auto');
-  const stepContent = isCompleted ? null : stepsArray[currentStep - 1];
+  const isCompleted = currentStep > steps.length;
+  const stepContent = isCompleted ? null : children;
 
   return (
     <motion.div
@@ -185,7 +188,6 @@ interface SlideTransitionProps {
   onHeightReady: (height: number) => void;
 }
 
-const stepsArray: ReactNode[] = [];
 
 function SlideTransition({ children, direction, onHeightReady }: SlideTransitionProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
