@@ -1,3 +1,34 @@
 {
-  "placeholderImages": []
+  "placeholderImages": [
+    {
+      "id": "projects/1",
+      "description": "A modern e-commerce website interface.",
+      "imageUrl": "https://images.unsplash.com/photo-1586880244406-556ebe35f282?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxvbmxpbmUlMjBzdG9yZXxlbnwwfHx8fDE3NjcyNzMwNDF8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "online store"
+    },
+    {
+      "id": "projects/2",
+      "description": "A clean dashboard for project management.",
+      "imageUrl": "https://images.unsplash.com/photo-1759256243611-502772ac391b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZGFzaGJvYXJkJTIwaW50ZXJmYWNlfGVufDB8fHx8MTc2NzIzODcxNXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "dashboard interface"
+    },
+    {
+      "id": "projects/3",
+      "description": "A minimalist blog layout.",
+      "imageUrl": "https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxtaW5pbWFsaXN0JTIwYmxvZ3xlbnwwfHx8fDE3NjcyNzAyMjl8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "minimalist blog"
+    },
+    {
+      "id": "projects/4",
+      "description": "An interactive data visualization dashboard.",
+      "imageUrl": "https://images.unsplash.com/photo-1691643158804-d3f02eb456a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxkYXRhJTIwY2hhcnRzfGVufDB8fHx8MTc2NzIxNDUwMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "data charts"
+    },
+    {
+      "id": "profile",
+      "description": "A profile picture of a developer.",
+      "imageUrl": "https://images.unsplash.com/photo-1522556189639-b150ed9c4330?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxtYW4lMjBwb3J0cmFpdHxlbnwwfHx8fDE3NjcyMjcxOTN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "man portrait"
+    }
+  ]
 }
