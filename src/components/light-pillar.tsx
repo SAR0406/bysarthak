@@ -2,7 +2,6 @@
 
 import React, { useRef, useEffect, useState } from 'react';
 import * as THREE from 'three';
-import './light-pillar.css';
 
 interface LightPillarProps {
   topColor?: string;
@@ -356,13 +355,20 @@ const LightPillar: React.FC<LightPillarProps> = ({
 
   if (!webGLSupported) {
     return (
-      <div className={`light-pillar-fallback ${className}`} style={{ mixBlendMode }}>
+      <div
+        className={`w-full h-full absolute top-0 left-0 flex items-center justify-center bg-black/10 text-gray-500 text-sm ${className}`}
+        style={{ mixBlendMode }}
+      >
         WebGL not supported
       </div>
     );
   }
 
-  return <div ref={containerRef} className={`light-pillar-container ${className}`} style={{ mixBlendMode }} />;
+  return (
+    <div ref={containerRef} className={`w-full h-full absolute top-0 left-0 ${className}`} style={{ mixBlendMode }} />
+  );
 };
 
 export default LightPillar;
+
+    
