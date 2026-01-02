@@ -12,7 +12,7 @@ export const metadata: Metadata = {
   description: 'Creative Coder & Explorer of Modern Web Experiences',
 };
 
-const logoUrl = `https://i.ibb.co/wrMzQqD/IMG-20251229-190558-670-2.jpg`;
+const logoUrl = `💫`;
 
 export default function RootLayout({
   children,

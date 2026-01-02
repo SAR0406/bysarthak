@@ -273,6 +273,8 @@ const PillNav: React.FC<PillNavProps> = ({
     ['--pill-gap']: '3px'
   } as React.CSSProperties;
 
+  const isLogoUrl = logo.startsWith('http') || logo.startsWith('/');
+
   return (
     <div className="fixed top-[1em] z-[1000] w-full left-0 md:w-auto md:left-1/2 md:-translate-x-1/2">
       <nav
@@ -296,7 +298,11 @@ const PillNav: React.FC<PillNavProps> = ({
               background: 'var(--base)'
             }}
           >
-            <img src={logo} alt={logoAlt} ref={logoImgRef} className="w-full h-full object-cover block" />
+            {isLogoUrl ? (
+              <img src={logo} alt={logoAlt} ref={logoImgRef} className="w-full h-full object-cover block" />
+            ) : (
+              <span className="text-xl" ref={logoImgRef as any}>{logo}</span>
+            )}
           </Link>
 
         <div
