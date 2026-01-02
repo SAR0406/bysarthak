@@ -17,6 +17,9 @@ import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { Github, Linkedin, Twitter } from "lucide-react";
 import Link from "next/link";
+import { useFirestore } from "@/firebase";
+import { collection, serverTimestamp } from "firebase/firestore";
+import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 
 const formSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters."),
@@ -26,6 +29,9 @@ const formSchema = z.object({
 
 export function Contact() {
   const { toast } = useToast();
+  const firestore = useFirestore();
+  const contactMessagesRef = collection(firestore, "contact_messages");
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -36,7 +42,13 @@ export function Contact() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
+    const messageData = {
+      ...values,
+      sentAt: serverTimestamp(),
+    };
+    
+    addDocumentNonBlocking(contactMessagesRef, messageData);
+
     toast({
       title: "Message Sent!",
       description: "Thanks for reaching out. I'll get back to you soon.",
