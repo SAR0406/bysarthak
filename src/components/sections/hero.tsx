@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import TextType from "@/components/TextType";
+import RotatingText from "../RotatingText";
 
 export function Hero() {
   return (
@@ -16,13 +17,16 @@ export function Hero() {
           className="font-display text-4xl md:text-6xl lg:text-7xl font-bold tracking-tighter text-white"
         />
         <div className="max-w-2xl text-lg md:text-xl text-white animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
-          <TextType 
-            text={["Creative Coder", "Explorer of Modern Web Experiences"]}
-            typingSpeed={75}
-            pauseDuration={1500}
-            showCursor={true}
-            cursorCharacter="|"
-            initialDelay={1000}
+          <RotatingText
+            texts={['Creative Coder', 'Explorer of Modern Web Experiences']}
+            staggerFrom={"last"}
+            initial={{ y: "100%" }}
+            animate={{ y: 0 }}
+            exit={{ y: "-120%" }}
+            staggerDuration={0.025}
+            splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
+            transition={{ type: "spring", damping: 30, stiffness: 400 }}
+            rotationInterval={2000}
           />
         </div>
         <div className="animate-fade-in-up" style={{ animationDelay: '1s' }}>
