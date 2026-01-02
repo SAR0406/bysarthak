@@ -43,7 +43,7 @@ export function Hero() {
             </Button>
           </div>
         </div>
-        <div className="w-full max-w-4xl absolute bottom-16 animate-fade-in-up" style={{ animationDelay: '1.2s' }}>
+        <div className="w-full max-w-4xl animate-fade-in-up" style={{ animationDelay: '1.2s' }}>
             <LogoLoop
                 logos={techLogos}
                 speed={60}
