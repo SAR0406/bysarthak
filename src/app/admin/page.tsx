@@ -266,13 +266,7 @@ export default function AdminPage() {
   };
 
   const formatMessageTimestamp = (date: Date) => {
-    if (isToday(date)) {
       return format(date, 'p');
-    }
-    if (isThisYear(date)) {
-      return format(date, 'MMM d, p');
-    }
-    return format(date, 'P, p');
   };
   
   const lastMessage = (convo: Conversation) => {
@@ -333,9 +327,9 @@ export default function AdminPage() {
     const hasBeenRead = Object.keys(message.readBy).includes(selectedConversation.senderEmail);
 
     if (hasBeenRead) {
-      return <CheckCheck className="h-4 w-4 text-blue-500" />;
+      return <CheckCheck className="h-4 w-4 text-blue-500 inline" />;
     }
-    return <Check className="h-4 w-4 text-muted-foreground" />;
+    return <Check className="h-4 w-4 text-muted-foreground inline" />;
   };
 
   return (
@@ -423,24 +417,26 @@ export default function AdminPage() {
               </div>
 
               <ScrollArea className="flex-1 p-4 bg-muted/20" ref={scrollAreaRef}>
-                <div className="space-y-4">
+                <div className="space-y-2">
                   {selectedConversation.messages?.map((msg) => (
-                    <div key={msg.id} className={cn("flex items-end gap-2.5 group", msg.sentBy === 'admin' && 'justify-end')}>
+                    <div key={msg.id} className={cn("flex items-end gap-2 group", msg.sentBy === 'admin' && 'justify-end')}>
                        <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'admin' && 'items-end')}>
-                         <div className={cn("leading-1.5 p-2 border-gray-200 relative", msg.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-s-xl rounded-ee-xl' : 'bg-card rounded-e-xl rounded-es-xl shadow-sm')}>
+                         <div className={cn("relative leading-1.5 p-2 rounded-xl", msg.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none shadow-sm')}>
                             {msg.imageUrl && (
                                 <Image src={msg.imageUrl} alt="attachment" width={300} height={200} className="rounded-md mb-2" />
                             )}
-                            {msg.text && <p className="text-sm font-normal px-1">{msg.text}</p>}
+                            {msg.text && <p className="text-sm font-normal px-1 pb-2">{msg.text}</p>}
+                            
+                            <div className="absolute bottom-1 right-2 text-xs text-muted-foreground/80 flex items-center gap-1">
+                                {msg.sentBy === 'admin' && <MessageStatus message={msg} />}
+                                <span>{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
+                            </div>
+
                             {msg.reactions && Object.keys(msg.reactions).length > 0 && (
-                                <div className="absolute -bottom-3 right-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
+                                <div className="absolute -bottom-3 left-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
                                     {Object.values(msg.reactions).map((emoji, i) => <span key={i}>{emoji}</span>)}
                                 </div>
                             )}
-                         </div>
-                          <div className="flex items-center gap-2">
-                            <span className="text-xs font-normal text-muted-foreground">{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
-                            <MessageStatus message={msg} />
                          </div>
                        </div>
                        <Popover>
