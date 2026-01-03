@@ -23,6 +23,36 @@
       "description": "An interactive data visualization dashboard.",
       "imageUrl": "https://images.unsplash.com/photo-1691643158804-d3f02eb456a3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw0fHxkYXRhJTIwY2hhcnRzfGVufDB8fHx8MTc2NzIxNDUwMXww&ixlib=rb-4.1.0&q=80&w=1080",
       "imageHint": "data charts"
+    },
+    {
+      "id": "gallery/1",
+      "description": "Abstract geometric shapes with a soft color palette.",
+      "imageUrl": "https://images.unsplash.com/photo-1616924551095-5156721a1cbc?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw4fHxhYnN0cmFjdCUyMGdlb21ldHJ5fGVufDB8fHx8MTc2NzM2MTUwMXww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "abstract geometry"
+    },
+    {
+      "id": "gallery/2",
+      "description": "A close-up of a circuit board with intricate details.",
+      "imageUrl": "https://images.unsplash.com/photo-1631375937044-6dd5beac01d2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxjaXJjdWl0JTIwYm9hcmR8ZW58MHx8fHwxNzY3MzUzMzE5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "circuit board"
+    },
+    {
+      "id": "gallery/3",
+      "description": "A person interacting with a futuristic UI.",
+      "imageUrl": "https://images.unsplash.com/photo-1720962158813-29b66b8e23e1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmdXR1cmlzdGljJTIwdWl8ZW58MHx8fHwxNzY3NDM4MTMxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "futuristic ui"
+    },
+    {
+      "id": "gallery/4",
+      "description": "A serene landscape with mountains and a lake.",
+      "imageUrl": "https://images.unsplash.com/photo-1683041132892-0fe990b3afc3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxzZXJlbmUlMjBsYW5kc2NhcGV8ZW58MHx8fHwxNzY3Mzc2NTY5fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "serene landscape"
+    },
+    {
+      "id": "gallery/5",
+      "description": "Code on a screen with a shallow depth of field.",
+      "imageUrl": "https://images.unsplash.com/photo-1753998943413-8cba1b923c0e?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxjb2RlJTIwc2NyZWVufGVufDB8fHx8MTc2NzQzNjYzN3ww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "code screen"
     }
   ]
 }

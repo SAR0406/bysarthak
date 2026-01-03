@@ -3,6 +3,7 @@ import { About } from "@/components/sections/about";
 import { Work } from "@/components/sections/work";
 import { GithubSection } from "@/components/sections/github";
 import { Contact } from "@/components/sections/contact";
+import { Gallery } from "@/components/sections/gallery";
 
 export default function Home() {
   return (
@@ -10,6 +11,7 @@ export default function Home() {
       <Hero />
       <About />
       <Work />
+      <Gallery />
       <GithubSection />
       <Contact />
     </div>

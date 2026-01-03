@@ -8,3 +8,7 @@ export type ImagePlaceholder = {
 };
 
 export const PlaceHolderImages: ImagePlaceholder[] = data.placeholderImages;
+
+export const getGalleryImages = (): ImagePlaceholder[] => {
+  return PlaceHolderImages.filter(p => p.id.startsWith('gallery/'));
+}
