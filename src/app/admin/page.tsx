@@ -17,7 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { Send, ArrowLeft } from 'lucide-react';
-import { useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
+import { useFirestore, useUser, useMemoFirebase } from '@/firebase';
 import {
   collection,
   serverTimestamp,
@@ -52,23 +52,37 @@ type Conversation = {
   messages: Message[];
 };
 
+const ADMIN_EMAIL = 'sarthak040624@gmail.com';
+
 export default function AdminPage() {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const [isAuthorized, setIsAuthorized] = useState(false);
 
   useEffect(() => {
-    if (!isUserLoading && !user) {
-      router.push('/login');
+    if (!isUserLoading) {
+      if (!user) {
+        router.push('/login');
+      } else if (user.email !== ADMIN_EMAIL) {
+        toast({
+          variant: 'destructive',
+          title: 'Unauthorized',
+          description: 'You do not have permission to access this page.',
+        });
+        router.push('/');
+      } else {
+        setIsAuthorized(true);
+      }
     }
-  }, [user, isUserLoading, router]);
+  }, [user, isUserLoading, router, toast]);
 
   const conversationsQuery = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
+    if (!firestore || !isAuthorized) return null;
     return query(collection(firestore, 'conversations'), orderBy('lastMessageAt', 'desc'));
-  }, [firestore, user]);
+  }, [firestore, isAuthorized]);
 
   const { data: conversations, isLoading } = useCollection<Conversation>(conversationsQuery);
 
@@ -78,15 +92,15 @@ export default function AdminPage() {
   });
 
   async function handleReply(values: z.infer<typeof replySchema>) {
-    if (!firestore || !user || !selectedConversation) return;
+    if (!firestore || !user || !selectedConversation || user.email !== ADMIN_EMAIL) return;
     const conversationRef = doc(firestore, 'conversations', selectedConversation.id);
 
     const replyData = {
       text: values.replyMessage,
       sentAt: serverTimestamp(),
       sentBy: 'admin',
-      senderName: user.displayName || 'Admin',
-      senderEmail: user.email || '',
+      senderName: 'Sarthak', // Hardcoded admin name
+      senderEmail: user.email,
     };
 
     try {
@@ -109,8 +123,7 @@ export default function AdminPage() {
     return convo.messages[convo.messages.length - 1];
   }
 
-
-  if (isUserLoading || !user) {
+  if (isUserLoading || !isAuthorized) {
     return (
       <div className="container mx-auto flex min-h-screen items-center justify-center">
         <p>Loading...</p>
@@ -183,7 +196,7 @@ export default function AdminPage() {
                     <div key={index} className={cn("flex items-start gap-2.5", msg.sentBy === 'admin' && 'justify-end')}>
                        <div className="flex flex-col gap-1 w-full max-w-[320px]">
                          <div className={cn("flex items-center space-x-2 rtl:space-x-reverse", msg.sentBy === 'admin' && 'justify-end')}>
-                             <span className="text-sm font-semibold text-card-foreground">{msg.sentBy === 'admin' ? 'Admin' : msg.senderName}</span>
+                             <span className="text-sm font-semibold text-card-foreground">{msg.senderName}</span>
                              <span className="text-xs font-normal text-muted-foreground">{msg.sentAt ? format(new Date(msg.sentAt.seconds * 1000), 'p') : ''}</span>
                          </div>
                          <div className={cn("leading-1.5 p-4 border-gray-200 rounded-e-xl rounded-es-xl", msg.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-ss-xl rounded-se-none' : 'bg-muted rounded-es-xl dark:bg-zinc-700')}>
