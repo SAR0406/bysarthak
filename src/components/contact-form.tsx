@@ -381,7 +381,7 @@ export function ContactForm() {
                             <Image src={msg.imageUrl} alt="attachment" width={300} height={200} className="rounded-md mb-2" />
                         )}
                         {msg.text && <p className="text-sm font-normal px-1">{msg.text}</p>}
-                        {Object.keys(msg.reactions).length > 0 && (
+                        {msg.reactions && Object.keys(msg.reactions).length > 0 && (
                             <div className="absolute -bottom-3 left-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
                                 {Object.values(msg.reactions).map((emoji, i) => <span key={i}>{emoji}</span>)}
                             </div>
