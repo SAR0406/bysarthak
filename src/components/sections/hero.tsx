@@ -1,5 +1,3 @@
-'use client';
-
 import { Button } from "@/components/ui/button";
 import { AnimatedText } from "../animated-text";
 import Link from "next/link";
@@ -28,22 +26,19 @@ export function Hero() {
           />
           <div className="w-full max-w-4xl text-lg md:text-xl text-white animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
             <RotatingText
-              texts={[
-                'I build intelligent systems that see, think, and automate.',
-                'Turning ambitious ideas into working AI systems.'
-              ]}
+              texts={['Creative Coder', 'Explorer of Modern Web Experiences']}
               staggerFrom={"last"}
               initial={{ y: "100%", opacity: 0 }}
               animate={{ y: "0%", opacity: 1 }}
               exit={{ y: "-120%", opacity: 0 }}
               staggerDuration={0.025}
-              splitLevelClassName="overflow-hidden pb-0.5 sm:pb-1 md:pb-1"
+              splitLevelClassName="pb-0.5 sm:pb-1 md:pb-1"
               transition={{ type: "spring", damping: 30, stiffness: 400 }}
-              rotationInterval={3000}
+              rotationInterval={2000}
             />
           </div>
           <div className="animate-fade-in-up" style={{ animationDelay: '1s' }}>
-             <Button asChild size="lg" className="bg-gradient-to-r from-primary to-accent text-primary-foreground font-bold shadow-lg transition-all duration-300 ease-in-out hover:scale-105 hover:shadow-2xl hover:shadow-primary/50">
+            <Button asChild size="lg" className="bg-white/10 border border-white/20 text-white shadow-lg backdrop-blur-md hover:bg-white/20 hover:shadow-2xl hover:shadow-primary/50 hover:-translate-y-1 transition-all duration-300">
               <Link href="#work">Explore My World</Link>
             </Button>
           </div>
