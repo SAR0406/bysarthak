@@ -1,5 +1,7 @@
 'use client';
-import React, { useEffect, useRef, JSX, ReactNode, useLayoutEffect } from 'react';
+
+import { useEffect, useRef } from 'react';
+import { JSX } from 'react';
 
 class Pixel {
   width: number;
@@ -179,8 +181,13 @@ export default function PixelCard({
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const pixelsRef = useRef<Pixel[]>([]);
   const animationRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
-  const timePreviousRef = useRef(performance.now());
-  const reducedMotion = useRef(typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches).current;
+  const timePreviousRef = useRef(0);
+  const reducedMotionRef = useRef(false);
+
+  useEffect(() => {
+    timePreviousRef.current = performance.now();
+    reducedMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  }, []);
 
   const variantCfg: VariantConfig = VARIANTS[variant] || VARIANTS.default;
   const finalGap = gap ?? variantCfg.gap;
@@ -212,46 +219,53 @@ export default function PixelCard({
         const dx = x - width / 2;
         const dy = y - height / 2;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        const delay = reducedMotion ? 0 : distance;
-        pxs.push(new Pixel(canvasRef.current, ctx, x, y, color, getEffectiveSpeed(finalSpeed, reducedMotion), delay));
+        const delay = reducedMotionRef.current ? 0 : distance;
+        pxs.push(new Pixel(canvasRef.current, ctx, x, y, color, getEffectiveSpeed(finalSpeed, reducedMotionRef.current), delay));
       }
     }
     pixelsRef.current = pxs;
   };
 
   const doAnimate = (fnName: keyof Pixel) => {
-    animationRef.current = requestAnimationFrame(() => doAnimate(fnName));
-    const timeNow = performance.now();
-    const timePassed = timeNow - timePreviousRef.current;
-    const timeInterval = 1000 / 60;
-
-    if (timePassed < timeInterval) return;
-    timePreviousRef.current = timeNow - (timePassed % timeInterval);
-
-    const ctx = canvasRef.current?.getContext('2d');
-    if (!ctx || !canvasRef.current) return;
-
-    ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
-
-    let allIdle = true;
-    for (let i = 0; i < pixelsRef.current.length; i++) {
-      const pixel = pixelsRef.current[i];
-      // @ts-ignore
-      pixel[fnName]();
-      if (!pixel.isIdle) {
-        allIdle = false;
-      }
-    }
-    if (allIdle && animationRef.current) {
+    if (animationRef.current) {
       cancelAnimationFrame(animationRef.current);
     }
+    
+    const animateLoop = () => {
+      const timeNow = performance.now();
+      const timePassed = timeNow - timePreviousRef.current;
+      const timeInterval = 1000 / 60;
+
+      if (timePassed >= timeInterval) {
+        timePreviousRef.current = timeNow - (timePassed % timeInterval);
+
+        const ctx = canvasRef.current?.getContext('2d');
+        if (!ctx || !canvasRef.current) return;
+
+        ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
+
+        let allIdle = true;
+        for (let i = 0; i < pixelsRef.current.length; i++) {
+          const pixel = pixelsRef.current[i];
+          // @ts-ignore
+          pixel[fnName]();
+          if (!pixel.isIdle) {
+            allIdle = false;
+          }
+        }
+        if (allIdle) {
+          if (animationRef.current) cancelAnimationFrame(animationRef.current);
+          animationRef.current = null;
+          return;
+        }
+      }
+      animationRef.current = requestAnimationFrame(animateLoop);
+    };
+    animationRef.current = requestAnimationFrame(animateLoop);
   };
 
   const handleAnimation = (name: keyof Pixel) => {
-    if (animationRef.current !== null) {
-      cancelAnimationFrame(animationRef.current);
-    }
-    animationRef.current = requestAnimationFrame(() => doAnimate(name));
+    doAnimate(name);
   };
 
   const onMouseEnter = () => handleAnimation('appear');
@@ -280,19 +294,19 @@ export default function PixelCard({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [finalGap, finalSpeed, finalColors, finalNoFocus, reducedMotion]);
+  }, [finalGap, finalSpeed, finalColors, finalNoFocus]);
 
   return (
     <div
       ref={containerRef}
-      className={`h-[300px] w-[300px] relative overflow-hidden grid place-items-center aspect-square border border-border rounded-full isolate transition-colors duration-200 ease-[cubic-bezier(0.5,1,0.89,1)] select-none ${className}`}
+      className={`h-[400px] w-[300px] relative overflow-hidden grid place-items-center aspect-[4/5] border border-[#27272a] rounded-[25px] isolate transition-colors duration-200 ease-[cubic-bezier(0.5,1,0.89,1)] select-none ${className}`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onFocus={finalNoFocus ? undefined : onFocus}
       onBlur={finalNoFocus ? undefined : onBlur}
       tabIndex={finalNoFocus ? -1 : 0}
     >
-      <canvas className="w-full h-full block absolute inset-0 z-10" ref={canvasRef} />
+      <canvas className="w-full h-full block" ref={canvasRef} />
       {children}
     </div>
   );
