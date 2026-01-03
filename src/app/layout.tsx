@@ -2,7 +2,6 @@
 import type { Metadata } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
-import { ThemeProvider } from '@/components/theme-provider';
 import PillNav from '@/components/PillNav';
 import { Toaster } from '@/components/ui/toaster';
 import { Footer } from '@/components/footer';
@@ -35,19 +34,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" suppressHydrationWarning className={`${inter.variable} ${spaceGrotesk.variable}`}>
+    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} dark`}>
       <head>
       </head>
       <body
         className='font-body antialiased'
       >
         <FirebaseClientProvider>
-          <ThemeProvider
-            attribute="class"
-            defaultTheme="system"
-            enableSystem
-            disableTransitionOnChange
-          >
             <div className="fixed top-0 left-0 w-full h-screen -z-10">
               <LightPillar
                 topColor="#0b66f9"
@@ -66,16 +59,15 @@ export default function RootLayout({
               <PillNav
                 logo={logoUrl}
                 items={navLinks}
-                baseColor="#FFFFFF"
-                pillColor="#000000"
-                hoveredPillTextColor="#000000"
-                pillTextColor="#FFFFFF"
+                baseColor="hsl(var(--background))"
+                pillColor="hsl(var(--foreground))"
+                hoveredPillTextColor="hsl(var(--background))"
+                pillTextColor="hsl(var(--foreground))"
               />
             </header>
             <main>{children}</main>
             <Footer />
             <Toaster />
-          </ThemeProvider>
         </FirebaseClientProvider>
       </body>
     </html>
