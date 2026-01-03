@@ -240,52 +240,6 @@ export function ContactForm() {
 
   const displayedMessages = messages.length > 0 ? messages : initialWelcomeMessage;
   
-  const renderChatContent = (): ReactNode => {
-    if (isUserLoading || (user && isHistoryLoading)) {
-      return (
-        <div key="loading-state" className="flex justify-center items-center h-full">
-          <p className="text-muted-foreground">Loading Chat...</p>
-        </div>
-      );
-    }
-
-    if (!user) {
-      return (
-        <div key="login-prompt" className="flex flex-col items-center justify-center h-full text-center p-4">
-          <p className="text-muted-foreground mb-4">Please log in to start a conversation.</p>
-          <Button asChild>
-            <Link href="/login">Login to Chat</Link>
-          </Button>
-        </div>
-      );
-    }
-    
-    if (user) {
-        return (
-          <React.Fragment>
-            {displayedMessages.map((msg) => (
-              <div key={msg.id} className={cn("flex items-end gap-2 group", msg.sentBy === 'visitor' && 'justify-end')}>
-                 <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'visitor' && 'items-end')}>
-                   <div className={cn("relative leading-1.5 p-2 rounded-xl", msg.sentBy === 'visitor' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none shadow-sm')}>
-                      {msg.imageUrl && (
-                          <Image src={msg.imageUrl} alt="attachment" width={300} height={200} className="rounded-md mb-2" />
-                      )}
-                      {msg.text && <p className="text-sm font-normal px-1 pb-2">{msg.text}</p>}
-                      
-                      <div className="absolute bottom-1 right-2 text-xs text-muted-foreground/80 flex items-center gap-1">
-                         {msg.sentBy === 'visitor' && <MessageStatus message={msg} />}
-                         <span>{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
-                      </div>
-                   </div>
-                 </div>
-              </div>
-            ))}
-          </React.Fragment>
-        );
-    }
-    
-    return null;
-  };
 
   return (
     <div className="mt-12 max-w-lg mx-auto">
@@ -308,7 +262,38 @@ export function ContactForm() {
           </div>
           <ScrollArea className="flex-1 p-4 bg-muted/20" ref={scrollAreaRef}>
             <div className="space-y-4">
-              {renderChatContent()}
+              {isUserLoading || (user && isHistoryLoading) ? (
+                <div className="flex justify-center items-center h-full">
+                  <p className="text-muted-foreground">Loading Chat...</p>
+                </div>
+              ) : !user ? (
+                <div className="flex flex-col items-center justify-center h-full text-center p-4">
+                  <p className="text-muted-foreground mb-4">Please log in to start a conversation.</p>
+                  <Button asChild>
+                    <Link href="/login">Login to Chat</Link>
+                  </Button>
+                </div>
+              ) : (
+                <>
+                  {displayedMessages.map((msg) => (
+                    <div key={msg.id} className={cn("flex items-end gap-2 group", msg.sentBy === 'visitor' && 'justify-end')}>
+                       <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'visitor' && 'items-end')}>
+                         <div className={cn("relative leading-1.5 p-2 rounded-xl", msg.sentBy === 'visitor' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none shadow-sm')}>
+                            {msg.imageUrl && (
+                                <Image src={msg.imageUrl} alt="attachment" width={300} height={200} className="rounded-md mb-2" />
+                            )}
+                            {msg.text && <p className="text-sm font-normal px-1 pb-2">{msg.text}</p>}
+                            
+                            <div className="absolute bottom-1 right-2 text-xs text-muted-foreground/80 flex items-center gap-1">
+                               {msg.sentBy === 'visitor' && <MessageStatus message={msg} />}
+                               <span>{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
+                            </div>
+                         </div>
+                       </div>
+                    </div>
+                  ))}
+                </>
+              )}
             </div>
           </ScrollArea>
           <div className="p-4 border-t">
