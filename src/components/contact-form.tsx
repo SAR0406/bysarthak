@@ -19,11 +19,8 @@ import { useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase
 import {
   collection,
   serverTimestamp,
-  addDoc,
-  query,
-  where,
-  getDocs,
-  updateDoc,
+  doc,
+  setDoc,
   arrayUnion,
   type DocumentReference,
 } from 'firebase/firestore';
@@ -74,61 +71,36 @@ export function ContactForm() {
     }
     setMessages(prev => [...prev, visitorMessage]);
     messageForm.reset();
-
-    const conversationsRef = collection(firestore, 'conversations');
-    const q = query(conversationsRef, where('senderEmail', '==', userDetails.email));
     
+    // Use the sender's email as the document ID for the conversation.
+    const conversationRef = doc(firestore, 'conversations', userDetails.email);
+
     const newMessagePayload = {
-      senderName: userDetails.name,
-      senderEmail: userDetails.email,
-      text: values.message,
-      sentAt: new Date(),
-      sentBy: 'visitor' as const,
+        senderName: userDetails.name,
+        senderEmail: userDetails.email,
+        text: values.message,
+        sentAt: new Date(), // Using client-side timestamp
+        sentBy: 'visitor' as const,
     };
     
-    // Non-blocking write operations with contextual error handling
-    getDocs(q).then(querySnapshot => {
-        if (querySnapshot.empty) {
-            // Create new conversation
-            const newConversationData = {
-                senderName: userDetails.name,
-                senderEmail: userDetails.email,
-                lastMessageAt: serverTimestamp(),
-                messages: [newMessagePayload],
-            };
-            addDoc(conversationsRef, newConversationData)
-                .catch(error => {
-                    setMessages(prev => prev.slice(0, -1)); // Revert optimistic UI
-                    errorEmitter.emit('permission-error', new FirestorePermissionError({
-                        path: conversationsRef.path,
-                        operation: 'create',
-                        requestResourceData: newConversationData,
-                    }));
-                });
-        } else {
-            // Update existing conversation
-            const conversationDocRef = querySnapshot.docs[0].ref as DocumentReference;
-            const updateData = {
-                messages: arrayUnion(newMessagePayload),
-                lastMessageAt: serverTimestamp(),
-            };
-            updateDoc(conversationDocRef, updateData)
-                .catch(error => {
-                    setMessages(prev => prev.slice(0, -1)); // Revert optimistic UI
-                    errorEmitter.emit('permission-error', new FirestorePermissionError({
-                        path: conversationDocRef.path,
-                        operation: 'update',
-                        requestResourceData: updateData,
-                    }));
-                });
-        }
-    }).catch(error => {
-        setMessages(prev => prev.slice(0, -1)); // Revert optimistic UI on read failure
-        errorEmitter.emit('permission-error', new FirestorePermissionError({
-            path: conversationsRef.path,
-            operation: 'list', // getDocs is a 'list' operation in rule terms
-        }));
-    });
+    const conversationData = {
+        senderName: userDetails.name,
+        senderEmail: userDetails.email,
+        lastMessageAt: serverTimestamp(),
+        messages: arrayUnion(newMessagePayload),
+    };
+
+    // Use setDoc with merge:true. This will create the document if it doesn't exist,
+    // or update it if it does. This avoids the need for a separate read operation.
+    setDoc(conversationRef, conversationData, { merge: true })
+      .catch(error => {
+          setMessages(prev => prev.slice(0, -1)); // Revert optimistic UI on failure
+          errorEmitter.emit('permission-error', new FirestorePermissionError({
+              path: conversationRef.path,
+              operation: 'write', // set with merge can be create or update
+              requestResourceData: conversationData,
+          }));
+      });
   };
 
   useEffect(() => {
@@ -252,5 +224,3 @@ export function ContactForm() {
     </div>
   );
 }
-
-    
