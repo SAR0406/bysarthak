@@ -25,9 +25,10 @@ import {
   arrayUnion,
   Timestamp,
   writeBatch,
+  setDoc,
 } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
-import { format, isToday } from 'date-fns';
+import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -74,7 +75,7 @@ const EMOJIS = [
 export function ContactForm() {
   const { toast } = useToast();
   const firestore = useFirestore();
-  const { user, isUserLoading } = useUser();
+  const { user } = useUser();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -101,7 +102,7 @@ export function ContactForm() {
   });
 
   const markMessagesAsRead = useCallback(async () => {
-    if (!firestore || !conversationData || !user) return;
+    if (!firestore || !conversationData || !user || !conversationRef) return;
 
     const unreadMessages = conversationData.messages.filter(
       (msg) => msg.sentBy === 'admin' && (!msg.readBy || !msg.readBy[user.email!])
@@ -117,7 +118,7 @@ export function ContactForm() {
         return msg;
     });
 
-    batch.update(conversationRef!, { messages: updatedMessages });
+    batch.update(conversationRef, { messages: updatedMessages });
     await batch.commit();
   }, [firestore, conversationData, user, conversationRef]);
 
@@ -164,7 +165,7 @@ export function ContactForm() {
       imageUrl,
       sentAt: new Date(),
       sentBy: 'visitor' as const,
-      senderName: user.displayName || user.email,
+      senderName: user.displayName || user.email!,
       senderEmail: user.email!,
       readBy: {},
     };
@@ -180,18 +181,13 @@ export function ContactForm() {
     };
 
     try {
-      await updateDoc(conversationRef, conversationPayload);
+        if (conversationData) {
+            await updateDoc(conversationRef, conversationPayload);
+        } else {
+            await setDoc(conversationRef, conversationPayload);
+        }
     } catch (e: any) {
-      // If doc doesn't exist, set it.
-      if (e.code === 'not-found') {
-          try {
-              await doc(firestore, 'conversations', user.email!).set(conversationPayload, {merge: true});
-          } catch (set_e: any) {
-              toast({ variant: 'destructive', title: 'Reply Failed', description: set_e.message });
-          }
-      } else {
         toast({ variant: 'destructive', title: 'Reply Failed', description: e.message });
-      }
     }
   }
 
@@ -201,7 +197,6 @@ export function ContactForm() {
 
   const MessageStatus = ({ message }: { message: Message }) => {
     if (message.sentBy !== 'visitor' || !conversationData) return null;
-    // Assuming admin is the only other participant.
     const adminRead = Object.keys(message.readBy || {}).length > 0;
 
     if (adminRead) {
@@ -224,7 +219,7 @@ export function ContactForm() {
         </div>
 
         <ScrollArea className="flex-1 p-4 bg-muted/20" ref={scrollAreaRef}>
-          <div className="space-y-4">
+          <div className="space-y-4 h-full">
             {isHistoryLoading ? (
                <div key="loading" className="flex justify-center items-center h-full">
                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -237,25 +232,25 @@ export function ContactForm() {
                     </Button>
                 </div>
             ) : (
-                <>
-                {messages.map((msg) => (
-                  <div key={msg.id} className={cn("flex items-end gap-2 group", msg.sentBy === 'visitor' && 'justify-end')}>
-                     <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'visitor' && 'items-end')}>
-                       <div className={cn("relative leading-1.5 p-2 rounded-xl", msg.sentBy === 'visitor' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none shadow-sm')}>
-                          {msg.imageUrl && (
-                              <Image src={msg.imageUrl} alt="attachment" width={300} height={200} className="rounded-md mb-2" />
-                          )}
-                          {msg.text && <p className="text-sm font-normal px-1 pb-2">{msg.text}</p>}
-                          
-                          <div className="absolute bottom-1 right-2 text-xs text-muted-foreground/80 flex items-center gap-1">
-                              {msg.sentBy === 'visitor' && <MessageStatus message={msg} />}
-                              <span>{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
-                          </div>
+                <div key="messages-list" className="space-y-4">
+                  {messages.map((msg) => (
+                    <div key={msg.id} className={cn("flex items-end gap-2 group", msg.sentBy === 'visitor' && 'justify-end')}>
+                       <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'visitor' && 'items-end')}>
+                         <div className={cn("relative leading-1.5 p-2 rounded-xl", msg.sentBy === 'visitor' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none shadow-sm')}>
+                            {msg.imageUrl && (
+                                <Image src={msg.imageUrl} alt="attachment" width={300} height={200} className="rounded-md mb-2" />
+                            )}
+                            {msg.text && <p className="text-sm font-normal px-1 pb-2">{msg.text}</p>}
+                            
+                            <div className="absolute bottom-1 right-2 text-xs text-muted-foreground/80 flex items-center gap-1">
+                                {msg.sentBy === 'visitor' && <MessageStatus message={msg} />}
+                                <span>{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
+                            </div>
+                         </div>
                        </div>
-                     </div>
-                  </div>
-                ))}
-                </>
+                    </div>
+                  ))}
+                </div>
             )}
           </div>
         </ScrollArea>
