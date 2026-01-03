@@ -1,63 +1,68 @@
+
 {
   "entities": {
-    "ContactMessage": {
-      "$schema": "http://json-schema.org/draft-07/schema#",
-      "title": "ContactMessage",
+    "Conversation": {
+      "title": "Conversation",
       "type": "object",
-      "description": "Represents a contact message sent by a visitor, including replies from an admin.",
+      "description": "Represents a single conversation thread with a visitor.",
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the contact message."
+          "description": "Unique identifier for the conversation."
         },
-        "name": {
+        "senderName": {
           "type": "string",
-          "description": "Name of the person sending the message."
+          "description": "Name of the visitor who initiated the conversation."
         },
-        "email": {
+        "senderEmail": {
           "type": "string",
-          "description": "Email address of the sender.",
+          "description": "Email address of the visitor.",
           "format": "email"
         },
-        "message": {
+        "lastMessageAt": {
           "type": "string",
-          "description": "The content of the message."
-        },
-        "sentAt": {
-          "type": "string",
-          "description": "Timestamp indicating when the message was sent.",
+          "description": "Timestamp of the last message in the conversation.",
           "format": "date-time"
         },
-        "replies": {
+        "messages": {
           "type": "array",
-          "description": "A thread of replies from the admin.",
+          "description": "An array of messages within the conversation.",
           "items": {
             "type": "object",
             "properties": {
-              "message": {
+              "text": {
                 "type": "string",
-                "description": "The content of the reply."
+                "description": "The content of the message."
               },
               "sentAt": {
                 "type": "string",
-                "description": "Timestamp for the reply.",
+                "description": "Timestamp indicating when the message was sent.",
                 "format": "date-time"
               },
               "sentBy": {
                 "type": "string",
-                "description": "Identifier for the sender (e.g., 'admin')."
+                "description": "Indicates if the message was from the 'visitor' or 'admin'.",
+                "enum": ["visitor", "admin"]
+              },
+              "senderName": {
+                "type": "string",
+                "description": "Name of the person sending the message."
+              },
+               "senderEmail": {
+                "type": "string",
+                "description": "Email of the person sending the message."
               }
             },
-            "required": ["message", "sentAt", "sentBy"]
+            "required": ["text", "sentAt", "sentBy", "senderName", "senderEmail"]
           }
         }
       },
       "required": [
         "id",
-        "name",
-        "email",
-        "message",
-        "sentAt"
+        "senderName",
+        "senderEmail",
+        "lastMessageAt",
+        "messages"
       ]
     },
     "UserProfile": {
@@ -108,17 +113,17 @@
   "firestore": {
     "structure": [
       {
-        "path": "/contact_messages/{contactMessageId}",
+        "path": "/conversations/{conversationId}",
         "definition": {
-          "entityName": "ContactMessage",
+          "entityName": "Conversation",
           "schema": {
-            "$ref": "#/backend/entities/ContactMessage"
+            "$ref": "#/backend/entities/Conversation"
           },
-          "description": "Stores contact messages and their replies. Only authenticated users (admins) can read and update (reply).",
+          "description": "Stores conversation threads. Anyone can create a thread. Only authenticated users (admins) can read and update (reply).",
           "params": [
             {
-              "name": "contactMessageId",
-              "description": "Unique identifier for the contact message document."
+              "name": "conversationId",
+              "description": "Unique identifier for the conversation document."
             }
           ]
         }
@@ -140,7 +145,6 @@
         }
       }
     ],
-    "reasoning": "This design prioritizes security and scalability. A top-level `/contact_messages` collection is used for messages, avoiding hierarchical authorization complexities. A separate `/users` collection stores user profiles, linking them by UID to Firebase Authentication. This separation allows for distinct security rules for public user data versus private contact messages."
+    "reasoning": "This design prioritizes security and scalability. A top-level `/conversations` collection stores message threads, identified by the sender's email to group messages. This avoids hierarchical complexities. A separate `/users` collection stores user profiles, linking them by UID to Firebase Authentication. This separation allows for distinct security rules for public user data versus private conversations."
   }
 }
-    

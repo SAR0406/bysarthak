@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -26,7 +27,6 @@ import {
   query,
   orderBy,
 } from 'firebase/firestore';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
@@ -36,19 +36,20 @@ const replySchema = z.object({
   replyMessage: z.string().min(1, 'Reply cannot be empty.'),
 });
 
-type Reply = {
-  message: string;
-  sentAt: { seconds: number; nanoseconds: number };
-  sentBy: 'admin' | string;
+type Message = {
+  text: string;
+  sentAt: { seconds: number; nanoseconds: number } | null;
+  sentBy: 'admin' | 'visitor';
+  senderName: string;
+  senderEmail: string;
 };
 
-type ContactMessage = {
+type Conversation = {
   id: string;
-  name: string;
-  email: string;
-  message: string;
-  sentAt: { seconds: number; nanoseconds: number } | null;
-  replies?: Reply[];
+  senderName: string;
+  senderEmail: string;
+  lastMessageAt: { seconds: number; nanoseconds: number } | null;
+  messages: Message[];
 };
 
 export default function AdminPage() {
@@ -56,7 +57,7 @@ export default function AdminPage() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const router = useRouter();
-  const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
+  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
 
   useEffect(() => {
     if (!isUserLoading && !user) {
@@ -64,12 +65,12 @@ export default function AdminPage() {
     }
   }, [user, isUserLoading, router]);
 
-  const messagesQuery = useMemoFirebase(() => {
+  const conversationsQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
-    return query(collection(firestore, 'contact_messages'), orderBy('sentAt', 'desc'));
+    return query(collection(firestore, 'conversations'), orderBy('lastMessageAt', 'desc'));
   }, [firestore, user]);
 
-  const { data: messages, isLoading } = useCollection<ContactMessage>(messagesQuery);
+  const { data: conversations, isLoading } = useCollection<Conversation>(conversationsQuery);
 
   const replyForm = useForm<z.infer<typeof replySchema>>({
     resolver: zodResolver(replySchema),
@@ -77,21 +78,23 @@ export default function AdminPage() {
   });
 
   async function handleReply(values: z.infer<typeof replySchema>) {
-    if (!firestore || !user || !selectedMessage) return;
-    const messageRef = doc(firestore, 'contact_messages', selectedMessage.id);
+    if (!firestore || !user || !selectedConversation) return;
+    const conversationRef = doc(firestore, 'conversations', selectedConversation.id);
 
     const replyData = {
-      message: values.replyMessage,
+      text: values.replyMessage,
       sentAt: serverTimestamp(),
       sentBy: 'admin',
+      senderName: user.displayName || 'Admin',
+      senderEmail: user.email || '',
     };
 
     try {
-      await updateDoc(messageRef, {
-        replies: arrayUnion(replyData),
+      await updateDoc(conversationRef, {
+        messages: arrayUnion(replyData),
+        lastMessageAt: serverTimestamp(),
       });
       replyForm.reset();
-      // No toast needed for a chat interface, the message will appear instantly
     } catch (e: any) {
       toast({
         variant: 'destructive',
@@ -100,6 +103,12 @@ export default function AdminPage() {
       });
     }
   }
+  
+  const lastMessage = (convo: Conversation) => {
+    if (!convo.messages || convo.messages.length === 0) return { text: "No messages yet", sentAt: convo.lastMessageAt };
+    return convo.messages[convo.messages.length - 1];
+  }
+
 
   if (isUserLoading || !user) {
     return (
@@ -115,8 +124,8 @@ export default function AdminPage() {
         {/* Left Panel: Conversation List */}
         <div
           className={cn(
-            'w-full md:w-1/3 border-r transition-transform duration-300 ease-in-out',
-            selectedMessage && 'hidden md:flex flex-col'
+            'w-full md:w-1/3 border-r transition-transform duration-300 ease-in-out flex flex-col',
+            selectedConversation && 'hidden md:flex'
           )}
         >
           <div className="p-4 border-b">
@@ -125,71 +134,60 @@ export default function AdminPage() {
           <ScrollArea className="flex-1">
             <div className="flex flex-col">
               {isLoading && <p className="p-4">Loading messages...</p>}
-              {!isLoading && (!messages || messages.length === 0) && (
+              {!isLoading && (!conversations || conversations.length === 0) && (
                 <p className="p-4 text-muted-foreground">No messages yet.</p>
               )}
-              {messages?.map(msg => (
-                <button
-                  key={msg.id}
-                  onClick={() => setSelectedMessage(msg)}
-                  className={cn(
-                    'w-full text-left p-4 border-b hover:bg-muted/50 transition-colors',
-                    selectedMessage?.id === msg.id && 'bg-muted'
-                  )}
-                >
-                  <div className="font-semibold">{msg.name}</div>
-                  <p className="text-sm text-muted-foreground truncate">{msg.message}</p>
-                  <p className="text-xs text-muted-foreground text-right mt-1">
-                    {msg.sentAt ? format(new Date(msg.sentAt.seconds * 1000), 'P') : ''}
-                  </p>
-                </button>
-              ))}
+              {conversations?.map(convo => {
+                const latestMsg = lastMessage(convo);
+                return (
+                  <button
+                    key={convo.id}
+                    onClick={() => setSelectedConversation(convo)}
+                    className={cn(
+                      'w-full text-left p-4 border-b hover:bg-muted/50 transition-colors',
+                      selectedConversation?.id === convo.id && 'bg-muted'
+                    )}
+                  >
+                    <div className="font-semibold">{convo.senderName}</div>
+                    <p className="text-sm text-muted-foreground truncate">{latestMsg.text}</p>
+                    <p className="text-xs text-muted-foreground text-right mt-1">
+                      {latestMsg.sentAt ? format(new Date(latestMsg.sentAt.seconds * 1000), 'P') : ''}
+                    </p>
+                  </button>
+                )
+              })}
             </div>
           </ScrollArea>
         </div>
 
         {/* Right Panel: Chat View */}
-        <div className={cn('w-full md:w-2/3 flex flex-col', !selectedMessage && 'hidden md:flex')}>
-          {selectedMessage ? (
+        <div className={cn('w-full md:w-2/3 flex flex-col', !selectedConversation && 'hidden md:flex')}>
+          {selectedConversation ? (
             <>
               <div className="p-4 border-b flex items-center gap-4">
-                 <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSelectedMessage(null)}>
+                 <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSelectedConversation(null)}>
                   <ArrowLeft className="w-4 h-4" />
                 </Button>
                 <Avatar>
-                  <AvatarFallback>{selectedMessage.name.charAt(0)}</AvatarFallback>
+                  <AvatarFallback>{selectedConversation.senderName.charAt(0)}</AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-semibold">{selectedMessage.name}</h3>
-                  <p className="text-xs text-muted-foreground">{selectedMessage.email}</p>
+                  <h3 className="font-semibold">{selectedConversation.senderName}</h3>
+                  <p className="text-xs text-muted-foreground">{selectedConversation.senderEmail}</p>
                 </div>
               </div>
 
               <ScrollArea className="flex-1 p-4">
                 <div className="space-y-4">
-                  {/* Original Message */}
-                  <div className="flex gap-2.5">
-                    <div className="flex flex-col gap-1 w-full max-w-[320px]">
-                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                         <span className="text-sm font-semibold text-card-foreground">{selectedMessage.name}</span>
-                         <span className="text-xs font-normal text-muted-foreground">{selectedMessage.sentAt ? format(new Date(selectedMessage.sentAt.seconds * 1000), 'p') : ''}</span>
-                      </div>
-                      <div className="leading-1.5 p-4 border-gray-200 bg-muted rounded-e-xl rounded-es-xl dark:bg-zinc-700">
-                         <p className="text-sm font-normal text-card-foreground">{selectedMessage.message}</p>
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Replies */}
-                  {selectedMessage.replies?.map((reply, index) => (
-                    <div key={index} className={cn("flex items-start gap-2.5", reply.sentBy === 'admin' && 'justify-end')}>
+                  {selectedConversation.messages?.map((msg, index) => (
+                    <div key={index} className={cn("flex items-start gap-2.5", msg.sentBy === 'admin' && 'justify-end')}>
                        <div className="flex flex-col gap-1 w-full max-w-[320px]">
-                         <div className={cn("flex items-center space-x-2 rtl:space-x-reverse", reply.sentBy === 'admin' && 'justify-end')}>
-                             <span className="text-sm font-semibold text-card-foreground">{reply.sentBy === 'admin' ? 'Admin' : selectedMessage.name}</span>
-                             <span className="text-xs font-normal text-muted-foreground">{reply.sentAt ? format(new Date(reply.sentAt.seconds * 1000), 'p') : ''}</span>
+                         <div className={cn("flex items-center space-x-2 rtl:space-x-reverse", msg.sentBy === 'admin' && 'justify-end')}>
+                             <span className="text-sm font-semibold text-card-foreground">{msg.sentBy === 'admin' ? 'Admin' : msg.senderName}</span>
+                             <span className="text-xs font-normal text-muted-foreground">{msg.sentAt ? format(new Date(msg.sentAt.seconds * 1000), 'p') : ''}</span>
                          </div>
-                         <div className={cn("leading-1.5 p-4 border-gray-200 rounded-e-xl rounded-es-xl", reply.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-ss-xl rounded-se-none' : 'bg-muted rounded-es-xl')}>
-                             <p className="text-sm font-normal">{reply.message}</p>
+                         <div className={cn("leading-1.5 p-4 border-gray-200 rounded-e-xl rounded-es-xl", msg.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-ss-xl rounded-se-none' : 'bg-muted rounded-es-xl dark:bg-zinc-700')}>
+                             <p className="text-sm font-normal">{msg.text}</p>
                          </div>
                        </div>
                     </div>
