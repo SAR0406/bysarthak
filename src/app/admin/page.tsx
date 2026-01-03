@@ -312,7 +312,7 @@ export default function AdminPage() {
                   >
                      <Popover>
                         <PopoverTrigger asChild>
-                           <Button variant="ghost" size="icon">
+                           <Button variant="ghost" size="icon" className="hidden md:inline-flex">
                              <Smile className="h-5 w-5" />
                            </Button>
                         </PopoverTrigger>

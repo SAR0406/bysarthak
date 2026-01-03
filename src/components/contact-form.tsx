@@ -251,7 +251,7 @@ export function ContactForm() {
                   >
                     <Popover>
                         <PopoverTrigger asChild>
-                           <Button variant="ghost" size="icon" disabled={!user}>
+                           <Button variant="ghost" size="icon" disabled={!user} className="hidden md:inline-flex">
                              <Smile className="h-5 w-5" />
                            </Button>
                         </PopoverTrigger>
