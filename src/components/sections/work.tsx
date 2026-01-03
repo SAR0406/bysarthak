@@ -1,3 +1,4 @@
+
 import { ProjectCard } from "@/components/project-card";
 import { Repo } from "@/types";
 import { Button } from "../ui/button";
@@ -46,8 +47,7 @@ export async function Work() {
             color="#7df9ff"
             speed={1}
             chaos={0.5}
-            thickness={2}
-            style={{ borderRadius: 16 }}
+            style={{ borderRadius: 'var(--radius)' }}
           >
             <ProjectCard repo={repo} />
           </ElectricBorder>
