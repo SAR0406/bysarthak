@@ -46,7 +46,7 @@ export async function Work() {
             key={repo.id}
             color="#7df9ff"
             speed={1}
-            chaos={0.5}
+            chaos={0.12}
             style={{ borderRadius: 'var(--radius)' }}
           >
             <ProjectCard repo={repo} />
