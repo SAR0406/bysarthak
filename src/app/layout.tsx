@@ -34,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} dark`} suppressHydrationWarning>
       <head>
       </head>
       <body
@@ -59,10 +59,10 @@ export default function RootLayout({
               <PillNav
                 logo={logoUrl}
                 items={navLinks}
-                baseColor="hsl(var(--background))"
-                pillColor="hsl(var(--foreground))"
-                hoveredPillTextColor="hsl(var(--foreground))"
-                pillTextColor="hsl(var(--background))"
+                baseColor="hsl(var(--card))"
+                pillColor="hsl(var(--primary))"
+                hoveredPillTextColor="hsl(var(--primary))"
+                pillTextColor="hsl(var(--primary-foreground))"
               />
             </header>
             <main>{children}</main>
