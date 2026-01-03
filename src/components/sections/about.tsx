@@ -4,7 +4,7 @@ import { Rocket, Handshake, BrainCircuit, Zap } from 'lucide-react';
 import PixelCard from '../PixelCard';
 import ScrollFloat from '../ScrollFloat';
 
-const profileImageUrl = "https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg";
+const profileImageUrl = "https://i.ibb.co/wYAdM9r/IMG-20251229-190558-670-1.jpg";
 
 const aboutSections = [
   {

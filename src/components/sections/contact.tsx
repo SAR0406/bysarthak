@@ -20,12 +20,12 @@ export function Contact() {
               <Github className="w-8 h-8" />
             </Button>
           </Link>
-          <Link href="#">
+          <Link href="https://www.linkedin.com/in/sarthak-sharma-51a892243/">
             <Button variant="outline" size="icon" className="w-16 h-16 rounded-full transition-transform hover:scale-110">
               <Linkedin className="w-8 h-8" />
             </Button>
           </Link>
-          <Link href="#">
+          <Link href="https://x.com/Sarthak44201143">
             <Button variant="outline" size="icon" className="w-16 h-16 rounded-full transition-transform hover:scale-110">
               <Twitter className="w-8 h-8" />
             </Button>
