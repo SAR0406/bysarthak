@@ -119,6 +119,11 @@ export default function AdminPage() {
 
   const { data: conversations, isLoading } = useCollection<Conversation>(conversationsQuery);
   
+  const getSentAtDate = (sentAt: Message['sentAt']) => {
+    if (!sentAt) return new Date();
+    return sentAt instanceof Timestamp ? sentAt.toDate() : sentAt;
+  };
+
   const displayedMessages = selectedConversation?.messages?.sort((a, b) => getSentAtDate(a.sentAt).getTime() - getSentAtDate(b.sentAt).getTime()) || [];
 
   const replyForm = useForm<z.infer<typeof replySchema>>({
@@ -156,12 +161,13 @@ export default function AdminPage() {
     
     const conversationRef = doc(firestore, 'conversations', selectedConversationId);
 
-    const replyData: Omit<Message, 'sentAt' | 'readBy'> & { sentAt: Date } = {
+    const replyData: Omit<Message, 'sentAt' | 'id' | 'readBy'> & { sentAt: Date, id: string, readBy: {} } = {
         id: uuidv4(),
         sentBy: 'admin' as const,
         senderName: ADMIN_NAME,
         senderEmail: user.email!,
         sentAt: new Date(),
+        readBy: {},
     };
 
     if (values.replyMessage) {
@@ -198,7 +204,6 @@ export default function AdminPage() {
       const updatedMessages = [...selectedConversation.messages];
       const message = updatedMessages[messageIndex];
       
-      // Ensure reactions object exists
       if (!message.reactions) {
         message.reactions = {};
       }
@@ -206,12 +211,9 @@ export default function AdminPage() {
       const userReaction = Object.keys(message.reactions).find(key => message.reactions![key] === user.email);
 
       if (userReaction === emoji) {
-          // User is removing their reaction
           delete message.reactions[emoji];
       } else {
-          // Remove previous reaction if it exists
           if(userReaction) delete message.reactions[userReaction];
-          // Add new reaction
           message.reactions[emoji] = user.email!;
       }
 
@@ -260,11 +262,6 @@ export default function AdminPage() {
     if (selectedConversation) { setTimeout(scrollToBottom, 50); }
   }, [selectedConversation?.messages]);
 
-  const getSentAtDate = (sentAt: Message['sentAt']) => {
-    if (!sentAt) return new Date();
-    return sentAt instanceof Timestamp ? sentAt.toDate() : sentAt;
-  };
-  
   const formatListTimestamp = (date: Date) => isToday(date) ? format(date, 'p') : format(date, 'P');
   const formatMessageTimestamp = (date: Date) => format(date, 'p');
   
