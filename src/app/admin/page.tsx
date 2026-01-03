@@ -227,12 +227,15 @@ export default function AdminPage() {
                     )}
                   >
                     <div className="flex justify-between items-start">
-                      <span className="font-semibold">{convo.senderName}</span>
-                      <span className="text-xs text-muted-foreground">
+                        <div className="flex-1 overflow-hidden">
+                            <span className="font-semibold block truncate">{convo.senderName}</span>
+                            <span className="text-xs text-muted-foreground block truncate">{convo.senderEmail}</span>
+                        </div>
+                      <span className="text-xs text-muted-foreground ml-2 shrink-0">
                         {latestMsg.sentAt ? formatListTimestamp(getSentAtDate(latestMsg.sentAt)) : ''}
                       </span>
                     </div>
-                    <p className="text-sm text-muted-foreground truncate">{latestMsg.text}</p>
+                    <p className="text-sm text-muted-foreground truncate mt-1">{latestMsg.text}</p>
                   </button>
                 )
               })}
