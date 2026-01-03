@@ -4,7 +4,7 @@
       "$schema": "http://json-schema.org/draft-07/schema#",
       "title": "ContactMessage",
       "type": "object",
-      "description": "Represents a contact message sent by a visitor.",
+      "description": "Represents a contact message sent by a visitor, including replies from an admin.",
       "properties": {
         "id": {
           "type": "string",
@@ -27,6 +27,29 @@
           "type": "string",
           "description": "Timestamp indicating when the message was sent.",
           "format": "date-time"
+        },
+        "replies": {
+          "type": "array",
+          "description": "A thread of replies from the admin.",
+          "items": {
+            "type": "object",
+            "properties": {
+              "message": {
+                "type": "string",
+                "description": "The content of the reply."
+              },
+              "sentAt": {
+                "type": "string",
+                "description": "Timestamp for the reply.",
+                "format": "date-time"
+              },
+              "sentBy": {
+                "type": "string",
+                "description": "Identifier for the sender (e.g., 'admin')."
+              }
+            },
+            "required": ["message", "sentAt", "sentBy"]
+          }
         }
       },
       "required": [
@@ -91,7 +114,7 @@
           "schema": {
             "$ref": "#/backend/entities/ContactMessage"
           },
-          "description": "Stores contact messages sent by visitors. No denormalized authorization fields are required as access is managed at the collection level, potentially restricted to administrators.",
+          "description": "Stores contact messages and their replies. Only authenticated users (admins) can read and update (reply).",
           "params": [
             {
               "name": "contactMessageId",
@@ -120,3 +143,4 @@
     "reasoning": "This design prioritizes security and scalability. A top-level `/contact_messages` collection is used for messages, avoiding hierarchical authorization complexities. A separate `/users` collection stores user profiles, linking them by UID to Firebase Authentication. This separation allows for distinct security rules for public user data versus private contact messages."
   }
 }
+    

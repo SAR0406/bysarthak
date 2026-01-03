@@ -3,7 +3,8 @@
  * and secures user profile data.
  *
  * Core Philosophy:
- * - Contact Messages: Write-once, read-never from the client.
+ * - Contact Messages: Write-once, read-never from the client for unauthenticated users.
+ *   Admin (any signed-in user) can read and update (for replies).
  * - User Profiles: Users can read their own profile and other public profiles,
  *   but can only create and update their own.
  *
@@ -26,14 +27,16 @@ service cloud.firestore {
 
     /**
      * @description
-     *   Implements a public 'dropbox'. Anyone can create a contact message,
-     *   but no one can read, update, or delete them through the client SDKs.
+     *   Implements a public 'dropbox' with admin reply functionality.
+     *   - Anyone can create a message.
+     *   - Only signed-in users (admins) can read, list, or update (reply to) messages.
+     *   - Deletion is disallowed for all.
      */
     match /contact_messages/{contactMessageId} {
-      allow get: if false;
-      allow list: if false;
+      allow get: if isSignedIn();
+      allow list: if isSignedIn();
       allow create: if true;
-      allow update: if false;
+      allow update: if isSignedIn(); // Allows admins to add replies
       allow delete: if false;
     }
 
@@ -51,3 +54,5 @@ service cloud.firestore {
     }
   }
 }
+
+    
