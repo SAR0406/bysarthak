@@ -58,7 +58,7 @@ export function Contact() {
         senderName: values.name,
         senderEmail: values.email,
         text: values.message,
-        sentAt: serverTimestamp(),
+        sentAt: new Date(),
         sentBy: 'visitor',
       };
 

@@ -17,7 +17,7 @@ import {
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
 import { Send, ArrowLeft } from 'lucide-react';
-import { useFirestore, useUser, useMemoFirebase } from '@/firebase';
+import { useFirestore, useUser, useMemoFirebase, useCollection } from '@/firebase';
 import {
   collection,
   serverTimestamp,
@@ -26,6 +26,7 @@ import {
   arrayUnion,
   query,
   orderBy,
+  Timestamp,
 } from 'firebase/firestore';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { format } from 'date-fns';
@@ -38,7 +39,7 @@ const replySchema = z.object({
 
 type Message = {
   text: string;
-  sentAt: { seconds: number; nanoseconds: number } | null;
+  sentAt: Timestamp | Date;
   sentBy: 'admin' | 'visitor';
   senderName: string;
   senderEmail: string;
@@ -48,7 +49,7 @@ type Conversation = {
   id: string;
   senderName: string;
   senderEmail: string;
-  lastMessageAt: { seconds: number; nanoseconds: number } | null;
+  lastMessageAt: Timestamp;
   messages: Message[];
 };
 
@@ -97,7 +98,7 @@ export default function AdminPage() {
 
     const replyData = {
       text: values.replyMessage,
-      sentAt: serverTimestamp(),
+      sentAt: new Date(),
       sentBy: 'admin',
       senderName: 'Sarthak', // Hardcoded admin name
       senderEmail: user.email,
@@ -109,6 +110,15 @@ export default function AdminPage() {
         lastMessageAt: serverTimestamp(),
       });
       replyForm.reset();
+      
+      // Manually update local state for immediate feedback
+      const updatedMessages = [...(selectedConversation.messages || []), replyData] as Message[];
+      setSelectedConversation({
+        ...selectedConversation,
+        messages: updatedMessages,
+        lastMessageAt: Timestamp.now(),
+      });
+
     } catch (e: any) {
       toast({
         variant: 'destructive',
@@ -121,6 +131,14 @@ export default function AdminPage() {
   const lastMessage = (convo: Conversation) => {
     if (!convo.messages || convo.messages.length === 0) return { text: "No messages yet", sentAt: convo.lastMessageAt };
     return convo.messages[convo.messages.length - 1];
+  }
+
+  const getSentAtDate = (sentAt: Message['sentAt']) => {
+    if (!sentAt) return new Date();
+    if (sentAt instanceof Timestamp) {
+      return sentAt.toDate();
+    }
+    return sentAt;
   }
 
   if (isUserLoading || !isAuthorized) {
@@ -164,7 +182,7 @@ export default function AdminPage() {
                     <div className="font-semibold">{convo.senderName}</div>
                     <p className="text-sm text-muted-foreground truncate">{latestMsg.text}</p>
                     <p className="text-xs text-muted-foreground text-right mt-1">
-                      {latestMsg.sentAt ? format(new Date(latestMsg.sentAt.seconds * 1000), 'P') : ''}
+                      {latestMsg.sentAt ? format(getSentAtDate(latestMsg.sentAt), 'P') : ''}
                     </p>
                   </button>
                 )
@@ -197,7 +215,7 @@ export default function AdminPage() {
                        <div className="flex flex-col gap-1 w-full max-w-[320px]">
                          <div className={cn("flex items-center space-x-2 rtl:space-x-reverse", msg.sentBy === 'admin' && 'justify-end')}>
                              <span className="text-sm font-semibold text-card-foreground">{msg.senderName}</span>
-                             <span className="text-xs font-normal text-muted-foreground">{msg.sentAt ? format(new Date(msg.sentAt.seconds * 1000), 'p') : ''}</span>
+                             <span className="text-xs font-normal text-muted-foreground">{msg.sentAt ? format(getSentAtDate(msg.sentAt), 'p') : ''}</span>
                          </div>
                          <div className={cn("leading-1.5 p-4 border-gray-200 rounded-e-xl rounded-es-xl", msg.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-ss-xl rounded-se-none' : 'bg-muted rounded-es-xl dark:bg-zinc-700')}>
                              <p className="text-sm font-normal">{msg.text}</p>
