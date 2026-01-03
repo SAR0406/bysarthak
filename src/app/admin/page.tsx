@@ -28,12 +28,10 @@ import {
   orderBy,
   Timestamp,
   writeBatch,
-  where,
-  getDocs,
 } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { format, isToday, isThisYear, isWithinInterval, subMinutes } from 'date-fns';
+import { format, isToday } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -45,8 +43,6 @@ const replySchema = z.object({
   attachment: z.instanceof(File).optional(),
 });
 
-type Reaction = { [key: string]: string }; // userEmail: emoji
-
 type Message = {
   id: string;
   text?: string;
@@ -56,18 +52,7 @@ type Message = {
   senderName: string;
   senderEmail: string;
   readBy: { [key: string]: Timestamp };
-  reactions: Reaction;
 };
-
-type Presence = {
-  visitor?: Timestamp;
-  admin?: Timestamp;
-}
-
-type Typing = {
-  visitor?: boolean;
-  admin?: boolean;
-}
 
 type Conversation = {
   id: string;
@@ -75,14 +60,11 @@ type Conversation = {
   senderEmail: string;
   lastMessageAt: Timestamp;
   messages: Message[];
-  presence?: Presence;
-  typing?: Typing;
 };
 
 const ADMIN_EMAIL = 'sarthak040624@gmail.com';
 const ADMIN_NAME = 'Sarthak';
 
-const REACTION_EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
 const EMOJIS = [
   '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
   '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
@@ -92,7 +74,7 @@ const EMOJIS = [
   '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭',
   '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧',
   '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢',
-  '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', ...REACTION_EMOJIS
+  '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '👍', '❤️', '😂', '😮', '😢', '🙏'
 ];
 
 
@@ -105,7 +87,6 @@ export default function AdminPage() {
   const [isAuthorized, setIsAuthorized] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const conversationRef = useMemoFirebase(() => {
     if (!firestore || !selectedConversationId) return null;
@@ -143,24 +124,8 @@ export default function AdminPage() {
     defaultValues: { replyMessage: '' },
   });
 
-  const handleSetTyping = useCallback((isTyping: boolean) => {
-     if (!selectedConversationId || !firestore) return;
-      const convRef = doc(firestore, "conversations", selectedConversationId);
-      updateDoc(convRef, { "typing.admin": isTyping });
-  }, [selectedConversationId, firestore]);
-  
-  const handleTypingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleSetTyping(true);
-    if(typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-    typingTimeoutRef.current = setTimeout(() => {
-      handleSetTyping(false);
-    }, 2000);
-  }
-
   async function handleReply(values: z.infer<typeof replySchema>) {
     if (!firestore || !user || !selectedConversationId) return;
-    handleSetTyping(false);
-    if(typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
 
     const conversationRef = doc(firestore, 'conversations', selectedConversationId);
     let imageUrl: string | undefined = undefined;
@@ -187,7 +152,6 @@ export default function AdminPage() {
       senderName: ADMIN_NAME,
       senderEmail: user.email!,
       readBy: {},
-      reactions: {},
     };
 
     replyForm.reset();
@@ -210,7 +174,7 @@ export default function AdminPage() {
     if (!firestore || !selectedConversation || !user) return;
 
     const unreadMessages = selectedConversation.messages.filter(
-      (msg) => msg.sentBy === 'visitor' && !msg.readBy[user.email!]
+      (msg) => msg.sentBy === 'visitor' && (!msg.readBy || !msg.readBy[user.email!])
     );
 
     if (unreadMessages.length === 0) return;
@@ -274,12 +238,6 @@ export default function AdminPage() {
     return convo.messages[convo.messages.length - 1];
   };
 
-  const isVisitorOnline = (convo: Conversation) => {
-    if (!convo.presence?.visitor) return false;
-    const lastSeen = convo.presence.visitor.toDate();
-    return isWithinInterval(lastSeen, { start: subMinutes(new Date(), 2), end: new Date() });
-  }
-
   if (isUserLoading || !isAuthorized) {
     return (
       <div className="container mx-auto flex min-h-screen items-center justify-center">
@@ -299,32 +257,10 @@ export default function AdminPage() {
     const currentMessage = replyForm.getValues('replyMessage') || '';
     replyForm.setValue('replyMessage', currentMessage + emoji);
   };
-  
-  const handleReaction = async (messageId: string, emoji: string) => {
-    if (!firestore || !user || !selectedConversation) return;
 
-    const messageIndex = selectedConversation.messages.findIndex(m => m.id === messageId);
-    if (messageIndex === -1) return;
-
-    const message = selectedConversation.messages[messageIndex];
-    const newReactions = { ...message.reactions };
-
-    if (newReactions[user.email!] === emoji) {
-      delete newReactions[user.email!]; // Toggle off reaction
-    } else {
-      newReactions[user.email!] = emoji; // Add/change reaction
-    }
-    
-    const updatedMessages = [...selectedConversation.messages];
-    updatedMessages[messageIndex] = { ...message, reactions: newReactions };
-    
-    const conversationRef = doc(firestore, 'conversations', selectedConversation.id);
-    await updateDoc(conversationRef, { messages: updatedMessages });
-  };
-  
   const MessageStatus = ({ message }: { message: Message }) => {
     if (message.sentBy !== 'admin' || !selectedConversation) return null;
-    const hasBeenRead = Object.keys(message.readBy).includes(selectedConversation.senderEmail);
+    const hasBeenRead = Object.keys(message.readBy || {}).includes(selectedConversation.senderEmail);
 
     if (hasBeenRead) {
       return <CheckCheck className="h-4 w-4 text-blue-500 inline" />;
@@ -353,7 +289,6 @@ export default function AdminPage() {
               )}
               {conversations?.map(convo => {
                 const latestMsg = lastMessage(convo);
-                const isOnline = isVisitorOnline(convo);
                 return (
                   <button
                     key={convo.id}
@@ -365,12 +300,9 @@ export default function AdminPage() {
                   >
                     <div className="flex justify-between items-start">
                         <div className="flex-1 overflow-hidden flex items-center gap-2">
-                            <div className="relative">
-                               <Avatar>
-                                 <AvatarFallback>{convo.senderName.charAt(0)}</AvatarFallback>
-                               </Avatar>
-                               {isOnline && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-card rounded-full" />}
-                            </div>
+                           <Avatar>
+                             <AvatarFallback>{convo.senderName.charAt(0)}</AvatarFallback>
+                           </Avatar>
                             <div>
                                 <span className="font-semibold block truncate">{convo.senderName}</span>
                                 <span className="text-xs text-muted-foreground block truncate">{convo.senderEmail}</span>
@@ -380,7 +312,7 @@ export default function AdminPage() {
                         {latestMsg.sentAt ? formatListTimestamp(getSentAtDate(latestMsg.sentAt)) : ''}
                       </span>
                     </div>
-                    <p className="text-sm text-muted-foreground truncate mt-1 pl-12">{convo.typing?.visitor ? 'typing...' : (latestMsg.text || 'Image')}</p>
+                    <p className="text-sm text-muted-foreground truncate mt-1 pl-12">{latestMsg.text || 'Image'}</p>
                   </button>
                 )
               })}
@@ -396,15 +328,11 @@ export default function AdminPage() {
                  <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSelectedConversationId(null)}>
                   <ArrowLeft className="w-4 h-4" />
                 </Button>
-                <div className="relative">
-                    <Avatar>
-                      <AvatarFallback>{selectedConversation.senderName.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    {isVisitorOnline(selectedConversation) && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-card rounded-full" />}
-                </div>
+                <Avatar>
+                  <AvatarFallback>{selectedConversation.senderName.charAt(0)}</AvatarFallback>
+                </Avatar>
                 <div className="flex-1">
                   <h3 className="font-semibold">{selectedConversation.senderName}</h3>
-                  <p className="text-xs text-muted-foreground">{selectedConversation.typing?.visitor ? 'typing...' : (isVisitorOnline(selectedConversation) ? 'Online' : 'Offline')}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="icon" onClick={showFeatureComingSoon}>
@@ -417,7 +345,7 @@ export default function AdminPage() {
               </div>
 
               <ScrollArea className="flex-1 p-4 bg-muted/20" ref={scrollAreaRef}>
-                <div className="space-y-2">
+                <div className="space-y-4">
                   {selectedConversation.messages?.map((msg) => (
                     <div key={msg.id} className={cn("flex items-end gap-2 group", msg.sentBy === 'admin' && 'justify-end')}>
                        <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'admin' && 'items-end')}>
@@ -431,30 +359,8 @@ export default function AdminPage() {
                                 {msg.sentBy === 'admin' && <MessageStatus message={msg} />}
                                 <span>{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
                             </div>
-
-                            {msg.reactions && Object.keys(msg.reactions).length > 0 && (
-                                <div className="absolute -bottom-3 left-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
-                                    {Object.values(msg.reactions).map((emoji, i) => <span key={i}>{emoji}</span>)}
-                                </div>
-                            )}
                          </div>
                        </div>
-                       <Popover>
-                          <PopoverTrigger asChild>
-                              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <Smile className="h-4 w-4" />
-                              </Button>
-                          </PopoverTrigger>
-                          <PopoverContent className="w-auto p-1 bg-card shadow-lg border rounded-lg">
-                              <div className="flex gap-1">
-                                  {REACTION_EMOJIS.map(emoji => (
-                                      <button key={emoji} onClick={() => handleReaction(msg.id, emoji)} className="text-xl p-1 rounded-md hover:bg-muted transition-colors">
-                                          {emoji}
-                                      </button>
-                                  ))}
-                              </div>
-                          </PopoverContent>
-                       </Popover>
                     </div>
                   ))}
                 </div>
@@ -493,7 +399,7 @@ export default function AdminPage() {
                       render={({ field }) => (
                         <FormItem className="flex-grow">
                           <FormControl>
-                            <Input placeholder="Type your reply..." {...field} autoComplete="off" onChange={(e) => {field.onChange(e); handleTypingChange(e); }} />
+                            <Input placeholder="Type your reply..." {...field} autoComplete="off" />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
@@ -516,3 +422,5 @@ export default function AdminPage() {
     </section>
   );
 }
+
+    

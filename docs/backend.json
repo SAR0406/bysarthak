@@ -68,32 +68,9 @@
                   "type": "string",
                   "format": "date-time"
                 }
-              },
-              "reactions": {
-                "type": "object",
-                "description": "Map of user emails to the emoji they reacted with.",
-                "additionalProperties": {
-                  "type": "string"
-                }
               }
             },
             "required": ["id", "sentAt", "sentBy", "senderName", "senderEmail"]
-          }
-        },
-        "typing": {
-          "type": "object",
-          "description": "Indicates which users are currently typing.",
-          "properties": {
-            "visitor": { "type": "boolean" },
-            "admin": { "type": "boolean" }
-          }
-        },
-        "presence": {
-          "type": "object",
-          "description": "Indicates online status of participants.",
-           "properties": {
-            "visitor": { "type": "string", "format": "date-time" },
-            "admin": { "type": "string", "format": "date-time" }
           }
         }
       },
@@ -187,3 +164,5 @@
     "reasoning": "This design prioritizes security and scalability. A top-level `/conversations` collection stores message threads, identified by the sender's email to group messages. This avoids hierarchical complexities. A separate `/users` collection stores user profiles, linking them by UID to Firebase Authentication. This separation allows for distinct security rules for public user data versus private conversations."
   }
 }
+
+    

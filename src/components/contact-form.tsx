@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect, useCallback, ReactNode } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -28,7 +28,7 @@ import {
 import { Card } from '@/components/ui/card';
 import { Send, Phone, Video, Smile, Paperclip, Check, CheckCheck } from 'lucide-react';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { format, isWithinInterval, subMinutes } from 'date-fns';
+import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from './ui/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
@@ -47,8 +47,6 @@ type UserDetails = {
   email: string;
 };
 
-type Reaction = { [key: string]: string }; // userEmail: emoji
-
 type ChatMessage = {
   id: string;
   text?: string;
@@ -58,29 +56,15 @@ type ChatMessage = {
   senderName: string;
   senderEmail: string;
   readBy: { [key: string]: Timestamp };
-  reactions: Reaction;
 };
-
-type Presence = {
-  visitor?: Timestamp;
-  admin?: Timestamp;
-}
-
-type Typing = {
-  visitor?: boolean;
-  admin?: boolean;
-}
 
 type Conversation = {
   messages: ChatMessage[];
-  presence?: Presence;
-  typing?: Typing;
 };
 
 const ADMIN_NAME = 'Sarthak';
 const ADMIN_EMAIL = 'sarthak040624@gmail.com';
 
-const REACTION_EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
 const EMOJIS = [
   '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
   '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
@@ -90,7 +74,7 @@ const EMOJIS = [
   '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭',
   '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧',
   '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢',
-  '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', ...REACTION_EMOJIS
+  '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '👍', '❤️', '😂', '😮', '😢', '🙏'
 ];
 
 
@@ -102,14 +86,10 @@ export function ContactForm() {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
   const getSentAtDate = (sentAt: ChatMessage['sentAt']) => {
     if (!sentAt) return new Date();
-    if (sentAt instanceof Timestamp) {
-      return sentAt.toDate();
-    }
-    return sentAt;
+    return sentAt instanceof Timestamp ? sentAt.toDate() : sentAt;
   };
   
   useEffect(() => {
@@ -131,40 +111,6 @@ export function ContactForm() {
   const { data: conversationData, isLoading: isHistoryLoading } = useDoc<Conversation>(conversationRef);
 
   const messages = conversationData?.messages?.sort((a, b) => getSentAtDate(a.sentAt).getTime() - getSentAtDate(b.sentAt).getTime()) || [];
-
-  const handleSetTyping = useCallback((isTyping: boolean) => {
-     if (!conversationRef) return;
-      updateDoc(conversationRef, { "typing.visitor": isTyping });
-  }, [conversationRef]);
-  
-  const handleTypingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    handleSetTyping(true);
-    if(typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
-    typingTimeoutRef.current = setTimeout(() => {
-      handleSetTyping(false);
-    }, 2000);
-  }
-
-  // --- Presence Management ---
-  useEffect(() => {
-    if (!conversationRef) return;
-
-    const updatePresence = () => {
-      updateDoc(conversationRef, {
-        "presence.visitor": serverTimestamp(),
-      });
-    };
-    updatePresence(); // Initial update
-    const interval = setInterval(updatePresence, 60000); // Update every minute
-    return () => clearInterval(interval);
-  }, [conversationRef]);
-
-  const isAdminOnline = () => {
-    if (!conversationData?.presence?.admin) return false;
-    const lastSeen = conversationData.presence.admin.toDate();
-    return isWithinInterval(lastSeen, { start: subMinutes(new Date(), 2), end: new Date() });
-  };
-  // -------------------------
 
   const markMessagesAsRead = useCallback(async () => {
     if (!firestore || !conversationData || !userDetails || !conversationRef) return;
@@ -200,9 +146,6 @@ export function ContactForm() {
 
   const handleMessageSubmit = async (values: z.infer<typeof messageSchema>) => {
     if (!firestore || !userDetails || !conversationRef) return;
-
-    handleSetTyping(false);
-    if(typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
     
     let imageUrl: string | undefined = undefined;
 
@@ -228,7 +171,6 @@ export function ContactForm() {
       sentAt: new Date(),
       sentBy: 'visitor' as const,
       readBy: {},
-      reactions: {},
     };
 
     messageForm.reset();
@@ -275,27 +217,6 @@ export function ContactForm() {
     const currentMessage = messageForm.getValues('message') || '';
     messageForm.setValue('message', currentMessage + emoji);
   };
-  
-  const handleReaction = async (messageId: string, emoji: string) => {
-    if (!firestore || !userDetails || !conversationData || !conversationRef) return;
-
-    const messageIndex = conversationData.messages.findIndex(m => m.id === messageId);
-    if (messageIndex === -1) return;
-
-    const message = conversationData.messages[messageIndex];
-    const newReactions = { ...(message.reactions || {}) };
-
-    if (newReactions[userDetails.email] === emoji) {
-      delete newReactions[userDetails.email]; // Toggle off reaction
-    } else {
-      newReactions[userDetails.email] = emoji; // Add/change reaction
-    }
-    
-    const updatedMessages = [...conversationData.messages];
-    updatedMessages[messageIndex] = { ...message, reactions: newReactions };
-    
-    await updateDoc(conversationRef, { messages: updatedMessages });
-  };
 
   const MessageStatus = ({ message }: { message: ChatMessage }) => {
     if (message.sentBy !== 'visitor') return null;
@@ -307,7 +228,7 @@ export function ContactForm() {
     return <Check className="h-4 w-4 text-muted-foreground inline" />;
   };
 
-  const initialWelcomeMessage = userDetails ? [{
+  const initialWelcomeMessage: ChatMessage[] = userDetails ? [{
         id: 'welcome-message',
         text: `Hi ${userDetails.name}! How can I help you today?`,
         sentAt: new Date(),
@@ -315,13 +236,12 @@ export function ContactForm() {
         senderName: ADMIN_NAME,
         senderEmail: ADMIN_EMAIL,
         readBy: {},
-        reactions: {},
     }] : [];
 
   const displayedMessages = messages.length > 0 ? messages : initialWelcomeMessage;
   
-  const renderChatContent = () => {
-    if (!user && (isUserLoading || isHistoryLoading)) {
+  const renderChatContent = (): ReactNode => {
+    if (isUserLoading || (user && isHistoryLoading)) {
       return (
         <div key="loading-state" className="flex justify-center items-center h-full">
           <p className="text-muted-foreground">Loading Chat...</p>
@@ -329,10 +249,10 @@ export function ContactForm() {
       );
     }
 
-    if (!user && !isUserLoading) {
+    if (!user) {
       return (
-        <div key="login-prompt" className="flex flex-col items-center justify-center h-full text-center">
-          <p className="text-muted-foreground mb-4">You must be logged in to start a conversation.</p>
+        <div key="login-prompt" className="flex flex-col items-center justify-center h-full text-center p-4">
+          <p className="text-muted-foreground mb-4">Please log in to start a conversation.</p>
           <Button asChild>
             <Link href="/login">Login to Chat</Link>
           </Button>
@@ -356,30 +276,8 @@ export function ContactForm() {
                          {msg.sentBy === 'visitor' && <MessageStatus message={msg} />}
                          <span>{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
                       </div>
-
-                      {msg.reactions && Object.keys(msg.reactions).length > 0 && (
-                          <div className="absolute -bottom-3 left-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
-                              {Object.values(msg.reactions).map((emoji, i) => <span key={i}>{emoji}</span>)}
-                          </div>
-                      )}
                    </div>
                  </div>
-                 <Popover>
-                      <PopoverTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <Smile className="h-4 w-4" />
-                          </Button>
-                      </PopoverTrigger>
-                      <PopoverContent className="w-auto p-1 bg-card shadow-lg border rounded-lg">
-                          <div className="flex gap-1">
-                              {REACTION_EMOJIS.map(emoji => (
-                                  <button key={emoji} onClick={() => handleReaction(msg.id, emoji)} className="text-xl p-1 rounded-md hover:bg-muted transition-colors">
-                                      {emoji}
-                                  </button>
-                              ))}
-                          </div>
-                      </PopoverContent>
-                  </Popover>
               </div>
             ))}
           </React.Fragment>
@@ -396,14 +294,8 @@ export function ContactForm() {
           className="flex flex-col h-[500px]"
         >
           <div className="p-4 border-b flex items-center">
-            <div className="relative mr-4">
-               <div className='flex-1'>
-                    <h3 className="font-semibold text-center">{ADMIN_NAME}</h3>
-               </div>
-               {isAdminOnline() && <div className="absolute top-0 right-0 w-3 h-3 bg-green-500 border-2 border-card rounded-full" />}
-            </div>
             <div className='flex-1'>
-               <p className="text-xs text-muted-foreground">{conversationData?.typing?.admin ? 'typing...' : (isAdminOnline() ? 'Online' : 'Offline')}</p>
+              <h3 className="font-semibold">{ADMIN_NAME}</h3>
             </div>
             <div className="flex items-center gap-1">
               <Button variant="ghost" size="icon" onClick={showFeatureComingSoon}>
@@ -415,7 +307,7 @@ export function ContactForm() {
             </div>
           </div>
           <ScrollArea className="flex-1 p-4 bg-muted/20" ref={scrollAreaRef}>
-            <div className="space-y-2">
+            <div className="space-y-4">
               {renderChatContent()}
             </div>
           </ScrollArea>
@@ -456,10 +348,6 @@ export function ContactForm() {
                           {...field}
                           autoComplete="off"
                           disabled={!user || isUserLoading}
-                          onChange={(e) => {
-                            field.onChange(e);
-                            handleTypingChange(e);
-                          }}
                         />
                       </FormControl>
                       <FormMessage />
@@ -477,3 +365,5 @@ export function ContactForm() {
     </div>
   );
 }
+
+    
