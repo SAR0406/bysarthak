@@ -1,3 +1,4 @@
+
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Rocket, Handshake, BrainCircuit, Zap } from 'lucide-react';
@@ -18,7 +19,7 @@ const aboutSections = [
   {
     icon: <BrainCircuit className="h-6 w-6 text-primary" />,
     title: "I’m currently learning",
-    content: "Python (advanced concepts, clean code, structure). Computer Vision & AI fundamentals. Backend basics (Node.js versions, APIs, automation tools). Core CS thinking: algorithms, logic, and system design."
+    content: "Python (advanced concepts, clean code, structure). Backend basics (Node.js versions, APIs, automation tools). Core CS thinking: algorithms, logic, and system design."
   }
 ];
 
@@ -27,7 +28,9 @@ export function About() {
     <section id="about" className="container mx-auto py-16">
       <div className="grid md:grid-cols-3 gap-12 items-start">
         <div className="flex justify-center md:col-span-1">
-          <img src="https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg" alt="Sarthak" className="rounded-full object-cover w-full max-w-[300px] md:max-w-full aspect-square" />
+          <PixelCard variant="pink" className="rounded-full">
+            <img src="https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg" alt="Sarthak" className="absolute inset-0 w-full h-full object-cover rounded-full z-20" />
+          </PixelCard>
         </div>
         <div className="md:col-span-2 space-y-8">
           <ScrollFloat className="font-headline text-3xl md:text-4xl font-bold text-white">💫 About Me</ScrollFloat>
