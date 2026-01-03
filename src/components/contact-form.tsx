@@ -34,6 +34,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
+import React from 'react';
 
 const replySchema = z.object({
   replyMessage: z.string().min(1, 'Reply cannot be empty.').optional(),
@@ -63,15 +64,15 @@ type Conversation = {
 };
 
 const EMOJIS = [
-  '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
-  '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
-  '😋', '😛', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳',
-  '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖',
-  '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤯', '😳',
-  '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭',
-  '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧',
-  '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢',
-  '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '👍', '❤️', '🙏'
+    '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
+    '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
+    '😋', '😛', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳',
+    '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖',
+    '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤯', '😳',
+    '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭',
+    '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧',
+    '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢',
+    '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '👍', '❤️', '🙏'
 ];
 
 const ADMIN_EMAIL = 'sarthak040624@gmail.com';
@@ -96,7 +97,7 @@ export function ContactForm() {
     return sentAt instanceof Timestamp ? sentAt.toDate() : sentAt;
   };
   
-  const displayedMessages = conversationData?.messages?.sort((a, b) => getSentAtDate(a.sentAt).getTime() - getSentAtDate(b.sentAt).getTime()) || [];
+  const messages = conversationData?.messages?.sort((a, b) => getSentAtDate(a.sentAt).getTime() - getSentAtDate(b.sentAt).getTime()) || [];
 
   const replyForm = useForm<z.infer<typeof replySchema>>({
     resolver: zodResolver(replySchema),
@@ -161,53 +162,37 @@ export function ContactForm() {
     }
   };
 
-  useEffect(() => { setTimeout(scrollToBottom, 50); }, [displayedMessages]);
+  useEffect(() => { setTimeout(scrollToBottom, 50); }, [messages]);
 
   async function handleReply(values: z.infer<typeof replySchema>) {
     if (!firestore || !user || !conversationRef) return;
-    let imageUrl: string | undefined = undefined;
-
-    if (values.attachment) {
-      const storage = getStorage();
-      const filePath = `attachments/${conversationRef.id}/${Date.now()}_${values.attachment.name}`;
-      const fileRef = storageRef(storage, filePath);
-      await uploadBytes(fileRef, values.attachment);
-      imageUrl = await getDownloadURL(fileRef);
+    
+    if (!values.replyMessage && !values.attachment) {
+      replyForm.reset();
+      return;
     }
 
-    if (!values.replyMessage && !imageUrl) {
-        replyForm.reset();
-        return;
-    }
-
-    const replyData: any = {
-      id: uuidv4(),
-      sentAt: new Date(),
-      sentBy: 'visitor' as const,
-      senderName: user.displayName || user.email!,
-      senderEmail: user.email!,
-      readBy: {},
-      reactions: {},
+    const replyData: Omit<Message, 'sentAt' | 'readBy'> & { sentAt: Date } = {
+        id: uuidv4(),
+        sentBy: 'visitor' as const,
+        senderName: user.displayName || user.email!,
+        senderEmail: user.email!,
+        sentAt: new Date(),
     };
 
     if (values.replyMessage) {
-      replyData.text = values.replyMessage;
+        replyData.text = values.replyMessage;
     }
-    if (imageUrl) {
-      replyData.imageUrl = imageUrl;
+    
+    if (values.attachment) {
+        const storage = getStorage();
+        const filePath = `attachments/${conversationRef.id}/${Date.now()}_${values.attachment.name}`;
+        const fileRef = storageRef(storage, filePath);
+        await uploadBytes(fileRef, values.attachment);
+        replyData.imageUrl = await getDownloadURL(fileRef);
     }
-
+    
     replyForm.reset();
-
-    const conversationPayload = {
-      id: user.email!,
-      senderName: user.displayName || user.email!,
-      senderEmail: user.email!,
-      lastMessageAt: serverTimestamp(),
-      messages: arrayUnion(replyData),
-      typing: { [user.email!]: false },
-      presence: { [user.email!]: 'online' },
-    };
 
     try {
       if (conversationData) {
@@ -217,7 +202,15 @@ export function ContactForm() {
           [`typing.${user.email!}`]: false,
         });
       } else {
-        await setDoc(conversationRef, conversationPayload);
+        await setDoc(conversationRef, {
+            id: user.email!,
+            senderName: user.displayName || user.email!,
+            senderEmail: user.email!,
+            lastMessageAt: serverTimestamp(),
+            messages: [replyData],
+            typing: { [user.email!]: false },
+            presence: { [user.email!]: 'online' },
+        });
       }
     } catch (e: any) { toast({ variant: 'destructive', title: 'Reply Failed', description: e.message }); }
   }
@@ -227,18 +220,27 @@ export function ContactForm() {
 
     const messageIndex = conversationData.messages.findIndex(m => m.id === messageId);
     if (messageIndex === -1) return;
-
-    const currentReactions = conversationData.messages[messageIndex].reactions || {};
-    const userReaction = Object.keys(currentReactions).find(key => currentReactions[key] === user.email);
-
+      
     const updatedMessages = [...conversationData.messages];
+    const message = updatedMessages[messageIndex];
+
+    // Ensure reactions object exists
+    if (!message.reactions) {
+        message.reactions = {};
+    }
+    
+    const userReaction = Object.keys(message.reactions).find(key => message.reactions![key] === user.email);
 
     if (userReaction === emoji) {
-        delete updatedMessages[messageIndex].reactions![emoji];
+        // User is removing their reaction
+        delete message.reactions[emoji];
     } else {
-        if(userReaction) delete updatedMessages[messageIndex].reactions![userReaction];
-        updatedMessages[messageIndex].reactions![emoji] = user.email!;
+        // Remove previous reaction if it exists
+        if(userReaction) delete message.reactions[userReaction];
+        // Add new reaction
+        message.reactions[emoji] = user.email!;
     }
+    
     await updateDoc(conversationRef, { messages: updatedMessages });
 };
 
@@ -267,34 +269,16 @@ export function ContactForm() {
 
         <ScrollArea className="flex-1 p-4 bg-muted/20" ref={scrollAreaRef}>
              {isHistoryLoading ? (
-               <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
+               <div key="loading" className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>
             ) : !user ? (
-                <div className="flex flex-col items-center justify-center h-full text-center">
+                <div key="login" className="flex flex-col items-center justify-center h-full text-center">
                     <p className="text-muted-foreground">You need an account to chat.</p>
                     <Button asChild variant="link" className="mt-2"><Link href="/login">Login or Sign Up</Link></Button>
                 </div>
             ) : (
-                <div className="space-y-1">
-                  {displayedMessages.map((msg) => (
+                <div key="messages-list" className="space-y-1">
+                  {messages.map((msg) => (
                     <div key={msg.id} className={cn("flex items-end gap-2.5 group", msg.sentBy === 'visitor' && 'justify-end')}>
-                       {msg.sentBy === 'admin' && (
-                         <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <MoreHorizontal className="w-4 h-4" />
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent mb-2">
-                                <div className="flex gap-0.5 bg-card border rounded-full p-1 shadow-md">
-                                    {['👍', '❤️', '😂', '😮', '😢', '🙏'].map(emoji => (
-                                        <button key={emoji} type="button" onClick={() => handleReaction(msg.id, emoji)} className="text-lg p-1 rounded-full hover:bg-muted transition-colors">
-                                            {emoji}
-                                        </button>
-                                    ))}
-                                </div>
-                            </PopoverContent>
-                        </Popover>
-                       )}
                        <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'visitor' && 'items-end')}>
                          <div className={cn("relative leading-1.5 p-2 rounded-xl", msg.sentBy === 'visitor' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none shadow-sm')}>
                             {msg.imageUrl && <Image src={msg.imageUrl} alt="attachment" width={300} height={200} className="rounded-md mb-2" />}
@@ -305,16 +289,16 @@ export function ContactForm() {
                             </div>
                             {msg.reactions && Object.keys(msg.reactions).length > 0 && (
                                 <div className="absolute -bottom-3 right-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
-                                    {Object.values(msg.reactions).map((emoji, i) => <span key={i}>{emoji}</span>)}
+                                    {Object.keys(msg.reactions).map((emoji, i) => <span key={i}>{emoji}</span>)}
+                                    <span className='ml-1 text-muted-foreground'>{Object.keys(msg.reactions).length}</span>
                                 </div>
                             )}
                          </div>
                        </div>
-                       {msg.sentBy === 'visitor' && (
-                         <Popover>
+                        <Popover>
                             <PopoverTrigger asChild>
                                 <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <MoreHorizontal className="w-4 h-4" />
+                                    <Smile className="w-4 h-4" />
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent mb-2">
@@ -327,7 +311,6 @@ export function ContactForm() {
                                 </div>
                             </PopoverContent>
                         </Popover>
-                       )}
                     </div>
                   ))}
                 </div>
@@ -342,8 +325,8 @@ export function ContactForm() {
                       <PopoverTrigger asChild><Button variant="ghost" size="icon"><Smile className="h-5 w-5" /></Button></PopoverTrigger>
                       <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent mb-2">
                           <div className="grid grid-cols-10 gap-0.5">
-                              {EMOJIS.map(emoji => (
-                                  <button key={emoji} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-xl p-0.5 rounded-md hover:bg-muted transition-colors">{emoji}</button>
+                              {EMOJIS.map((emoji,i) => (
+                                  <button key={`${emoji}-${i}`} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-xl p-0.5 rounded-md hover:bg-muted transition-colors">{emoji}</button>
                               ))}
                           </div>
                       </PopoverContent>
@@ -372,5 +355,3 @@ export function ContactForm() {
     </div>
   );
 }
-
-    

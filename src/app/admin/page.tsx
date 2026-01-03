@@ -69,15 +69,15 @@ const ADMIN_EMAIL = 'sarthak040624@gmail.com';
 const ADMIN_NAME = 'Sarthak';
 
 const EMOJIS = [
-  '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
-  '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
-  '😋', '😛', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳',
-  '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖',
-  '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤯', '😳',
-  '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭',
-  '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧',
-  '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢',
-  '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '👍', '❤️', '🙏'
+    '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
+    '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
+    '😋', '😛', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳',
+    '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖',
+    '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤯', '😳',
+    '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭',
+    '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧',
+    '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢',
+    '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '👍', '❤️', '🙏'
 ];
 
 export default function AdminPage() {
@@ -148,40 +148,34 @@ export default function AdminPage() {
 
   async function handleReply(values: z.infer<typeof replySchema>) {
     if (!firestore || !user || !selectedConversationId) return;
-
+    
+    if (!values.replyMessage && !values.attachment) {
+      replyForm.reset();
+      return;
+    }
+    
     const conversationRef = doc(firestore, 'conversations', selectedConversationId);
-    let imageUrl: string | undefined = undefined;
 
+    const replyData: Omit<Message, 'sentAt' | 'readBy'> & { sentAt: Date } = {
+        id: uuidv4(),
+        sentBy: 'admin' as const,
+        senderName: ADMIN_NAME,
+        senderEmail: user.email!,
+        sentAt: new Date(),
+    };
+
+    if (values.replyMessage) {
+        replyData.text = values.replyMessage;
+    }
+    
     if (values.attachment) {
       const storage = getStorage();
       const filePath = `attachments/${selectedConversationId}/${Date.now()}_${values.attachment.name}`;
       const fileRef = storageRef(storage, filePath);
       await uploadBytes(fileRef, values.attachment);
-      imageUrl = await getDownloadURL(fileRef);
+      replyData.imageUrl = await getDownloadURL(fileRef);
     }
-
-    if (!values.replyMessage && !imageUrl) {
-        replyForm.reset();
-        return;
-    }
-
-    const replyData: any = {
-      id: uuidv4(),
-      sentAt: new Date(),
-      sentBy: 'admin' as const,
-      senderName: ADMIN_NAME,
-      senderEmail: user.email!,
-      readBy: {},
-      reactions: {},
-    };
-
-    if (values.replyMessage) {
-      replyData.text = values.replyMessage;
-    }
-    if (imageUrl) {
-      replyData.imageUrl = imageUrl;
-    }
-
+    
     replyForm.reset();
 
     try {
@@ -201,19 +195,24 @@ export default function AdminPage() {
       const messageIndex = selectedConversation.messages.findIndex(m => m.id === messageId);
       if (messageIndex === -1) return;
 
-      const currentReactions = selectedConversation.messages[messageIndex].reactions || {};
-      const userReaction = Object.keys(currentReactions).find(key => currentReactions[key] === user.email);
-
       const updatedMessages = [...selectedConversation.messages];
+      const message = updatedMessages[messageIndex];
+      
+      // Ensure reactions object exists
+      if (!message.reactions) {
+        message.reactions = {};
+      }
+
+      const userReaction = Object.keys(message.reactions).find(key => message.reactions![key] === user.email);
 
       if (userReaction === emoji) {
           // User is removing their reaction
-          delete updatedMessages[messageIndex].reactions![emoji];
+          delete message.reactions[emoji];
       } else {
           // Remove previous reaction if it exists
-          if(userReaction) delete updatedMessages[messageIndex].reactions![userReaction];
+          if(userReaction) delete message.reactions[userReaction];
           // Add new reaction
-          updatedMessages[messageIndex].reactions![emoji] = user.email!;
+          message.reactions[emoji] = user.email!;
       }
 
       await updateDoc(conversationRef, { messages: updatedMessages });
@@ -356,10 +355,26 @@ export default function AdminPage() {
                  <div className="space-y-1">
                   {displayedMessages.map((msg) => (
                     <div key={msg.id} className={cn("flex items-end gap-2.5 group", msg.sentBy === 'admin' && 'justify-end')}>
+                       <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'admin' && 'items-end')}>
+                         <div className={cn("relative leading-1.5 p-2 rounded-xl", msg.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none shadow-sm')}>
+                            {msg.imageUrl && <Image src={msg.imageUrl} alt="attachment" width={300} height={200} className="rounded-md mb-2" />}
+                            {msg.text && <p className="text-sm font-normal px-1">{msg.text}</p>}
+                            <div className="text-xs text-muted-foreground/80 flex items-center justify-end gap-1 mt-1">
+                                {msg.sentBy === 'admin' && <MessageStatus message={msg} />}
+                                <span>{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
+                            </div>
+                            {msg.reactions && Object.keys(msg.reactions).length > 0 && (
+                                <div className="absolute -bottom-3 left-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
+                                    {Object.keys(msg.reactions).map((emoji, i) => <span key={i}>{emoji}</span>)}
+                                    <span className='ml-1 text-muted-foreground'>{Object.keys(msg.reactions).length}</span>
+                                </div>
+                            )}
+                         </div>
+                       </div>
                        <Popover>
                             <PopoverTrigger asChild>
                                 <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                                    <MoreHorizontal className="w-4 h-4" />
+                                    <Smile className="w-4 h-4" />
                                 </Button>
                             </PopoverTrigger>
                             <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent mb-2">
@@ -372,21 +387,6 @@ export default function AdminPage() {
                                 </div>
                             </PopoverContent>
                         </Popover>
-                       <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'admin' && 'items-end')}>
-                         <div className={cn("relative leading-1.5 p-2 rounded-xl", msg.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none shadow-sm')}>
-                            {msg.imageUrl && <Image src={msg.imageUrl} alt="attachment" width={300} height={200} className="rounded-md mb-2" />}
-                            {msg.text && <p className="text-sm font-normal px-1">{msg.text}</p>}
-                            <div className="text-xs text-muted-foreground/80 flex items-center justify-end gap-1 mt-1">
-                                {msg.sentBy === 'admin' && <MessageStatus message={msg} />}
-                                <span>{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
-                            </div>
-                            {msg.reactions && Object.keys(msg.reactions).length > 0 && (
-                                <div className="absolute -bottom-3 left-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
-                                    {Object.values(msg.reactions).map((emoji, i) => <span key={i}>{emoji}</span>)}
-                                </div>
-                            )}
-                         </div>
-                       </div>
                     </div>
                   ))}
                 </div>
@@ -399,8 +399,8 @@ export default function AdminPage() {
                         <PopoverTrigger asChild><Button variant="ghost" size="icon"><Smile className="h-5 w-5" /></Button></PopoverTrigger>
                         <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent mb-2">
                             <div className="grid grid-cols-10 gap-0.5">
-                                {EMOJIS.map(emoji => (
-                                    <button key={emoji} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-xl p-0.5 rounded-md hover:bg-muted transition-colors">{emoji}</button>
+                                {EMOJIS.map((emoji, i) => (
+                                    <button key={`${emoji}-${i}`} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-xl p-0.5 rounded-md hover:bg-muted transition-colors">{emoji}</button>
                                 ))}
                             </div>
                         </PopoverContent>
@@ -433,5 +433,3 @@ export default function AdminPage() {
     </section>
   );
 }
-
-    
