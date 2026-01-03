@@ -322,7 +322,7 @@ export function ContactForm() {
   const renderChatContent = () => {
     if (!user && (isUserLoading || isHistoryLoading)) {
       return (
-        <div key="loading-state" className="flex justify-center items-center h-full">
+        <div className="flex justify-center items-center h-full">
           <p className="text-muted-foreground">Loading Chat...</p>
         </div>
       );
@@ -330,7 +330,7 @@ export function ContactForm() {
 
     if (!user && !isUserLoading) {
       return (
-        <div key="login-prompt" className="flex flex-col items-center justify-center h-full text-center">
+        <div className="flex flex-col items-center justify-center h-full text-center">
           <p className="text-muted-foreground mb-4">You must be logged in to start a conversation.</p>
           <Button asChild>
             <Link href="/login">Login to Chat</Link>
@@ -388,7 +388,6 @@ export function ContactForm() {
     <div className="mt-12 max-w-lg mx-auto">
       <Card className="w-full shadow-2xl shadow-primary/10">
         <div
-          key="chat"
           className="flex flex-col h-[500px]"
         >
           <div className="p-4 border-b flex items-center">
