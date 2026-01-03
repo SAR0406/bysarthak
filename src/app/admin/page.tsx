@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { Send, ArrowLeft, Phone, Video } from 'lucide-react';
+import { Send, ArrowLeft, Phone, Video, Smile } from 'lucide-react';
 import { useFirestore, useUser, useMemoFirebase, useCollection } from '@/firebase';
 import {
   collection,
@@ -32,6 +32,7 @@ import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { format, isToday, isThisYear } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 
 const replySchema = z.object({
   replyMessage: z.string().min(1, 'Reply cannot be empty.'),
@@ -54,6 +55,18 @@ type Conversation = {
 };
 
 const ADMIN_EMAIL = 'sarthak040624@gmail.com';
+
+const EMOJIS = [
+  '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
+  '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
+  '😋', '😛', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳',
+  '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖',
+  '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤯', '😳',
+  '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭',
+  '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧',
+  '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢',
+  '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '👍', '👎', '❤️'
+];
 
 export default function AdminPage() {
   const { toast } = useToast();
@@ -195,6 +208,11 @@ export default function AdminPage() {
       description: 'Voice and video call functionality will be added in a future update.',
     });
   };
+  
+  const handleEmojiSelect = (emoji: string) => {
+    const currentMessage = replyForm.getValues('replyMessage');
+    replyForm.setValue('replyMessage', currentMessage + emoji);
+  }
 
   return (
     <section id="admin" className="h-screen w-full p-4 md:p-8">
@@ -292,6 +310,22 @@ export default function AdminPage() {
                     onSubmit={replyForm.handleSubmit(handleReply)}
                     className="flex gap-2"
                   >
+                     <Popover>
+                        <PopoverTrigger asChild>
+                           <Button variant="ghost" size="icon">
+                             <Smile className="h-5 w-5" />
+                           </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-2 border-none">
+                            <div className="grid grid-cols-8 gap-1">
+                                {EMOJIS.map(emoji => (
+                                    <button key={emoji} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-xl p-1 rounded-md hover:bg-muted transition-colors">
+                                        {emoji}
+                                    </button>
+                                ))}
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                     <FormField
                       control={replyForm.control}
                       name="replyMessage"

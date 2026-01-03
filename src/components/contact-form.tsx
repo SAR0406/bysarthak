@@ -23,12 +23,13 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
-import { Send, Phone, Video } from 'lucide-react';
+import { Send, Phone, Video, Smile } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format, isToday, isThisYear } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from './ui/use-toast';
+import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
 
 
 const messageSchema = z.object({
@@ -51,6 +52,19 @@ type ChatMessage = {
 type Conversation = {
     messages: ChatMessage[];
 }
+
+const EMOJIS = [
+  '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
+  '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
+  '😋', '😛', '😜', '🤪', '🤨', '🧐', '🤓', '😎', '🤩', '🥳',
+  '😏', '😒', '😞', '😔', '😟', '😕', '🙁', '☹️', '😣', '😖',
+  '😫', '😩', '🥺', '😢', '😭', '😤', '😠', '😡', '🤯', '😳',
+  '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭',
+  '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧',
+  '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢',
+  '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '👍', '👎', '❤️'
+];
+
 
 export function ContactForm() {
   const firestore = useFirestore();
@@ -186,6 +200,11 @@ export function ContactForm() {
       description: 'Voice and video call functionality will be added in a future update.',
     });
   };
+  
+  const handleEmojiSelect = (emoji: string) => {
+    const currentMessage = messageForm.getValues('message');
+    messageForm.setValue('message', currentMessage + emoji);
+  }
 
   return (
     <div className="mt-12 max-w-lg mx-auto">
@@ -237,6 +256,22 @@ export function ContactForm() {
                     onSubmit={messageForm.handleSubmit(handleMessageSubmit)}
                     className="flex gap-2"
                   >
+                    <Popover>
+                        <PopoverTrigger asChild>
+                           <Button variant="ghost" size="icon">
+                             <Smile className="h-5 w-5" />
+                           </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-2 border-none">
+                            <div className="grid grid-cols-8 gap-1">
+                                {EMOJIS.map(emoji => (
+                                    <button key={emoji} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-xl p-1 rounded-md hover:bg-muted transition-colors">
+                                        {emoji}
+                                    </button>
+                                ))}
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                     <FormField
                       control={messageForm.control}
                       name="message"
