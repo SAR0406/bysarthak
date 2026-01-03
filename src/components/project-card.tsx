@@ -13,7 +13,7 @@ export function ProjectCard({ repo }: ProjectCardProps) {
   const allTopics = repo.language ? [repo.language, ...(repo.topics || [])] : repo.topics || [];
 
   return (
-    <Card className="h-full flex flex-col group border-2 bg-card/50 hover:border-primary transition-all duration-300">
+    <Card className="h-full flex flex-col group border-2 bg-card hover:border-primary transition-all duration-300">
       <CardHeader className="p-6 pb-4">
         <div className="flex items-start justify-between gap-4">
             <h3 className="font-bold text-xl text-primary-foreground">{repo.name}</h3>
