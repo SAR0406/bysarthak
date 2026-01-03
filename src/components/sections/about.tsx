@@ -28,8 +28,8 @@ export function About() {
     <section id="about" className="container mx-auto py-16">
       <div className="grid md:grid-cols-3 gap-12 items-start">
         <div className="flex justify-center md:col-span-1">
-          <PixelCard variant="pink">
-            <img src="https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg" alt="Sarthak" className="absolute inset-0 w-full h-full object-cover rounded-[25px] z-20" />
+          <PixelCard variant="pink" className="rounded-full">
+            <img src="https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg" alt="Sarthak" className="absolute inset-0 w-full h-full object-cover rounded-full z-20" />
           </PixelCard>
         </div>
         <div className="md:col-span-2 space-y-8">
