@@ -15,8 +15,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { useToast } from '@/components/ui/use-toast';
-import { useFirestore } from '@/firebase';
+import { useFirestore, errorEmitter, FirestorePermissionError } from '@/firebase';
 import {
   collection,
   serverTimestamp,
@@ -26,6 +25,7 @@ import {
   getDocs,
   updateDoc,
   arrayUnion,
+  type DocumentReference,
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
 import { Send, User, Mail } from 'lucide-react';
@@ -45,7 +45,6 @@ type UserDetails = z.infer<typeof userDetailsSchema>;
 type Message = { text: string; sentAt: Date };
 
 export function ContactForm() {
-  const { toast } = useToast();
   const firestore = useFirestore();
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -78,41 +77,58 @@ export function ContactForm() {
 
     const conversationsRef = collection(firestore, 'conversations');
     const q = query(conversationsRef, where('senderEmail', '==', userDetails.email));
-
-    try {
-      const querySnapshot = await getDocs(q);
-
-      const newMessagePayload = {
-        senderName: userDetails.name,
-        senderEmail: userDetails.email,
-        text: values.message,
-        sentAt: new Date(),
-        sentBy: 'visitor',
-      };
-
-      if (querySnapshot.empty) {
-        await addDoc(conversationsRef, {
-          senderName: userDetails.name,
-          senderEmail: userDetails.email,
-          lastMessageAt: serverTimestamp(),
-          messages: [newMessagePayload],
-        });
-      } else {
-        const conversationDoc = querySnapshot.docs[0];
-        await updateDoc(conversationDoc.ref, {
-          messages: arrayUnion(newMessagePayload),
-          lastMessageAt: serverTimestamp(),
-        });
-      }
-    } catch (e: any) {
-      toast({
-        variant: 'destructive',
-        title: 'Oh no!',
-        description: e.message || 'There was an error sending your message.',
-      });
-      // Optionally remove the message from local state on failure
-      setMessages(prev => prev.slice(0, prev.length - 1));
-    }
+    
+    const newMessagePayload = {
+      senderName: userDetails.name,
+      senderEmail: userDetails.email,
+      text: values.message,
+      sentAt: new Date(),
+      sentBy: 'visitor' as const,
+    };
+    
+    // Non-blocking write operations with contextual error handling
+    getDocs(q).then(querySnapshot => {
+        if (querySnapshot.empty) {
+            // Create new conversation
+            const newConversationData = {
+                senderName: userDetails.name,
+                senderEmail: userDetails.email,
+                lastMessageAt: serverTimestamp(),
+                messages: [newMessagePayload],
+            };
+            addDoc(conversationsRef, newConversationData)
+                .catch(error => {
+                    setMessages(prev => prev.slice(0, -1)); // Revert optimistic UI
+                    errorEmitter.emit('permission-error', new FirestorePermissionError({
+                        path: conversationsRef.path,
+                        operation: 'create',
+                        requestResourceData: newConversationData,
+                    }));
+                });
+        } else {
+            // Update existing conversation
+            const conversationDocRef = querySnapshot.docs[0].ref as DocumentReference;
+            const updateData = {
+                messages: arrayUnion(newMessagePayload),
+                lastMessageAt: serverTimestamp(),
+            };
+            updateDoc(conversationDocRef, updateData)
+                .catch(error => {
+                    setMessages(prev => prev.slice(0, -1)); // Revert optimistic UI
+                    errorEmitter.emit('permission-error', new FirestorePermissionError({
+                        path: conversationDocRef.path,
+                        operation: 'update',
+                        requestResourceData: updateData,
+                    }));
+                });
+        }
+    }).catch(error => {
+        setMessages(prev => prev.slice(0, -1)); // Revert optimistic UI on read failure
+        errorEmitter.emit('permission-error', new FirestorePermissionError({
+            path: conversationsRef.path,
+            operation: 'list', // getDocs is a 'list' operation in rule terms
+        }));
+    });
   };
 
   useEffect(() => {
@@ -236,3 +252,5 @@ export function ContactForm() {
     </div>
   );
 }
+
+    
