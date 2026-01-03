@@ -2,7 +2,7 @@
 import { Github, Linkedin, Twitter } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ContactForm } from '@/components/contact-form';
+import { SimpleContactForm } from '@/components/simple-contact-form';
 
 export function Contact() {
   return (
@@ -37,7 +37,7 @@ export function Contact() {
         <h2 className="font-headline text-3xl md:text-4xl font-bold">Get In Touch</h2>
       </div>
 
-      <ContactForm />
+      <SimpleContactForm />
     </section>
   );
 }

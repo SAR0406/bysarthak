@@ -11,7 +11,7 @@
  *   but can only create and update their own.
  *
  * Data Structure:
- * - /conversations/{email}: Stores message threads, identified by the user's email.
+ * - /conversations/{conversationId}: Stores message threads, identified by the user's email.
  * - /users/{userId}: Stores public user profiles.
  */
 rules_version = '2';
@@ -36,14 +36,13 @@ service cloud.firestore {
      *   Implements a public 'dropbox' with admin reply functionality.
      *   - Anyone can create/update a conversation (add messages).
      *   - The admin can list/read any conversation.
-     *   - A user can read their own conversation history.
+     *   - A user can read their own conversation history if they are signed in.
      *   - Deletion is disallowed for all.
      */
     match /conversations/{conversationId} {
       allow get: if isAdmin() || (isSignedIn() && request.auth.token.email == conversationId);
       allow list: if isAdmin();
-      allow create: if true;
-      allow update: if isAdmin() || (isSignedIn() && request.auth.token.email == conversationId);
+      allow create, update: if true;
       allow delete: if false;
     }
 

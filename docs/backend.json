@@ -8,7 +8,7 @@
       "properties": {
         "id": {
           "type": "string",
-          "description": "Unique identifier for the conversation."
+          "description": "Unique identifier for the conversation (visitor's email)."
         },
         "senderName": {
           "type": "string",
@@ -30,18 +30,9 @@
           "items": {
             "type": "object",
             "properties": {
-              "id": {
-                "type": "string",
-                "description": "Unique identifier for the message."
-              },
               "text": {
                 "type": "string",
                 "description": "The content of the message."
-              },
-              "imageUrl": {
-                "type": "string",
-                "description": "URL of an image attached to the message.",
-                "format": "uri"
               },
               "sentAt": {
                 "type": "string",
@@ -57,20 +48,12 @@
                 "type": "string",
                 "description": "Name of the person sending the message."
               },
-               "senderEmail": {
+              "senderEmail": {
                 "type": "string",
                 "description": "Email of the person sending the message."
-              },
-              "readBy": {
-                "type": "object",
-                "description": "Map of user emails to timestamps indicating when they read the message.",
-                "additionalProperties": {
-                  "type": "string",
-                  "format": "date-time"
-                }
               }
             },
-            "required": ["id", "sentAt", "sentBy", "senderName", "senderEmail"]
+            "required": ["sentAt", "sentBy", "senderName", "senderEmail", "text"]
           }
         }
       },
@@ -164,5 +147,3 @@
     "reasoning": "This design prioritizes security and scalability. A top-level `/conversations` collection stores message threads, identified by the sender's email to group messages. This avoids hierarchical complexities. A separate `/users` collection stores user profiles, linking them by UID to Firebase Authentication. This separation allows for distinct security rules for public user data versus private conversations."
   }
 }
-
-    
