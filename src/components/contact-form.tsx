@@ -23,11 +23,12 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
-import { Send, MessageSquare } from 'lucide-react';
+import { Send, Phone, Video } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { format, isToday, isThisYear } from 'date-fns';
 import { cn } from '@/lib/utils';
+import { useToast } from './ui/use-toast';
 
 
 const messageSchema = z.object({
@@ -54,6 +55,7 @@ type Conversation = {
 export function ContactForm() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
+  const { toast } = useToast();
 
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
@@ -178,6 +180,13 @@ export function ContactForm() {
 
   const showChat = !!userDetails;
 
+  const showFeatureComingSoon = () => {
+    toast({
+      title: 'Feature Coming Soon',
+      description: 'Voice and video call functionality will be added in a future update.',
+    });
+  };
+
   return (
     <div className="mt-12 max-w-lg mx-auto">
       <Card className="w-full shadow-2xl shadow-primary/10">
@@ -189,9 +198,19 @@ export function ContactForm() {
               transition={{ duration: 0.3 }}
               className="flex flex-col h-[500px]"
             >
-              <div className="p-4 border-b text-center">
-                  <h3 className="font-semibold">Chat with Sarthak</h3>
-                  {userDetails && <p className="text-xs text-muted-foreground">{userDetails.name}</p>}
+              <div className="p-4 border-b flex items-center">
+                  <div className='flex-1'>
+                    <h3 className="font-semibold text-center">Chat with Sarthak</h3>
+                    {userDetails && <p className="text-xs text-muted-foreground text-center">{userDetails.name}</p>}
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="icon" onClick={showFeatureComingSoon}>
+                      <Phone className="w-5 h-5 text-muted-foreground" />
+                    </Button>
+                    <Button variant="ghost" size="icon" onClick={showFeatureComingSoon}>
+                      <Video className="w-5 h-5 text-muted-foreground" />
+                    </Button>
+                  </div>
               </div>
               <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
                  <div className="space-y-4">

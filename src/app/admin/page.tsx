@@ -16,7 +16,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { Send, ArrowLeft } from 'lucide-react';
+import { Send, ArrowLeft, Phone, Video } from 'lucide-react';
 import { useFirestore, useUser, useMemoFirebase, useCollection } from '@/firebase';
 import {
   collection,
@@ -189,6 +189,13 @@ export default function AdminPage() {
     );
   }
 
+  const showFeatureComingSoon = () => {
+    toast({
+      title: 'Feature Coming Soon',
+      description: 'Voice and video call functionality will be added in a future update.',
+    });
+  };
+
   return (
     <section id="admin" className="h-screen w-full p-4 md:p-8">
       <div className="h-full rounded-lg border bg-card text-card-foreground shadow-sm flex overflow-hidden">
@@ -244,9 +251,17 @@ export default function AdminPage() {
                 <Avatar>
                   <AvatarFallback>{selectedConversation.senderName.charAt(0)}</AvatarFallback>
                 </Avatar>
-                <div>
+                <div className="flex-1">
                   <h3 className="font-semibold">{selectedConversation.senderName}</h3>
                   <p className="text-xs text-muted-foreground">{selectedConversation.senderEmail}</p>
+                </div>
+                <div className="flex items-center gap-2">
+                  <Button variant="ghost" size="icon" onClick={showFeatureComingSoon}>
+                    <Phone className="w-5 h-5 text-muted-foreground" />
+                  </Button>
+                  <Button variant="ghost" size="icon" onClick={showFeatureComingSoon}>
+                    <Video className="w-5 h-5 text-muted-foreground" />
+                  </Button>
                 </div>
               </div>
 
@@ -303,5 +318,3 @@ export default function AdminPage() {
     </section>
   );
 }
-
-    
