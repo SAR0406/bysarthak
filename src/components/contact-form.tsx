@@ -118,6 +118,14 @@ export function ContactForm() {
     if (!firestore || !userDetails?.email) return null;
     return doc(firestore, 'conversations', userDetails.email);
   }, [firestore, userDetails?.email]);
+  
+  const getSentAtDate = (sentAt: ChatMessage['sentAt']) => {
+    if (!sentAt) return new Date();
+    if (sentAt instanceof Timestamp) {
+      return sentAt.toDate();
+    }
+    return sentAt;
+  };
 
   const { data: conversationData, isLoading: isHistoryLoading } = useDoc<Conversation>(conversationRef);
 
@@ -238,14 +246,6 @@ export function ContactForm() {
         requestResourceData: conversationPayload,
       }));
     });
-  };
-
-  const getSentAtDate = (sentAt: ChatMessage['sentAt']) => {
-    if (!sentAt) return new Date();
-    if (sentAt instanceof Timestamp) {
-      return sentAt.toDate();
-    }
-    return sentAt;
   };
 
   const formatMessageTimestamp = (date: Date) => {
