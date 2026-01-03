@@ -30,6 +30,7 @@ import { format, isToday, isThisYear } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useToast } from './ui/use-toast';
 import { Popover, PopoverContent, PopoverTrigger } from './ui/popover';
+import Link from 'next/link';
 
 
 const messageSchema = z.object({
@@ -74,40 +75,20 @@ export function ContactForm() {
   const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
-  const hasInitialized = useRef(false);
-
-  const messageForm = useForm<z.infer<typeof messageSchema>>({
-    resolver: zodResolver(messageSchema),
-    defaultValues: { message: '' },
-  });
   
-  // Effect to initialize user details for both logged-in and guest users
   useEffect(() => {
-    if (isUserLoading || hasInitialized.current) return;
-
-    let sessionDetails: UserDetails;
-    if (user) {
-        // User is logged in
-        sessionDetails = {
-            name: user.displayName || 'Authenticated User',
-            email: user.email!,
-        };
+    if (user && !isUserLoading) {
+      setUserDetails({
+        name: user.displayName || 'Authenticated User',
+        email: user.email!,
+      });
     } else {
-        // User is a guest, create a guest identity
-        const guestId = `guest_${Math.random().toString(36).substring(2, 9)}`;
-        sessionDetails = {
-            name: `Visitor ${guestId.slice(-3)}`,
-            email: `${guestId}@guest.com`,
-        };
+      setUserDetails(null);
     }
-    setUserDetails(sessionDetails);
-    hasInitialized.current = true;
-    
   }, [user, isUserLoading]);
 
 
   const conversationRef = useMemoFirebase(() => {
-    // Only create a ref if we have userDetails (from either a logged-in user or guest)
     if (!firestore || !userDetails?.email) return null;
     return doc(firestore, 'conversations', userDetails.email);
   }, [firestore, userDetails?.email]);
@@ -115,9 +96,8 @@ export function ContactForm() {
   const { data: conversationData, isLoading: isHistoryLoading } = useDoc<Conversation>(conversationRef);
 
   useEffect(() => {
-    // This effect now runs whenever conversation history loads or when userDetails are set for the first time
-    if (userDetails && messages.length === 0) {
-        const historyMessages = conversationData?.messages || [];
+    if (userDetails && conversationData) {
+        const historyMessages = conversationData.messages || [];
         const initialMessages = historyMessages.length > 0 ? historyMessages : [{
             text: `Hi ${userDetails.name}! How can I help you today?`,
             sentAt: new Date(),
@@ -127,9 +107,15 @@ export function ContactForm() {
         }];
 
         setMessages(initialMessages.sort((a, b) => getSentAtDate(a.sentAt).getTime() - getSentAtDate(b.sentAt).getTime()));
+    } else if (!userDetails) {
+        setMessages([]); // Clear messages if user logs out
     }
-  }, [conversationData, userDetails, messages.length]);
+  }, [conversationData, userDetails]);
 
+  const messageForm = useForm<z.infer<typeof messageSchema>>({
+    resolver: zodResolver(messageSchema),
+    defaultValues: { message: '' },
+  });
 
   const handleMessageSubmit = async (values: z.infer<typeof messageSchema>) => {
     if (!firestore || !userDetails) return;
@@ -192,7 +178,6 @@ export function ContactForm() {
     }
   }, [messages]);
 
-  const showChat = !!userDetails;
 
   const showFeatureComingSoon = () => {
     toast({
@@ -233,12 +218,12 @@ export function ContactForm() {
               </div>
               <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
                  <div className="space-y-4">
-                    {(isHistoryLoading || isUserLoading || !showChat) && messages.length === 0 && (
+                    {(isUserLoading || (user && isHistoryLoading)) && (
                         <div className="flex justify-center items-center h-full">
-                            <p className="text-muted-foreground">Loading...</p>
+                            <p className="text-muted-foreground">Loading Chat...</p>
                         </div>
                     )}
-                    {messages.map((msg, index) => (
+                    {user && messages.map((msg, index) => (
                         <div key={index} className={cn("flex items-end gap-2.5", msg.sentBy === 'visitor' && 'justify-end')}>
                            <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'visitor' && 'items-end')}>
                              <div className={cn("leading-1.5 p-3 border-gray-200", msg.sentBy === 'visitor' ? 'bg-primary text-primary-foreground rounded-s-xl rounded-ee-xl' : 'bg-muted rounded-e-xl rounded-es-xl')}>
@@ -248,6 +233,14 @@ export function ContactForm() {
                            </div>
                         </div>
                     ))}
+                    {!user && !isUserLoading && (
+                      <div className="flex flex-col items-center justify-center h-full text-center">
+                        <p className="text-muted-foreground mb-4">You must be logged in to start a conversation.</p>
+                        <Button asChild>
+                          <Link href="/login">Login to Chat</Link>
+                        </Button>
+                      </div>
+                    )}
                  </div>
               </ScrollArea>
               <div className="p-4 border-t">
@@ -258,7 +251,7 @@ export function ContactForm() {
                   >
                     <Popover>
                         <PopoverTrigger asChild>
-                           <Button variant="ghost" size="icon">
+                           <Button variant="ghost" size="icon" disabled={!user}>
                              <Smile className="h-5 w-5" />
                            </Button>
                         </PopoverTrigger>
@@ -278,13 +271,13 @@ export function ContactForm() {
                       render={({ field }) => (
                         <FormItem className="flex-grow">
                           <FormControl>
-                            <Input placeholder="Type your message..." {...field} autoComplete="off" disabled={!showChat} />
+                            <Input placeholder="Type your message..." {...field} autoComplete="off" disabled={!user || isUserLoading} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" size="icon" disabled={messageForm.formState.isSubmitting || !showChat}>
+                    <Button type="submit" size="icon" disabled={messageForm.formState.isSubmitting || !user || isUserLoading}>
                       <Send className="h-4 w-4" />
                     </Button>
                   </form>
