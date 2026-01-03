@@ -316,10 +316,10 @@ export default function AdminPage() {
                              <Smile className="h-5 w-5" />
                            </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-2 border-none">
-                            <div className="grid grid-cols-8 gap-1">
+                        <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent">
+                            <div className="grid grid-cols-10 gap-0.5">
                                 {EMOJIS.map(emoji => (
-                                    <button key={emoji} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-xl p-1 rounded-md hover:bg-muted transition-colors">
+                                    <button key={emoji} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-2xl p-1 rounded-md hover:bg-muted transition-colors">
                                         {emoji}
                                     </button>
                                 ))}
