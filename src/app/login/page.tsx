@@ -33,7 +33,7 @@ import {
 import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import Stepper, { Step } from '@/components/ui/stepper';
-import { Github, ToyBrick } from 'lucide-react';
+import { Github, ToyBrick, LogIn, UserPlus } from 'lucide-react';
 
 const signUpSchema = z.object({
   email: z.string().email('Invalid email address.'),
@@ -148,8 +148,12 @@ export default function LoginPage() {
         <CardDescription>Sign in or create an account to continue</CardDescription>
       </CardHeader>
       <CardContent className="flex flex-col gap-4">
-        <Button size="lg" onClick={() => setFlow('login')}>Login</Button>
-        <Button size="lg" variant="outline" onClick={() => setFlow('signup')}>Sign Up</Button>
+        <Button size="lg" onClick={() => setFlow('login')}>
+            <LogIn className="mr-2 h-4 w-4" /> Login
+        </Button>
+        <Button size="lg" variant="outline" onClick={() => setFlow('signup')}>
+            <UserPlus className="mr-2 h-4 w-4" /> Sign Up
+        </Button>
       </CardContent>
     </Card>
   );
