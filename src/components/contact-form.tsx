@@ -109,7 +109,7 @@ export function ContactForm() {
         name: user.displayName || 'Authenticated User',
         email: user.email!,
       });
-    } else {
+    } else if (!isUserLoading) {
       setUserDetails(null);
     }
   }, [user, isUserLoading]);
@@ -169,7 +169,7 @@ export function ContactForm() {
     if (!firestore || !conversationData || !userDetails) return;
 
     const unreadMessages = conversationData.messages.filter(
-      (msg) => msg.sentBy === 'admin' && !msg.readBy[userDetails.email!]
+      (msg) => msg.sentBy === 'admin' && (!msg.readBy || !msg.readBy[userDetails.email!])
     );
 
     if (unreadMessages.length === 0) return;
@@ -177,7 +177,7 @@ export function ContactForm() {
     const batch = writeBatch(firestore);
     const updatedMessages = conversationData.messages.map((msg) => {
         if (unreadMessages.some(unread => unread.id === msg.id)) {
-            return { ...msg, readBy: { ...msg.readBy, [userDetails.email!]: Timestamp.now() } };
+            return { ...msg, readBy: { ...(msg.readBy || {}), [userDetails.email!]: Timestamp.now() } };
         }
         return msg;
     });
@@ -287,7 +287,7 @@ export function ContactForm() {
     if (messageIndex === -1) return;
 
     const message = conversationData.messages[messageIndex];
-    const newReactions = { ...message.reactions };
+    const newReactions = { ...(message.reactions || {}) };
 
     if (newReactions[userDetails.email] === emoji) {
       delete newReactions[userDetails.email]; // Toggle off reaction
@@ -303,7 +303,7 @@ export function ContactForm() {
 
   const MessageStatus = ({ message }: { message: ChatMessage }) => {
     if (message.sentBy !== 'visitor') return null;
-    const hasBeenRead = Object.keys(message.readBy).includes(ADMIN_EMAIL);
+    const hasBeenRead = Object.keys(message.readBy || {}).includes(ADMIN_EMAIL);
 
     if (hasBeenRead) {
       return <CheckCheck className="h-4 w-4 text-blue-500" />;
@@ -352,7 +352,7 @@ export function ContactForm() {
           </div>
           <ScrollArea className="flex-1 p-4 bg-muted/20" ref={scrollAreaRef}>
             <div className="space-y-4">
-              {(isUserLoading || (user && isHistoryLoading)) && (
+              {(isUserLoading || (user && isHistoryLoading)) && !user &&(
                 <div className="flex justify-center items-center h-full">
                   <p className="text-muted-foreground">Loading Chat...</p>
                 </div>
@@ -395,7 +395,7 @@ export function ContactForm() {
                 </div>
               ))}
               {!user && !isUserLoading && (
-                <div className="flex flex-col items-center justify-center h-full text-center">
+                <div key="login-prompt" className="flex flex-col items-center justify-center h-full text-center">
                   <p className="text-muted-foreground mb-4">You must be logged in to start a conversation.</p>
                   <Button asChild>
                     <Link href="/login">Login to Chat</Link>
