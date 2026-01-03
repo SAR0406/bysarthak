@@ -233,6 +233,7 @@ export function ContactForm() {
     messageForm.reset();
 
     const conversationPayload = {
+      id: userDetails.email,
       senderName: userDetails.name,
       senderEmail: userDetails.email,
       lastMessageAt: serverTimestamp(),
@@ -347,28 +348,12 @@ export function ContactForm() {
           <ScrollArea className="flex-1 p-4 bg-muted/20" ref={scrollAreaRef}>
             <div className="space-y-2">
               {(isUserLoading || (user && isHistoryLoading)) && !user &&(
-                <div className="flex justify-center items-center h-full">
+                <div key="loading-state" className="flex justify-center items-center h-full">
                   <p className="text-muted-foreground">Loading Chat...</p>
                 </div>
               )}
               {user && displayedMessages.map((msg) => (
                 <div key={msg.id} className={cn("flex items-end gap-2 group", msg.sentBy === 'visitor' && 'justify-end')}>
-                   <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Smile className="h-4 w-4" />
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-1 bg-card shadow-lg border rounded-lg">
-                            <div className="flex gap-1">
-                                {REACTION_EMOJIS.map(emoji => (
-                                    <button key={emoji} onClick={() => handleReaction(msg.id, emoji)} className="text-xl p-1 rounded-md hover:bg-muted transition-colors">
-                                        {emoji}
-                                    </button>
-                                ))}
-                            </div>
-                        </PopoverContent>
-                    </Popover>
                    <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'visitor' && 'items-end')}>
                      <div className={cn("relative leading-1.5 p-2 rounded-xl", msg.sentBy === 'visitor' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none shadow-sm')}>
                         {msg.imageUrl && (
@@ -388,6 +373,22 @@ export function ContactForm() {
                         )}
                      </div>
                    </div>
+                   <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Smile className="h-4 w-4" />
+                            </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-1 bg-card shadow-lg border rounded-lg">
+                            <div className="flex gap-1">
+                                {REACTION_EMOJIS.map(emoji => (
+                                    <button key={emoji} onClick={() => handleReaction(msg.id, emoji)} className="text-xl p-1 rounded-md hover:bg-muted transition-colors">
+                                        {emoji}
+                                    </button>
+                                ))}
+                            </div>
+                        </PopoverContent>
+                    </Popover>
                 </div>
               ))}
               {!user && !isUserLoading && (
@@ -458,3 +459,5 @@ export function ContactForm() {
     </div>
   );
 }
+
+    
