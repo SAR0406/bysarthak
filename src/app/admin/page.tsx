@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -29,7 +29,7 @@ import {
   Timestamp,
 } from 'firebase/firestore';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { format } from 'date-fns';
+import { format, isToday, isThisYear } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 
@@ -62,6 +62,7 @@ export default function AdminPage() {
   const router = useRouter();
   const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (!isUserLoading) {
@@ -94,39 +95,60 @@ export default function AdminPage() {
 
   async function handleReply(values: z.infer<typeof replySchema>) {
     if (!firestore || !user || !selectedConversation || user.email !== ADMIN_EMAIL) return;
+    
     const conversationRef = doc(firestore, 'conversations', selectedConversation.id);
 
     const replyData = {
       text: values.replyMessage,
       sentAt: new Date(),
-      sentBy: 'admin',
+      sentBy: 'admin' as const,
       senderName: 'Sarthak', // Hardcoded admin name
       senderEmail: user.email,
     };
 
+    // Optimistic UI update
+    const updatedMessages = [...(selectedConversation.messages || []), replyData] as Message[];
+    const previousConversationState = selectedConversation;
+
+    setSelectedConversation({
+      ...selectedConversation,
+      messages: updatedMessages,
+      lastMessageAt: Timestamp.now(), // Visually update timestamp
+    });
+    replyForm.reset();
+
     try {
+      // Asynchronously update Firestore
       await updateDoc(conversationRef, {
         messages: arrayUnion(replyData),
         lastMessageAt: serverTimestamp(),
       });
-      replyForm.reset();
-      
-      // Manually update local state for immediate feedback
-      const updatedMessages = [...(selectedConversation.messages || []), replyData] as Message[];
-      setSelectedConversation({
-        ...selectedConversation,
-        messages: updatedMessages,
-        lastMessageAt: Timestamp.now(),
-      });
-
     } catch (e: any) {
+      // Revert UI on failure
+      setSelectedConversation(previousConversationState);
       toast({
         variant: 'destructive',
         title: 'Reply Failed',
-        description: e.message,
+        description: e.message || "Could not send reply. Please try again.",
       });
     }
   }
+
+  const scrollToBottom = () => {
+    if (scrollAreaRef.current) {
+        const scrollableView = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
+        if (scrollableView) {
+            scrollableView.scrollTop = scrollableView.scrollHeight;
+        }
+    }
+  };
+
+  useEffect(() => {
+    if (selectedConversation) {
+      // Allow the DOM to update before scrolling
+      setTimeout(scrollToBottom, 0);
+    }
+  }, [selectedConversation?.messages, selectedConversation]);
   
   const lastMessage = (convo: Conversation) => {
     if (!convo.messages || convo.messages.length === 0) return { text: "No messages yet", sentAt: convo.lastMessageAt };
@@ -140,6 +162,24 @@ export default function AdminPage() {
     }
     return sentAt;
   }
+  
+  const formatListTimestamp = (date: Date) => {
+    if (isToday(date)) {
+      return format(date, 'p'); // e.g., 4:30 PM
+    }
+    return format(date, 'P'); // e.g., 06/28/2024
+  }
+
+  const formatMessageTimestamp = (date: Date) => {
+    if (isToday(date)) {
+      return format(date, 'p'); // e.g., 4:30 PM
+    }
+    if (isThisYear(date)) {
+      return format(date, 'MMM d, p'); // e.g., Jun 28, 4:30 PM
+    }
+    return format(date, 'P, p'); // e.g., 06/28/2023, 4:30 PM
+  };
+
 
   if (isUserLoading || !isAuthorized) {
     return (
@@ -175,15 +215,17 @@ export default function AdminPage() {
                     key={convo.id}
                     onClick={() => setSelectedConversation(convo)}
                     className={cn(
-                      'w-full text-left p-4 border-b hover:bg-muted/50 transition-colors',
+                      'w-full text-left p-4 border-b hover:bg-muted/50 transition-colors duration-200',
                       selectedConversation?.id === convo.id && 'bg-muted'
                     )}
                   >
-                    <div className="font-semibold">{convo.senderName}</div>
+                    <div className="flex justify-between items-start">
+                      <span className="font-semibold">{convo.senderName}</span>
+                      <span className="text-xs text-muted-foreground">
+                        {latestMsg.sentAt ? formatListTimestamp(getSentAtDate(latestMsg.sentAt)) : ''}
+                      </span>
+                    </div>
                     <p className="text-sm text-muted-foreground truncate">{latestMsg.text}</p>
-                    <p className="text-xs text-muted-foreground text-right mt-1">
-                      {latestMsg.sentAt ? format(getSentAtDate(latestMsg.sentAt), 'P') : ''}
-                    </p>
                   </button>
                 )
               })}
@@ -208,18 +250,18 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <ScrollArea className="flex-1 p-4">
+              <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
                 <div className="space-y-4">
                   {selectedConversation.messages?.map((msg, index) => (
-                    <div key={index} className={cn("flex items-start gap-2.5", msg.sentBy === 'admin' && 'justify-end')}>
-                       <div className="flex flex-col gap-1 w-full max-w-[320px]">
-                         <div className={cn("flex items-center space-x-2 rtl:space-x-reverse", msg.sentBy === 'admin' && 'justify-end')}>
+                    <div key={index} className={cn("flex items-end gap-2.5", msg.sentBy === 'admin' && 'justify-end')}>
+                       <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'admin' && 'items-end')}>
+                         <div className="flex items-center space-x-2 rtl:space-x-reverse">
                              <span className="text-sm font-semibold text-card-foreground">{msg.senderName}</span>
-                             <span className="text-xs font-normal text-muted-foreground">{msg.sentAt ? format(getSentAtDate(msg.sentAt), 'p') : ''}</span>
                          </div>
-                         <div className={cn("leading-1.5 p-4 border-gray-200 rounded-e-xl rounded-es-xl", msg.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-ss-xl rounded-se-none' : 'bg-muted rounded-es-xl dark:bg-zinc-700')}>
+                         <div className={cn("leading-1.5 p-3 border-gray-200", msg.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-s-xl rounded-ee-xl' : 'bg-muted rounded-e-xl rounded-es-xl dark:bg-zinc-700')}>
                              <p className="text-sm font-normal">{msg.text}</p>
                          </div>
+                         <span className="text-xs font-normal text-muted-foreground">{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
                        </div>
                     </div>
                   ))}
