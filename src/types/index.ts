@@ -8,4 +8,5 @@ export type Repo = {
   html_url: string;
   language: string | null;
   topics: string[];
+  homepage: string | null;
 };
