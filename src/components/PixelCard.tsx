@@ -180,11 +180,7 @@ export default function PixelCard({
   const pixelsRef = useRef<Pixel[]>([]);
   const animationRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
   const timePreviousRef = useRef(performance.now());
-  const [reducedMotion, setReducedMotion] = React.useState(false);
-  
-  useEffect(() => {
-    setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches)
-  }, []);
+  const reducedMotion = useRef(typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches).current;
 
   const variantCfg: VariantConfig = VARIANTS[variant] || VARIANTS.default;
   const finalGap = gap ?? variantCfg.gap;
@@ -201,7 +197,7 @@ export default function PixelCard({
     const ctx = canvasRef.current.getContext('2d');
 
     if (!ctx) return;
-
+    
     canvasRef.current.width = width;
     canvasRef.current.height = height;
     canvasRef.current.style.width = `${width}px`;
@@ -217,7 +213,6 @@ export default function PixelCard({
         const dy = y - height / 2;
         const distance = Math.sqrt(dx * dx + dy * dy);
         const delay = reducedMotion ? 0 : distance;
-        
         pxs.push(new Pixel(canvasRef.current, ctx, x, y, color, getEffectiveSpeed(finalSpeed, reducedMotion), delay));
       }
     }
@@ -290,7 +285,7 @@ export default function PixelCard({
   return (
     <div
       ref={containerRef}
-      className={`h-[300px] w-[300px] md:h-[400px] md:w-[400px] relative overflow-hidden grid place-items-center aspect-square border border-zinc-800 rounded-full isolate transition-colors duration-200 ease-[cubic-bezier(0.5,1,0.89,1)] select-none ${className}`}
+      className={`h-[400px] w-[300px] relative overflow-hidden grid place-items-center aspect-[4/5] border border-border rounded-[25px] isolate transition-colors duration-200 ease-[cubic-bezier(0.5,1,0.89,1)] select-none ${className}`}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onFocus={finalNoFocus ? undefined : onFocus}
