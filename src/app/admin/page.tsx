@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -15,7 +15,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { Send } from 'lucide-react';
+import { Send, ArrowLeft } from 'lucide-react';
 import { useFirestore, useUser, useCollection, useMemoFirebase } from '@/firebase';
 import {
   collection,
@@ -29,10 +29,18 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
 const replySchema = z.object({
   replyMessage: z.string().min(1, 'Reply cannot be empty.'),
 });
+
+type Reply = {
+  message: string;
+  sentAt: { seconds: number; nanoseconds: number };
+  sentBy: 'admin' | string;
+};
 
 type ContactMessage = {
   id: string;
@@ -40,7 +48,7 @@ type ContactMessage = {
   email: string;
   message: string;
   sentAt: { seconds: number; nanoseconds: number } | null;
-  replies?: { message: string; sentAt: { seconds: number; nanoseconds: number }; sentBy: string }[];
+  replies?: Reply[];
 };
 
 export default function AdminPage() {
@@ -48,16 +56,15 @@ export default function AdminPage() {
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const router = useRouter();
+  const [selectedMessage, setSelectedMessage] = useState<ContactMessage | null>(null);
 
   useEffect(() => {
-    // If auth is done loading and there's no user, redirect to login
     if (!isUserLoading && !user) {
       router.push('/login');
     }
   }, [user, isUserLoading, router]);
 
   const messagesQuery = useMemoFirebase(() => {
-    // Only fetch if the user is authenticated
     if (!firestore || !user) return null;
     return query(collection(firestore, 'contact_messages'), orderBy('sentAt', 'desc'));
   }, [firestore, user]);
@@ -69,12 +76,12 @@ export default function AdminPage() {
     defaultValues: { replyMessage: '' },
   });
 
-  async function handleReply(messageId: string, replyValues: z.infer<typeof replySchema>) {
-    if (!firestore || !user) return;
-    const messageRef = doc(firestore, 'contact_messages', messageId);
+  async function handleReply(values: z.infer<typeof replySchema>) {
+    if (!firestore || !user || !selectedMessage) return;
+    const messageRef = doc(firestore, 'contact_messages', selectedMessage.id);
 
     const replyData = {
-      message: replyValues.replyMessage,
+      message: values.replyMessage,
       sentAt: serverTimestamp(),
       sentBy: 'admin',
     };
@@ -83,11 +90,8 @@ export default function AdminPage() {
       await updateDoc(messageRef, {
         replies: arrayUnion(replyData),
       });
-      // This reset might need to be more specific if you have multiple forms
       replyForm.reset();
-      toast({
-        title: 'Reply Sent!',
-      });
+      // No toast needed for a chat interface, the message will appear instantly
     } catch (e: any) {
       toast({
         variant: 'destructive',
@@ -97,7 +101,6 @@ export default function AdminPage() {
     }
   }
 
-  // Render a loading state or nothing while checking for user
   if (isUserLoading || !user) {
     return (
       <div className="container mx-auto flex min-h-screen items-center justify-center">
@@ -107,75 +110,123 @@ export default function AdminPage() {
   }
 
   return (
-    <section id="admin" className="container mx-auto py-24">
-      <div className="text-center">
-        <h2 className="font-headline text-3xl md:text-4xl font-bold">Admin Dashboard</h2>
-        <p className="mt-4 text-lg text-muted-foreground">Manage incoming messages.</p>
-      </div>
-
-      <div className="mt-12 max-w-4xl mx-auto">
-        <h3 className="text-xl font-semibold mb-4">Messages</h3>
-        <div className="space-y-4 max-h-[600px] overflow-y-auto pr-4">
-          {isLoading && <p>Loading messages...</p>}
-          {!isLoading && (!messages || messages.length === 0) && (
-            <p>No messages yet.</p>
+    <section id="admin" className="h-screen w-full p-4 md:p-8">
+      <div className="h-full rounded-lg border bg-card text-card-foreground shadow-sm flex overflow-hidden">
+        {/* Left Panel: Conversation List */}
+        <div
+          className={cn(
+            'w-full md:w-1/3 border-r transition-transform duration-300 ease-in-out',
+            selectedMessage && 'hidden md:flex flex-col'
           )}
-          {messages &&
-            messages.map(msg => (
-              <Card key={msg.id}>
-                <CardHeader>
-                  <div className="flex items-center gap-4">
-                    <Avatar>
-                      <AvatarFallback>{msg.name.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div>
-                      <CardTitle className="text-base">{msg.name}</CardTitle>
-                      <p className="text-xs text-muted-foreground">{msg.email}</p>
-                      <p className="text-xs text-muted-foreground">
-                        {msg.sentAt ? format(new Date(msg.sentAt.seconds * 1000), 'PPP p') : 'Just now'}
-                      </p>
+        >
+          <div className="p-4 border-b">
+            <h2 className="font-headline text-xl font-bold">Messages</h2>
+          </div>
+          <ScrollArea className="flex-1">
+            <div className="flex flex-col">
+              {isLoading && <p className="p-4">Loading messages...</p>}
+              {!isLoading && (!messages || messages.length === 0) && (
+                <p className="p-4 text-muted-foreground">No messages yet.</p>
+              )}
+              {messages?.map(msg => (
+                <button
+                  key={msg.id}
+                  onClick={() => setSelectedMessage(msg)}
+                  className={cn(
+                    'w-full text-left p-4 border-b hover:bg-muted/50 transition-colors',
+                    selectedMessage?.id === msg.id && 'bg-muted'
+                  )}
+                >
+                  <div className="font-semibold">{msg.name}</div>
+                  <p className="text-sm text-muted-foreground truncate">{msg.message}</p>
+                  <p className="text-xs text-muted-foreground text-right mt-1">
+                    {msg.sentAt ? format(new Date(msg.sentAt.seconds * 1000), 'P') : ''}
+                  </p>
+                </button>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+
+        {/* Right Panel: Chat View */}
+        <div className={cn('w-full md:w-2/3 flex flex-col', !selectedMessage && 'hidden md:flex')}>
+          {selectedMessage ? (
+            <>
+              <div className="p-4 border-b flex items-center gap-4">
+                 <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSelectedMessage(null)}>
+                  <ArrowLeft className="w-4 h-4" />
+                </Button>
+                <Avatar>
+                  <AvatarFallback>{selectedMessage.name.charAt(0)}</AvatarFallback>
+                </Avatar>
+                <div>
+                  <h3 className="font-semibold">{selectedMessage.name}</h3>
+                  <p className="text-xs text-muted-foreground">{selectedMessage.email}</p>
+                </div>
+              </div>
+
+              <ScrollArea className="flex-1 p-4">
+                <div className="space-y-4">
+                  {/* Original Message */}
+                  <div className="flex gap-2.5">
+                    <div className="flex flex-col gap-1 w-full max-w-[320px]">
+                      <div className="flex items-center space-x-2 rtl:space-x-reverse">
+                         <span className="text-sm font-semibold text-card-foreground">{selectedMessage.name}</span>
+                         <span className="text-xs font-normal text-muted-foreground">{selectedMessage.sentAt ? format(new Date(selectedMessage.sentAt.seconds * 1000), 'p') : ''}</span>
+                      </div>
+                      <div className="leading-1.5 p-4 border-gray-200 bg-muted rounded-e-xl rounded-es-xl dark:bg-zinc-700">
+                         <p className="text-sm font-normal text-card-foreground">{selectedMessage.message}</p>
+                      </div>
                     </div>
                   </div>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-sm">{msg.message}</p>
-                  <div className="mt-4 space-y-2 pl-6 border-l">
-                    {msg.replies?.map((reply, index) => (
-                      <div key={index}>
-                        <p className="text-sm">{reply.message}</p>
-                        <p className="text-xs text-muted-foreground">
-                          - Admin,{' '}
-                          {reply.sentAt ? format(new Date(reply.sentAt.seconds * 1000), 'PPP p') : ''}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
-
-                  <Form {...replyForm}>
-                    <form
-                      onSubmit={replyForm.handleSubmit(values => handleReply(msg.id, values))}
-                      className="mt-4 flex gap-2"
-                    >
-                      <FormField
-                        control={replyForm.control}
-                        name="replyMessage"
-                        render={({ field }) => (
-                          <FormItem className="flex-grow">
-                            <FormControl>
-                              <Input placeholder="Type your reply..." {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <Button type="submit" size="icon" disabled={replyForm.formState.isSubmitting}>
-                        <Send className="h-4 w-4" />
-                      </Button>
-                    </form>
-                  </Form>
-                </CardContent>
-              </Card>
-            ))}
+                  
+                  {/* Replies */}
+                  {selectedMessage.replies?.map((reply, index) => (
+                    <div key={index} className={cn("flex items-start gap-2.5", reply.sentBy === 'admin' && 'justify-end')}>
+                       <div className="flex flex-col gap-1 w-full max-w-[320px]">
+                         <div className={cn("flex items-center space-x-2 rtl:space-x-reverse", reply.sentBy === 'admin' && 'justify-end')}>
+                             <span className="text-sm font-semibold text-card-foreground">{reply.sentBy === 'admin' ? 'Admin' : selectedMessage.name}</span>
+                             <span className="text-xs font-normal text-muted-foreground">{reply.sentAt ? format(new Date(reply.sentAt.seconds * 1000), 'p') : ''}</span>
+                         </div>
+                         <div className={cn("leading-1.5 p-4 border-gray-200 rounded-e-xl rounded-es-xl", reply.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-ss-xl rounded-se-none' : 'bg-muted rounded-es-xl')}>
+                             <p className="text-sm font-normal">{reply.message}</p>
+                         </div>
+                       </div>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+              
+              <div className="p-4 border-t">
+                <Form {...replyForm}>
+                  <form
+                    onSubmit={replyForm.handleSubmit(handleReply)}
+                    className="flex gap-2"
+                  >
+                    <FormField
+                      control={replyForm.control}
+                      name="replyMessage"
+                      render={({ field }) => (
+                        <FormItem className="flex-grow">
+                          <FormControl>
+                            <Input placeholder="Type your reply..." {...field} autoComplete="off" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" size="icon" disabled={replyForm.formState.isSubmitting}>
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </form>
+                </Form>
+              </div>
+            </>
+          ) : (
+            <div className="flex-1 flex items-center justify-center">
+              <p className="text-muted-foreground">Select a message to start chatting</p>
+            </div>
+          )}
         </div>
       </div>
     </section>
