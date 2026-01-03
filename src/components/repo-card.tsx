@@ -9,7 +9,7 @@ type RepoCardProps = {
 
 export function RepoCard({ repo }: RepoCardProps) {
   return (
-    <Link href={repo.html_url} target="_blank" rel="noopener noreferrer">
+    <Link href={repo.html_url} target="_blank" rel="noopener noreferrer" className="h-full">
       <Card className="h-full relative overflow-hidden group transition-all duration-300 hover:border-primary/50 hover:-translate-y-1">
         <div className="absolute top-0 left-[-100%] h-full w-full bg-gradient-to-r from-transparent via-primary/10 to-transparent group-hover:animate-[shimmer_1.5s_infinite] group-hover:left-[100%]" />
         <CardHeader>
@@ -19,7 +19,7 @@ export function RepoCard({ repo }: RepoCardProps) {
         <CardContent>
           <div className="flex justify-between items-center text-sm text-muted-foreground">
             <div className="flex items-center gap-1">
-              <Circle className="h-3 w-3 text-primary fill-current" />
+              {repo.language && <Circle className="h-3 w-3 text-primary fill-current" />}
               <span>{repo.language || 'N/A'}</span>
             </div>
             <div className="flex items-center gap-4">

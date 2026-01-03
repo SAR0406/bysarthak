@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import { useToast } from "@/hooks/use-toast";
+import { useToast } from "@/components/ui/use-toast";
 import { Github, Linkedin, Twitter } from "lucide-react";
 import Link from "next/link";
 import { useFirestore } from "@/firebase";
@@ -30,7 +30,7 @@ const formSchema = z.object({
 export function Contact() {
   const { toast } = useToast();
   const firestore = useFirestore();
-  const contactMessagesRef = collection(firestore, "contact_messages");
+
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -42,6 +42,8 @@ export function Contact() {
   });
 
   function onSubmit(values: z.infer<typeof formSchema>) {
+    if (!firestore) return;
+    const contactMessagesRef = collection(firestore, "contact_messages");
     const messageData = {
       ...values,
       sentAt: serverTimestamp(),

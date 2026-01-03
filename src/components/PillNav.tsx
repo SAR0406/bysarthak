@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
 import Link from 'next/link';
 import { gsap } from 'gsap';
 import { useAuth, useUser } from '@/firebase';
@@ -68,18 +68,12 @@ const PillNav: React.FC<PillNavProps> = ({
   const hamburgerRef = useRef<HTMLButtonElement | null>(null);
   const mobileMenuRef = useRef<HTMLDivElement | null>(null);
   const navItemsRef = useRef<HTMLDivElement | null>(null);
-  const logoRef = useRef<HTMLAnchorElement | HTMLElement | null>(logo);
-  const [isMounted, setIsMounted] = useState(false);
+  const logoRef = useRef<HTMLAnchorElement | null>(null);
   const [activeLink, setActiveLink] = useState(activeHref);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
-
-  useEffect(() => {
-    if (!isMounted) return;
+  useLayoutEffect(() => {
     const layout = () => {
-      circleRefs.current.forEach(circle => {
+      circleRefs.current.forEach((circle, index) => {
         if (!circle?.parentElement) return;
 
         const pill = circle.parentElement as HTMLElement;
@@ -92,11 +86,10 @@ const PillNav: React.FC<PillNavProps> = ({
         const delta = Math.ceil(R - Math.sqrt(Math.max(0, R * R - (w * w) / 4))) + 1;
         const originY = D - delta;
 
-        circle.style.width = `${D}px`;
-        circle.style.height = `${D}px`;
-        circle.style.bottom = `-${delta}px`;
-
         gsap.set(circle, {
+          width: D,
+          height: D,
+          bottom: -delta,
           xPercent: -50,
           scale: 0,
           transformOrigin: `50% ${originY}px`
@@ -108,23 +101,14 @@ const PillNav: React.FC<PillNavProps> = ({
         if (label) gsap.set(label, { y: 0 });
         if (white) gsap.set(white, { y: h + 12, opacity: 0 });
 
-        const index = circleRefs.current.indexOf(circle);
-        if (index === -1) return;
-
         tlRefs.current[index]?.kill();
         const tl = gsap.timeline({ paused: true });
-
-        tl.to(circle, { scale: 1.2, xPercent: -50, duration: 2, ease, overwrite: 'auto' }, 0);
-
-        if (label) {
-          tl.to(label, { y: -(h + 8), duration: 2, ease, overwrite: 'auto' }, 0);
-        }
-
+        tl.to(circle, { scale: 1.2, duration: 2, ease, overwrite: 'auto' }, 0);
+        if (label) tl.to(label, { y: -(h + 8), duration: 2, ease, overwrite: 'auto' }, 0);
         if (white) {
           gsap.set(white, { y: Math.ceil(h + 100), opacity: 0 });
           tl.to(white, { y: 0, opacity: 1, duration: 2, ease, overwrite: 'auto' }, 0);
         }
-
         tlRefs.current[index] = tl;
       });
     };
@@ -134,40 +118,25 @@ const PillNav: React.FC<PillNavProps> = ({
     const onResize = () => layout();
     window.addEventListener('resize', onResize);
 
-    if (document.fonts) {
-      document.fonts.ready.then(layout).catch(() => {});
-    }
-
     const menu = mobileMenuRef.current;
     if (menu) {
       gsap.set(menu, { visibility: 'hidden', opacity: 0, scaleY: 1, y: 0 });
     }
 
     if (initialLoadAnimation) {
-      const logo = logoRef.current;
+      const logoEl = logoRef.current;
       const navItems = navItemsRef.current;
 
-      if (logo) {
-        gsap.set(logo, { scale: 0 });
-        gsap.to(logo, {
-          scale: 1,
-          duration: 0.6,
-          ease
-        });
+      if (logoEl) {
+        gsap.fromTo(logoEl, { scale: 0 }, { scale: 1, duration: 0.6, ease });
       }
-
       if (navItems) {
-        gsap.set(navItems, { width: 0, overflow: 'hidden' });
-        gsap.to(navItems, {
-          width: 'auto',
-          duration: 0.6,
-          ease
-        });
+        gsap.fromTo(navItems, { width: 0 }, { width: 'auto', duration: 0.6, ease, overwrite: 'auto' });
       }
     }
 
     return () => window.removeEventListener('resize', onResize);
-  }, [items, ease, initialLoadAnimation, isMounted]);
+  }, [items, ease, initialLoadAnimation]);
 
   const handleEnter = (i: number) => {
     const tl = tlRefs.current[i];
@@ -295,9 +264,7 @@ const PillNav: React.FC<PillNavProps> = ({
             aria-label="Home"
             onMouseEnter={handleLogoEnter}
             role="menuitem"
-            ref={el => {
-              if (el) logoRef.current = el;
-            }}
+            ref={logoRef}
             onClick={handleLinkClick(items?.[0]?.href || '/')}
             className="rounded-full p-1 inline-flex items-center justify-center overflow-hidden"
             style={{
@@ -499,5 +466,3 @@ const PillNav: React.FC<PillNavProps> = ({
 };
 
 export default PillNav;
-
-    

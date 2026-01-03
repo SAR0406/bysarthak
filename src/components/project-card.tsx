@@ -17,13 +17,15 @@ export function ProjectCard({ title, description, tags, image }: ProjectCardProp
   return (
     <Card className="overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2">
       <div className="relative h-60 w-full overflow-hidden">
-        <Image
-          src={placeholder?.imageUrl || ''}
-          alt={title}
-          fill
-          className="object-cover transition-transform duration-300 group-hover:scale-105"
-          data-ai-hint={placeholder?.imageHint}
-        />
+        {placeholder && (
+          <Image
+            src={placeholder.imageUrl}
+            alt={title}
+            fill
+            className="object-cover transition-transform duration-300 group-hover:scale-105"
+            data-ai-hint={placeholder.imageHint}
+          />
+        )}
       </div>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
