@@ -30,9 +30,15 @@
           "items": {
             "type": "object",
             "properties": {
+              "id": {
+                "type": "string"
+              },
               "text": {
                 "type": "string",
                 "description": "The content of the message."
+              },
+              "imageUrl": {
+                "type": "string"
               },
               "sentAt": {
                 "type": "string",
@@ -51,9 +57,13 @@
               "senderEmail": {
                 "type": "string",
                 "description": "Email of the person sending the message."
+              },
+              "readBy": {
+                "type": "object",
+                "properties": {}
               }
             },
-            "required": ["sentAt", "sentBy", "senderName", "senderEmail", "text"]
+            "required": ["sentAt", "sentBy", "senderName", "senderEmail", "text", "id"]
           }
         }
       },
