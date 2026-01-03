@@ -4,14 +4,15 @@
  * and secures user profile data.
  *
  * Core Philosophy:
- * - Conversations: Anyone can create a conversation or add messages to it. 
- *   Only the designated admin can read conversations.
+ * - Conversations: Anyone can create a conversation or add messages to it.
+ *   Only the designated admin can read all conversations. A user can read
+ *   their own conversation history.
  * - User Profiles: Users can read their own profile and other public profiles,
  *   but can only create and update their own.
  *
  * Data Structure:
- * - /conversations: Stores message threads.
- * - /users: Stores public user profiles.
+ * - /conversations/{email}: Stores message threads, identified by the user's email.
+ * - /users/{userId}: Stores public user profiles.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -33,15 +34,16 @@ service cloud.firestore {
     /**
      * @description
      *   Implements a public 'dropbox' with admin reply functionality.
-     *   - Anyone can create a conversation or add messages to it.
-     *   - Only the admin can read or list conversations.
+     *   - Anyone can create/update a conversation (add messages).
+     *   - The admin can list/read any conversation.
+     *   - A user can read their own conversation history.
      *   - Deletion is disallowed for all.
      */
     match /conversations/{conversationId} {
-      allow get: if isAdmin();
+      allow get: if isAdmin() || (isSignedIn() && request.auth.token.email == conversationId);
       allow list: if isAdmin();
-      allow create: if true; // Anyone can start a new conversation
-      allow update: if true; // Anyone can add a message, admin can add a reply
+      allow create: if true;
+      allow update: if true;
       allow delete: if false;
     }
 
