@@ -1,68 +1,28 @@
-import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Repo } from "@/types";
-import { Github, ExternalLink, Code, Star, GitFork } from "lucide-react";
+import { Github, Star, GitFork } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "@/components/ui/tooltip"
 
 type ProjectCardProps = {
   repo: Repo;
 };
 
 export function ProjectCard({ repo }: ProjectCardProps) {
+  const allTopics = repo.language ? [repo.language, ...(repo.topics || [])] : repo.topics || [];
+
   return (
     <Card className="h-full flex flex-col group border-2 border-transparent hover:border-primary transition-all duration-300">
       <CardHeader className="p-4 pb-2">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+        <div className="flex items-start justify-between gap-2">
+          <Link href={repo.html_url} target="_blank" rel="noopener noreferrer" className="flex items-center gap-2 group/link">
             <Github className="w-5 h-5" />
-            <Link href={repo.html_url} target="_blank" rel="noopener noreferrer" className="font-semibold text-lg hover:underline truncate">
+            <span className="font-semibold text-lg group-hover/link:underline truncate">
               {repo.name}
-            </Link>
-          </div>
-          {repo.homepage && (
-            <TooltipProvider>
-              <Tooltip>
-                <TooltipTrigger asChild>
-                  <Button asChild variant="ghost" size="icon">
-                    <Link href={repo.homepage} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink className="w-5 h-5 text-muted-foreground" />
-                    </Link>
-                  </Button>
-                </TooltipTrigger>
-                <TooltipContent>
-                  <p>Open App</p>
-                </TooltipContent>
-              </Tooltip>
-            </TooltipProvider>
-          )}
-        </div>
-      </CardHeader>
-      <CardContent className="p-4 flex-grow flex flex-col justify-between">
-        <div>
-          <p className="text-sm text-muted-foreground h-16 line-clamp-3 mb-4">
-            {repo.description || "No description provided."}
-          </p>
-          <div className="flex flex-wrap gap-1 mb-4">
-            {(repo.topics || []).slice(0, 4).map((tag) => (
-              <Badge key={tag} variant="secondary" className="text-xs">
-                {tag}
-              </Badge>
-            ))}
-          </div>
-        </div>
-        <div className="flex justify-between items-center text-xs text-muted-foreground">
-          <div className="flex items-center gap-1.5">
-            <Code className="w-3 h-3"/> 
-            <span>{repo.language || 'N/A'}</span>
-          </div>
-          <div className="flex items-center gap-4">
+            </span>
+          </Link>
+          <div className="flex items-center text-xs text-muted-foreground gap-4">
             <div className="flex items-center gap-1">
               <Star className="w-3 h-3" />
               <span>{repo.stargazers_count}</span>
@@ -73,7 +33,28 @@ export function ProjectCard({ repo }: ProjectCardProps) {
             </div>
           </div>
         </div>
+      </CardHeader>
+      <CardContent className="p-4 pt-2 flex-grow">
+        <p className="text-sm text-muted-foreground h-12 line-clamp-2 mb-4">
+          {repo.description || "No description provided."}
+        </p>
+        <div className="flex flex-wrap gap-1">
+          {allTopics.slice(0, 4).map((topic) => (
+            <Badge key={topic} variant="secondary" className="text-xs">
+              {topic}
+            </Badge>
+          ))}
+        </div>
       </CardContent>
+      <CardFooter className="p-4 pt-0">
+        {repo.homepage && (
+          <Button asChild className="w-full">
+            <Link href={repo.homepage} target="_blank" rel="noopener noreferrer">
+              See Project
+            </Link>
+          </Button>
+        )}
+      </CardFooter>
     </Card>
   );
 }

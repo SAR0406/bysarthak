@@ -7,7 +7,7 @@ import { Github } from "lucide-react";
 async function getGithubRepos(): Promise<Repo[]> {
   try {
     const res = await fetch(
-      "https://api.github.com/users/SAR0406/repos?sort=pushed&per_page=8",
+      "https://api.github.com/users/SAR0406/repos?sort=pushed&per_page=100",
       {
         next: { revalidate: 3600 }, // Revalidate every hour
       }
