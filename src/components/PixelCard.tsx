@@ -1,5 +1,5 @@
 'use client';
-import React, { useEffect, useRef, JSX } from 'react';
+import React, { useEffect, useRef, JSX, ReactNode, useLayoutEffect } from 'react';
 
 class Pixel {
   width: number;
