@@ -219,13 +219,12 @@ export function ContactForm() {
         </div>
 
         <ScrollArea className="flex-1 p-4 bg-muted/20" ref={scrollAreaRef}>
-          <div className="space-y-4 h-full">
             {isHistoryLoading ? (
                <div key="loading" className="flex justify-center items-center h-full">
                    <Loader2 className="h-8 w-8 animate-spin text-primary" />
                </div>
             ) : !user ? (
-                <div key="login" className="flex flex-col items-center justify-center h-full text-center">
+                <div key="login-prompt" className="flex flex-col items-center justify-center h-full text-center">
                     <p className="text-muted-foreground">You need an account to chat.</p>
                     <Button asChild variant="link" className="mt-2">
                         <Link href="/login">Login or Sign Up</Link>
@@ -252,7 +251,6 @@ export function ContactForm() {
                   ))}
                 </div>
             )}
-          </div>
         </ScrollArea>
         
         {user && (
