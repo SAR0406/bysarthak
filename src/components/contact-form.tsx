@@ -17,12 +17,10 @@ import {
 import { Input } from '@/components/ui/input';
 import { useFirestore, errorEmitter, FirestorePermissionError, useUser, useDoc, useMemoFirebase } from '@/firebase';
 import {
-  collection,
   serverTimestamp,
   doc,
   setDoc,
   arrayUnion,
-  type DocumentReference,
   Timestamp,
 } from 'firebase/firestore';
 import { Card, CardContent } from '@/components/ui/card';
@@ -63,42 +61,6 @@ export function ContactForm() {
   const [messages, setMessages] = useState<ChatMessage[]>([]);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  const conversationRef = useMemoFirebase(() => {
-    if (!firestore || !userDetails?.email) return null;
-    return doc(firestore, 'conversations', userDetails.email);
-  }, [firestore, userDetails?.email]);
-  
-  const { data: conversationData, isLoading: isHistoryLoading } = useDoc<Conversation>(conversationRef);
-
-  useEffect(() => {
-    if (user && !isUserLoading) {
-        setUserDetails({
-            name: user.displayName || 'Authenticated User',
-            email: user.email || '',
-        });
-    }
-  }, [user, isUserLoading]);
-
-  useEffect(() => {
-    if (conversationData) {
-        setMessages(prevMessages => {
-            const historyMessages = conversationData.messages || [];
-            const existingTexts = new Set(prevMessages.map(m => m.text));
-            const uniqueHistory = historyMessages.filter(h => !existingTexts.has(h.text));
-            return [...uniqueHistory, ...prevMessages].sort((a, b) => getSentAtDate(a.sentAt).getTime() - getSentAtDate(b.sentAt).getTime());
-        });
-    } else if (userDetails && messages.length === 0) {
-        setMessages([{
-            text: `Hi ${userDetails.name}! How can I help you today?`,
-            sentAt: new Date(),
-            sentBy: 'admin',
-            senderName: 'Sarthak',
-            senderEmail: 'sarthak040624@gmail.com',
-        }]);
-    }
-  }, [conversationData, userDetails]);
-
-
   const userDetailsForm = useForm<UserDetails>({
     resolver: zodResolver(userDetailsSchema),
     defaultValues: { name: '', email: '' },
@@ -109,37 +71,79 @@ export function ContactForm() {
     defaultValues: { message: '' },
   });
 
+  // Pre-fill form if user is logged in
+  useEffect(() => {
+    if (user && !isUserLoading) {
+      const userData = {
+          name: user.displayName || 'Authenticated User',
+          email: user.email || '',
+      };
+      userDetailsForm.reset(userData); // Use reset to update form values and state
+    }
+  }, [user, isUserLoading, userDetailsForm]);
+
+
+  const conversationRef = useMemoFirebase(() => {
+    // Only create a ref if we have userDetails (from form submit) OR a logged-in user's email
+    const email = userDetails?.email || (user && !isUserLoading ? user.email : null);
+    if (!firestore || !email) return null;
+    return doc(firestore, 'conversations', email);
+  }, [firestore, userDetails?.email, user, isUserLoading]);
+  
+  const { data: conversationData, isLoading: isHistoryLoading } = useDoc<Conversation>(conversationRef);
+
+  useEffect(() => {
+    if (conversationData) {
+        setMessages(prevMessages => {
+            const historyMessages = conversationData.messages || [];
+            // This logic can be simplified if history is always loaded first
+            const combined = [...historyMessages, ...prevMessages.filter(pm => !historyMessages.some(hm => hm.text === pm.text))];
+            return combined.sort((a, b) => getSentAtDate(a.sentAt).getTime() - getSentAtDate(b.sentAt).getTime());
+        });
+    } else if (userDetails && messages.length === 0) {
+        // Only show initial message if there's no history and form has been submitted
+        setMessages([{
+            text: `Hi ${userDetails.name}! How can I help you today?`,
+            sentAt: new Date(),
+            sentBy: 'admin',
+            senderName: 'Sarthak',
+            senderEmail: 'sarthak040624@gmail.com',
+        }]);
+    }
+  }, [conversationData, userDetails, messages.length]);
+
+
   const handleUserDetailsSubmit = (values: UserDetails) => {
     setUserDetails(values);
   };
 
   const handleMessageSubmit = async (values: z.infer<typeof messageSchema>) => {
-    if (!firestore || !userDetails) return;
+    const currentDetails = userDetails || (user ? { name: user.displayName || 'User', email: user.email! } : null);
+    if (!firestore || !currentDetails) return;
 
     const newMessagePayload: ChatMessage = {
-        senderName: userDetails.name,
-        senderEmail: userDetails.email,
+        senderName: currentDetails.name,
+        senderEmail: currentDetails.email,
         text: values.message,
         sentAt: new Date(),
         sentBy: 'visitor' as const,
     };
     
-    // Optimistic UI update
     setMessages(prev => [...prev, newMessagePayload]);
     messageForm.reset();
     
-    const conversationRef = doc(firestore, 'conversations', userDetails.email);
+    const conversationRef = doc(firestore, 'conversations', currentDetails.email);
     
     const conversationPayload = {
-        senderName: userDetails.name,
-        senderEmail: userDetails.email,
+        senderName: currentDetails.name,
+        senderEmail: currentDetails.email,
         lastMessageAt: serverTimestamp(),
         messages: arrayUnion(newMessagePayload),
     };
 
     setDoc(conversationRef, conversationPayload, { merge: true })
       .catch(error => {
-          setMessages(prev => prev.slice(0, -1)); // Revert optimistic UI on failure
+          setMessages(prev => prev.slice(0, -1));
           errorEmitter.emit('permission-error', new FirestorePermissionError({
               path: conversationRef.path,
               operation: 'write',
@@ -158,12 +162,12 @@ export function ContactForm() {
   
   const formatMessageTimestamp = (date: Date) => {
     if (isToday(date)) {
-      return format(date, 'p'); // e.g., 4:30 PM
+      return format(date, 'p');
     }
     if (isThisYear(date)) {
-      return format(date, 'MMM d, p'); // e.g., Jun 28, 4:30 PM
+      return format(date, 'MMM d, p');
     }
-    return format(date, 'P, p'); // e.g., 06/28/2023, 4:30 PM
+    return format(date, 'P, p');
   };
 
   useEffect(() => {
@@ -175,13 +179,14 @@ export function ContactForm() {
     }
   }, [messages]);
 
-  const showUserDetailsForm = !userDetails && !isUserLoading;
+  const showUserDetailsForm = !userDetails && !user;
+  const showChat = userDetails || user;
 
   return (
     <div className="mt-12 max-w-lg mx-auto">
       <Card className="w-full shadow-2xl shadow-primary/10">
         <AnimatePresence mode="wait">
-          {showUserDetailsForm ? (
+          {!showChat && !isUserLoading ? (
             <motion.div
               key="details"
               initial={{ opacity: 0, y: 20 }}
@@ -246,13 +251,13 @@ export function ContactForm() {
             >
               <div className="p-4 border-b text-center">
                   <h3 className="font-semibold">Chat with Sarthak</h3>
-                  {userDetails && <p className="text-xs text-muted-foreground">{userDetails.email}</p>}
+                  {(userDetails || user) && <p className="text-xs text-muted-foreground">{userDetails?.email || user?.email}</p>}
               </div>
               <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
                  <div className="space-y-4">
-                    {isHistoryLoading && messages.length <= 1 && (
+                    {(isHistoryLoading || isUserLoading) && messages.length === 0 && (
                         <div className="flex justify-center items-center h-full">
-                            <p className="text-muted-foreground">Loading history...</p>
+                            <p className="text-muted-foreground">Loading...</p>
                         </div>
                     )}
                     {messages.map((msg, index) => (
@@ -279,13 +284,13 @@ export function ContactForm() {
                       render={({ field }) => (
                         <FormItem className="flex-grow">
                           <FormControl>
-                            <Input placeholder="Type your message..." {...field} autoComplete="off" disabled={!userDetails} />
+                            <Input placeholder="Type your message..." {...field} autoComplete="off" disabled={!showChat} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" size="icon" disabled={messageForm.formState.isSubmitting || !userDetails}>
+                    <Button type="submit" size="icon" disabled={messageForm.formState.isSubmitting || !showChat}>
                       <Send className="h-4 w-4" />
                     </Button>
                   </form>
@@ -298,5 +303,3 @@ export function ContactForm() {
     </div>
   );
 }
-
-    
