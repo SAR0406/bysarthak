@@ -159,16 +159,21 @@ export function ContactForm() {
         return;
     }
 
-    const replyData = {
+    const replyData: any = {
       id: uuidv4(),
-      text: values.replyMessage,
-      imageUrl,
       sentAt: new Date(),
       sentBy: 'visitor' as const,
       senderName: user.displayName || user.email!,
       senderEmail: user.email!,
       readBy: {},
     };
+
+    if(values.replyMessage) {
+        replyData.text = values.replyMessage;
+    }
+    if(imageUrl) {
+        replyData.imageUrl = imageUrl;
+    }
 
     replyForm.reset();
 
@@ -182,7 +187,10 @@ export function ContactForm() {
 
     try {
         if (conversationData) {
-            await updateDoc(conversationRef, conversationPayload);
+            await updateDoc(conversationRef, {
+              messages: arrayUnion(replyData),
+              lastMessageAt: serverTimestamp()
+            });
         } else {
             await setDoc(conversationRef, conversationPayload);
         }
@@ -304,3 +312,5 @@ export function ContactForm() {
     </div>
   );
 }
+
+    

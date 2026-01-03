@@ -16,7 +16,7 @@ const techLogos = [
 
 export function Hero() {
   return (
-    <section id="home" className="relative h-screen w-full flex items-center justify-center text-center overflow-hidden">
+    <section id="home" className="relative h-screen w-full flex items-center justify-center text-center">
      
       <div className="relative z-10 flex flex-col items-center gap-8 px-4">
         <div className="flex flex-col items-center gap-6">
@@ -28,9 +28,9 @@ export function Hero() {
             <RotatingText
               texts={['Creative Coder', 'Explorer of Modern Web Experiences']}
               staggerFrom={"last"}
-              initial={{ y: "100%", opacity: 0 }}
-              animate={{ y: "0%", opacity: 1 }}
-              exit={{ y: "-120%", opacity: 0 }}
+              initial={{ y: 25, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              exit={{ y: -25, opacity: 0 }}
               staggerDuration={0.025}
               splitLevelClassName="pb-0.5 sm:pb-1 md:pb-1"
               transition={{ type: "spring", damping: 30, stiffness: 400 }}

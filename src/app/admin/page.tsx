@@ -143,16 +143,21 @@ export default function AdminPage() {
         return;
     }
 
-    const replyData = {
+    const replyData: any = {
       id: uuidv4(),
-      text: values.replyMessage,
-      imageUrl,
       sentAt: new Date(),
       sentBy: 'admin' as const,
       senderName: ADMIN_NAME,
       senderEmail: user.email!,
       readBy: {},
     };
+
+    if (values.replyMessage) {
+        replyData.text = values.replyMessage;
+    }
+    if (imageUrl) {
+        replyData.imageUrl = imageUrl;
+    }
 
     replyForm.reset();
 
