@@ -1,3 +1,4 @@
+
 import { Github, Linkedin, Twitter } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -14,20 +15,18 @@ export function Contact() {
             href="https://github.com/SAR0406"
             target="_blank"
             rel="noopener noreferrer"
-            className="animate-float"
-            style={{ animationDelay: '0s' }}
           >
-            <Button variant="outline" size="icon" className="w-16 h-16 rounded-full">
+            <Button variant="outline" size="icon" className="w-16 h-16 rounded-full transition-transform hover:scale-110">
               <Github className="w-8 h-8" />
             </Button>
           </Link>
-          <Link href="#" className="animate-float" style={{ animationDelay: '0.2s' }}>
-            <Button variant="outline" size="icon" className="w-16 h-16 rounded-full">
+          <Link href="#">
+            <Button variant="outline" size="icon" className="w-16 h-16 rounded-full transition-transform hover:scale-110">
               <Linkedin className="w-8 h-8" />
             </Button>
           </Link>
-          <Link href="#" className="animate-float" style={{ animationDelay: '0.4s' }}>
-            <Button variant="outline" size="icon" className="w-16 h-16 rounded-full">
+          <Link href="#">
+            <Button variant="outline" size="icon" className="w-16 h-16 rounded-full transition-transform hover:scale-110">
               <Twitter className="w-8 h-8" />
             </Button>
           </Link>
@@ -36,9 +35,6 @@ export function Contact() {
 
       <div className="text-center">
         <h2 className="font-headline text-3xl md:text-4xl font-bold">Get In Touch</h2>
-        <p className="mt-4 text-lg text-muted-foreground">
-          Have a project in mind or just want to say hi? I'd love to hear from you.
-        </p>
       </div>
 
       <ContactForm />

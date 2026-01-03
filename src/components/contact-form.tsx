@@ -1,5 +1,7 @@
+
 'use client';
 
+import { useState, useRef, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -13,7 +15,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { useFirestore } from '@/firebase';
 import {
@@ -26,118 +27,212 @@ import {
   updateDoc,
   arrayUnion,
 } from 'firebase/firestore';
+import { Card, CardContent } from '@/components/ui/card';
+import { Send, User, Mail } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { ScrollArea } from '@/components/ui/scroll-area';
 
-const formSchema = z.object({
+const userDetailsSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
   email: z.string().email('Invalid email address.'),
-  message: z.string().min(10, 'Message must be at least 10 characters.'),
 });
+
+const messageSchema = z.object({
+  message: z.string().min(1, 'Message cannot be empty.'),
+});
+
+type UserDetails = z.infer<typeof userDetailsSchema>;
+type Message = { text: string; sentAt: Date };
 
 export function ContactForm() {
   const { toast } = useToast();
   const firestore = useFirestore();
+  const [userDetails, setUserDetails] = useState<UserDetails | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
+  const scrollAreaRef = useRef<HTMLDivElement>(null);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: { name: '', email: '', message: '' },
+  const userDetailsForm = useForm<UserDetails>({
+    resolver: zodResolver(userDetailsSchema),
+    defaultValues: { name: '', email: '' },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
-    if (!firestore) return;
+  const messageForm = useForm<z.infer<typeof messageSchema>>({
+    resolver: zodResolver(messageSchema),
+    defaultValues: { message: '' },
+  });
+
+  const handleUserDetailsSubmit = (values: UserDetails) => {
+    setUserDetails(values);
+    setMessages([{ text: `Hi ${values.name}! How can I help you today?`, sentAt: new Date() }]);
+  };
+
+  const handleMessageSubmit = async (values: z.infer<typeof messageSchema>) => {
+    if (!firestore || !userDetails) return;
+
+    const visitorMessage = {
+      text: values.message,
+      sentAt: new Date(),
+    }
+    setMessages(prev => [...prev, visitorMessage]);
+    messageForm.reset();
+
+    const conversationsRef = collection(firestore, 'conversations');
+    const q = query(conversationsRef, where('senderEmail', '==', userDetails.email));
 
     try {
-      const conversationsRef = collection(firestore, 'conversations');
-      const q = query(conversationsRef, where('senderEmail', '==', values.email));
-      
       const querySnapshot = await getDocs(q);
 
-      const newMessage = {
-        senderName: values.name,
-        senderEmail: values.email,
+      const newMessagePayload = {
+        senderName: userDetails.name,
+        senderEmail: userDetails.email,
         text: values.message,
         sentAt: new Date(),
         sentBy: 'visitor',
       };
 
       if (querySnapshot.empty) {
-        // No existing conversation, create a new one
         await addDoc(conversationsRef, {
-          senderName: values.name,
-          senderEmail: values.email,
+          senderName: userDetails.name,
+          senderEmail: userDetails.email,
           lastMessageAt: serverTimestamp(),
-          messages: [newMessage],
+          messages: [newMessagePayload],
         });
       } else {
-        // Existing conversation found, update it
         const conversationDoc = querySnapshot.docs[0];
         await updateDoc(conversationDoc.ref, {
-          messages: arrayUnion(newMessage),
+          messages: arrayUnion(newMessagePayload),
           lastMessageAt: serverTimestamp(),
         });
       }
-
-      toast({
-        title: 'Message Sent!',
-        description: "Thanks for reaching out. I'll get back to you soon.",
-      });
-      form.reset();
     } catch (e: any) {
-        toast({
+      toast({
         variant: 'destructive',
         title: 'Oh no!',
-        description: e.message || "There was an error sending your message.",
+        description: e.message || 'There was an error sending your message.',
       });
+      // Optionally remove the message from local state on failure
+      setMessages(prev => prev.slice(0, prev.length - 1));
     }
-  }
+  };
+
+  useEffect(() => {
+    if (scrollAreaRef.current) {
+        const scrollableView = scrollAreaRef.current.querySelector('div[data-radix-scroll-area-viewport]');
+        if (scrollableView) {
+            scrollableView.scrollTop = scrollableView.scrollHeight;
+        }
+    }
+  }, [messages]);
 
   return (
     <div className="mt-12 max-w-lg mx-auto">
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-          <FormField
-            control={form.control}
-            name="name"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Name</FormLabel>
-                <FormControl>
-                  <Input placeholder="Your Name" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="email"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Email</FormLabel>
-                <FormControl>
-                  <Input placeholder="your.email@example.com" {...field} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <FormField
-            control={form.control}
-            name="message"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Message</FormLabel>
-                <FormControl>
-                  <Textarea placeholder="Your message here..." {...field} rows={5} />
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
-          <Button type="submit" size="lg" className="w-full" disabled={form.formState.isSubmitting}>
-            {form.formState.isSubmitting ? 'Sending...' : 'Send Message'}
-          </Button>
-        </form>
-      </Form>
+      <Card className="w-full shadow-2xl shadow-primary/10">
+        <AnimatePresence mode="wait">
+          {!userDetails ? (
+            <motion.div
+              key="details"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.3 }}
+            >
+              <CardContent className="p-6">
+                <h3 className="text-center text-lg font-medium mb-4">Let's get started</h3>
+                <Form {...userDetailsForm}>
+                  <form onSubmit={userDetailsForm.handleSubmit(handleUserDetailsSubmit)} className="space-y-4">
+                    <FormField
+                      control={userDetailsForm.control}
+                      name="name"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="sr-only">Name</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                               <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                               <Input placeholder="Your Name" {...field} className="pl-10" />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={userDetailsForm.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="sr-only">Email</FormLabel>
+                          <FormControl>
+                            <div className="relative">
+                               <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                               <Input placeholder="your.email@example.com" {...field} className="pl-10" />
+                            </div>
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" className="w-full">
+                      Start Chat
+                    </Button>
+                  </form>
+                </Form>
+              </CardContent>
+            </motion.div>
+          ) : (
+            <motion.div
+              key="chat"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+              className="flex flex-col h-[500px]"
+            >
+              <div className="p-4 border-b text-center">
+                  <h3 className="font-semibold">Chat with Sarthak</h3>
+                  <p className="text-xs text-muted-foreground">{userDetails.email}</p>
+              </div>
+              <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
+                 <div className="space-y-4">
+                    {messages.map((msg, index) => (
+                        <div key={index} className={`flex items-end gap-2.5 ${index % 2 !== 0 ? 'justify-end' : ''}`}>
+                           <div className={`flex flex-col gap-1 w-full max-w-[320px] ${index % 2 !== 0 ? 'items-end' : ''}`}>
+                             <div className={`leading-1.5 p-3 border-gray-200 ${index % 2 !== 0 ? 'bg-primary text-primary-foreground rounded-s-xl rounded-ee-xl' : 'bg-muted rounded-e-xl rounded-es-xl'}`}>
+                                 <p className="text-sm font-normal">{msg.text}</p>
+                             </div>
+                             <span className="text-xs font-normal text-muted-foreground">{new Date(msg.sentAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                           </div>
+                        </div>
+                    ))}
+                 </div>
+              </ScrollArea>
+              <div className="p-4 border-t">
+                <Form {...messageForm}>
+                  <form
+                    onSubmit={messageForm.handleSubmit(handleMessageSubmit)}
+                    className="flex gap-2"
+                  >
+                    <FormField
+                      control={messageForm.control}
+                      name="message"
+                      render={({ field }) => (
+                        <FormItem className="flex-grow">
+                          <FormControl>
+                            <Input placeholder="Type your message..." {...field} autoComplete="off" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <Button type="submit" size="icon" disabled={messageForm.formState.isSubmitting}>
+                      <Send className="h-4 w-4" />
+                    </Button>
+                  </form>
+                </Form>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </Card>
     </div>
   );
 }
