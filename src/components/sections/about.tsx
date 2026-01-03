@@ -4,8 +4,6 @@ import { Rocket, Handshake, BrainCircuit, Zap } from 'lucide-react';
 import PixelCard from '../PixelCard';
 import ScrollFloat from '../ScrollFloat';
 
-const profileImageUrl = "https://i.ibb.co/wYAdM9r/IMG-20251229-190558-670-1.jpg";
-
 const aboutSections = [
   {
     icon: <Rocket className="h-6 w-6 text-primary" />,
@@ -29,14 +27,7 @@ export function About() {
     <section id="about" className="container mx-auto py-16">
       <div className="grid md:grid-cols-3 gap-12 items-start">
         <div className="flex justify-center md:col-span-1">
-          <PixelCard variant="pink" className='rounded-full'>
-             <Image
-              src={profileImageUrl}
-              alt="Sarthak"
-              fill
-              className="object-cover rounded-full absolute inset-0 z-0"
-            />
-          </PixelCard>
+          <img src="https://i.ibb.co/wYAdM9r/IMG-20251229-190558-670-1.jpg" alt="Sarthak" className="rounded-full object-cover w-full max-w-[300px] md:max-w-full aspect-square" />
         </div>
         <div className="md:col-span-2 space-y-8">
           <ScrollFloat className="font-headline text-3xl md:text-4xl font-bold text-white">💫 About Me</ScrollFloat>
