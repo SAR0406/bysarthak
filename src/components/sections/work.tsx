@@ -4,7 +4,6 @@ import { Repo } from "@/types";
 import { Button } from "../ui/button";
 import Link from "next/link";
 import { Github } from "lucide-react";
-import ElectricBorder from "../ElectricBorder";
 
 async function getGithubRepos(): Promise<Repo[]> {
   try {
@@ -42,15 +41,7 @@ export async function Work() {
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
         {repos.map((repo) => (
-          <ElectricBorder
-            key={repo.id}
-            color="#7df9ff"
-            speed={1}
-            chaos={0.12}
-            style={{ borderRadius: 'var(--radius)' }}
-          >
-            <ProjectCard repo={repo} />
-          </ElectricBorder>
+          <ProjectCard key={repo.id} repo={repo} />
         ))}
       </div>
        <div className="text-center mt-12">
