@@ -22,7 +22,7 @@ export function Hero() {
         <div className="flex flex-col items-center gap-6">
           <AnimatedText
             text="Hi, I’m Sarthak 👋"
-            className="font-display text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white"
+            className="font-headline text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white"
           />
           <div className="w-full max-w-4xl text-lg md:text-xl text-white animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
             <RotatingText

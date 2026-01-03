@@ -19,7 +19,6 @@ export default {
       fontFamily: {
         body: ['var(--font-inter)', 'sans-serif'],
         headline: ['var(--font-space-grotesk)', 'sans-serif'],
-        display: ['var(--font-poppins)', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
