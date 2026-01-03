@@ -37,7 +37,7 @@ export function ProjectCard({ repo }: ProjectCardProps) {
                   </Button>
                 </TooltipTrigger>
                 <TooltipContent>
-                  <p>Live Demo</p>
+                  <p>Open App</p>
                 </TooltipContent>
               </Tooltip>
             </TooltipProvider>
