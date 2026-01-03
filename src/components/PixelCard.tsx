@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { JSX } from 'react';
 
 class Pixel {
@@ -182,11 +182,11 @@ export default function PixelCard({
   const pixelsRef = useRef<Pixel[]>([]);
   const animationRef = useRef<ReturnType<typeof requestAnimationFrame> | null>(null);
   const timePreviousRef = useRef(0);
-  const reducedMotionRef = useRef(false);
+  const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
     timePreviousRef.current = performance.now();
-    reducedMotionRef.current = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    setReducedMotion(window.matchMedia('(prefers-reduced-motion: reduce)').matches);
   }, []);
 
   const variantCfg: VariantConfig = VARIANTS[variant] || VARIANTS.default;
@@ -219,8 +219,8 @@ export default function PixelCard({
         const dx = x - width / 2;
         const dy = y - height / 2;
         const distance = Math.sqrt(dx * dx + dy * dy);
-        const delay = reducedMotionRef.current ? 0 : distance;
-        pxs.push(new Pixel(canvasRef.current, ctx, x, y, color, getEffectiveSpeed(finalSpeed, reducedMotionRef.current), delay));
+        const delay = reducedMotion ? 0 : distance;
+        pxs.push(new Pixel(canvasRef.current, ctx, x, y, color, getEffectiveSpeed(finalSpeed, reducedMotion), delay));
       }
     }
     pixelsRef.current = pxs;
@@ -247,8 +247,7 @@ export default function PixelCard({
         let allIdle = true;
         for (let i = 0; i < pixelsRef.current.length; i++) {
           const pixel = pixelsRef.current[i];
-          // @ts-ignore
-          pixel[fnName]();
+          (pixel[fnName] as () => void)();
           if (!pixel.isIdle) {
             allIdle = false;
           }
@@ -294,7 +293,7 @@ export default function PixelCard({
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [finalGap, finalSpeed, finalColors, finalNoFocus]);
+  }, [finalGap, finalSpeed, finalColors, finalNoFocus, reducedMotion]);
 
   return (
     <div
@@ -306,8 +305,8 @@ export default function PixelCard({
       onBlur={finalNoFocus ? undefined : onBlur}
       tabIndex={finalNoFocus ? -1 : 0}
     >
-      <canvas className="w-full h-full block" ref={canvasRef} />
       {children}
+      <canvas className="w-full h-full block absolute inset-0 z-10" ref={canvasRef} />
     </div>
   );
 }
