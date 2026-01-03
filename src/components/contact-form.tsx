@@ -68,7 +68,7 @@ const EMOJIS = [
   '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭',
   '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧',
   '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢',
-  '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '👍', '❤️', '😮', '🙏'
+  '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '👍', '❤️', '🙏'
 ];
 
 
@@ -85,7 +85,7 @@ export function ContactForm() {
   }, [firestore, user]);
   
   const { data: conversationData, isLoading: isHistoryLoading } = useDoc<Conversation>(conversationRef);
-
+  
   const getSentAtDate = (sentAt: Message['sentAt']) => {
     if (!sentAt) return new Date();
     if (sentAt instanceof Timestamp) {
@@ -276,8 +276,8 @@ export function ContactForm() {
                       </PopoverTrigger>
                       <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent mb-2">
                           <div className="grid grid-cols-10 gap-0.5">
-                              {EMOJIS.map(emoji => (
-                                  <button key={emoji} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-xl p-0.5 rounded-md hover:bg-muted transition-colors">
+                              {EMOJIS.map((emoji, index) => (
+                                  <button key={`${emoji}-${index}`} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-xl p-0.5 rounded-md hover:bg-muted transition-colors">
                                       {emoji}
                                   </button>
                               ))}
@@ -312,5 +312,3 @@ export function ContactForm() {
     </div>
   );
 }
-
-    
