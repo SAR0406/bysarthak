@@ -106,6 +106,22 @@ export function Contact() {
 
   return (
     <section id="contact" className="container mx-auto py-24">
+      <div className="text-center mb-12">
+        <h3 className="text-xl font-semibold">Connect with me</h3>
+        <p className="text-muted-foreground mt-2">Find me on social media</p>
+        <div className="flex justify-center gap-6 mt-6">
+            <Link href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer" className="animate-float" style={{animationDelay: '0s'}}>
+                <Button variant="outline" size="icon" className="w-16 h-16 rounded-full"><Github className="w-8 h-8"/></Button>
+            </Link>
+            <Link href="#" className="animate-float" style={{animationDelay: '0.2s'}}>
+                <Button variant="outline" size="icon" className="w-16 h-16 rounded-full"><Linkedin className="w-8 h-8"/></Button>
+            </Link>
+            <Link href="#" className="animate-float" style={{animationDelay: '0.4s'}}>
+                <Button variant="outline" size="icon" className="w-16 h-16 rounded-full"><Twitter className="w-8 h-8"/></Button>
+            </Link>
+        </div>
+      </div>
+
       <div className="text-center">
         <h2 className="font-headline text-3xl md:text-4xl font-bold">Get In Touch</h2>
         <p className="mt-4 text-lg text-muted-foreground">
@@ -134,7 +150,7 @@ export function Contact() {
         </div>
         
         <div className="space-y-4">
-           {user && (
+           {user ? (
             <div>
               <h3 className="text-xl font-semibold mb-4">Messages</h3>
               <div className="space-y-4 max-h-[600px] overflow-y-auto pr-4">
@@ -182,23 +198,11 @@ export function Contact() {
                 ))}
               </div>
             </div>
-           )}
-           {!user && (
-             <div className="flex flex-col items-center justify-center space-y-8 text-center h-full">
-                <div>
-                    <h3 className="text-xl font-semibold">Connect with me</h3>
-                    <p className="text-muted-foreground mt-2">Find me on social media</p>
-                </div>
-                <div className="flex gap-6">
-                    <Link href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer" className="animate-float" style={{animationDelay: '0s'}}>
-                        <Button variant="outline" size="icon" className="w-16 h-16 rounded-full"><Github className="w-8 h-8"/></Button>
-                    </Link>
-                    <Link href="#" className="animate-float" style={{animationDelay: '0.2s'}}>
-                        <Button variant="outline" size="icon" className="w-16 h-16 rounded-full"><Linkedin className="w-8 h-8"/></Button>
-                    </Link>
-                    <Link href="#" className="animate-float" style={{animationDelay: '0.4s'}}>
-                        <Button variant="outline" size="icon" className="w-16 h-16 rounded-full"><Twitter className="w-8 h-8"/></Button>
-                    </Link>
+           ) : (
+             <div className="flex flex-col items-center justify-center space-y-8 text-center h-full rounded-lg bg-card/50 p-8">
+                <div className='text-center'>
+                    <h3 className="text-2xl font-bold">Let's Connect</h3>
+                    <p className="text-muted-foreground mt-2">I'm always open to new ideas and collaborations.</p>
                 </div>
             </div>
            )}
