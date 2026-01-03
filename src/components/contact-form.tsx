@@ -29,6 +29,9 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Send, User, Mail, MessageSquare } from 'lucide-react';
 import { AnimatePresence, motion } from 'framer-motion';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { format, isToday, isThisYear } from 'date-fns';
+import { cn } from '@/lib/utils';
+
 
 const userDetailsSchema = z.object({
   name: z.string().min(2, 'Name must be at least 2 characters.'),
@@ -78,13 +81,11 @@ export function ContactForm() {
 
   useEffect(() => {
     if (conversationData) {
-        // When history loads, merge it with any messages sent before it loaded.
         setMessages(prevMessages => {
             const historyMessages = conversationData.messages || [];
-            // Create a Set of existing message texts to avoid duplicates
             const existingTexts = new Set(prevMessages.map(m => m.text));
             const uniqueHistory = historyMessages.filter(h => !existingTexts.has(h.text));
-            return [...uniqueHistory, ...prevMessages];
+            return [...uniqueHistory, ...prevMessages].sort((a, b) => getSentAtDate(a.sentAt).getTime() - getSentAtDate(b.sentAt).getTime());
         });
     } else if (userDetails && messages.length === 0) {
         setMessages([{
@@ -129,20 +130,20 @@ export function ContactForm() {
     
     const conversationRef = doc(firestore, 'conversations', userDetails.email);
     
-    const conversationData = {
+    const conversationPayload = {
         senderName: userDetails.name,
         senderEmail: userDetails.email,
         lastMessageAt: serverTimestamp(),
         messages: arrayUnion(newMessagePayload),
     };
 
-    setDoc(conversationRef, conversationData, { merge: true })
+    setDoc(conversationRef, conversationPayload, { merge: true })
       .catch(error => {
           setMessages(prev => prev.slice(0, -1)); // Revert optimistic UI on failure
           errorEmitter.emit('permission-error', new FirestorePermissionError({
               path: conversationRef.path,
-              operation: 'write', // set with merge can be create or update
-              requestResourceData: conversationData,
+              operation: 'write',
+              requestResourceData: conversationPayload,
           }));
       });
   };
@@ -153,6 +154,16 @@ export function ContactForm() {
       return sentAt.toDate();
     }
     return sentAt;
+  };
+  
+  const formatMessageTimestamp = (date: Date) => {
+    if (isToday(date)) {
+      return format(date, 'p'); // e.g., 4:30 PM
+    }
+    if (isThisYear(date)) {
+      return format(date, 'MMM d, p'); // e.g., Jun 28, 4:30 PM
+    }
+    return format(date, 'P, p'); // e.g., 06/28/2023, 4:30 PM
   };
 
   useEffect(() => {
@@ -245,12 +256,12 @@ export function ContactForm() {
                         </div>
                     )}
                     {messages.map((msg, index) => (
-                        <div key={index} className={`flex items-end gap-2.5 ${msg.sentBy !== 'admin' ? 'justify-end' : ''}`}>
-                           <div className={`flex flex-col gap-1 w-full max-w-[320px] ${msg.sentBy !== 'admin' ? 'items-end' : ''}`}>
-                             <div className={`leading-1.5 p-3 border-gray-200 ${msg.sentBy !== 'admin' ? 'bg-primary text-primary-foreground rounded-s-xl rounded-ee-xl' : 'bg-muted rounded-e-xl rounded-es-xl'}`}>
+                        <div key={index} className={cn("flex items-end gap-2.5", msg.sentBy === 'visitor' && 'justify-end')}>
+                           <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'visitor' && 'items-end')}>
+                             <div className={cn("leading-1.5 p-3 border-gray-200", msg.sentBy === 'visitor' ? 'bg-primary text-primary-foreground rounded-s-xl rounded-ee-xl' : 'bg-muted rounded-e-xl rounded-es-xl')}>
                                  <p className="text-sm font-normal">{msg.text}</p>
                              </div>
-                             <span className="text-xs font-normal text-muted-foreground">{new Date(getSentAtDate(msg.sentAt)).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                             <span className="text-xs font-normal text-muted-foreground">{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
                            </div>
                         </div>
                     ))}

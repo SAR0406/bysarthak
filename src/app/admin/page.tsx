@@ -258,7 +258,7 @@ export default function AdminPage() {
                          <div className="flex items-center space-x-2 rtl:space-x-reverse">
                              <span className="text-sm font-semibold text-card-foreground">{msg.senderName}</span>
                          </div>
-                         <div className={cn("leading-1.5 p-3 border-gray-200", msg.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-s-xl rounded-ee-xl' : 'bg-muted rounded-e-xl rounded-es-xl dark:bg-zinc-700')}>
+                         <div className={cn("leading-1.5 p-3 border-gray-200", msg.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-s-xl rounded-ee-xl' : 'bg-muted rounded-e-xl rounded-es-xl')}>
                              <p className="text-sm font-normal">{msg.text}</p>
                          </div>
                          <span className="text-xs font-normal text-muted-foreground">{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
@@ -303,3 +303,5 @@ export default function AdminPage() {
     </section>
   );
 }
+
+    
