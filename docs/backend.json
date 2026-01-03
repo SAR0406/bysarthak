@@ -24,6 +24,16 @@
           "description": "Timestamp of the last message in the conversation.",
           "format": "date-time"
         },
+        "typing": {
+            "type": "object",
+            "description": "Indicates which users are currently typing.",
+            "properties": {}
+        },
+        "presence": {
+            "type": "object",
+            "description": "Indicates which users are online.",
+            "properties": {}
+        },
         "messages": {
           "type": "array",
           "description": "An array of messages within the conversation.",
@@ -60,6 +70,11 @@
               },
               "readBy": {
                 "type": "object",
+                "properties": {}
+              },
+              "reactions": {
+                "type": "object",
+                "description": "Emoji reactions to the message.",
                 "properties": {}
               }
             },
@@ -157,3 +172,5 @@
     "reasoning": "This design prioritizes security and scalability. A top-level `/conversations` collection stores message threads, identified by the sender's email to group messages. This avoids hierarchical complexities. A separate `/users` collection stores user profiles, linking them by UID to Firebase Authentication. This separation allows for distinct security rules for public user data versus private conversations."
   }
 }
+
+    
