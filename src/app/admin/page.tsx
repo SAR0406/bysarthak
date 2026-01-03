@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useCallback } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -16,8 +16,8 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { Send, ArrowLeft, Phone, Video, Smile } from 'lucide-react';
-import { useFirestore, useUser, useMemoFirebase, useCollection } from '@/firebase';
+import { Send, ArrowLeft, Phone, Video, Smile, Paperclip, Check, CheckCheck } from 'lucide-react';
+import { useFirestore, useUser, useMemoFirebase, useCollection, useDoc } from '@/firebase';
 import {
   collection,
   serverTimestamp,
@@ -27,24 +27,47 @@ import {
   query,
   orderBy,
   Timestamp,
+  writeBatch,
+  where,
+  getDocs,
 } from 'firebase/firestore';
+import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { format, isToday, isThisYear } from 'date-fns';
+import { format, isToday, isThisYear, isWithinInterval, subMinutes } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import Image from 'next/image';
+import { v4 as uuidv4 } from 'uuid';
 
 const replySchema = z.object({
-  replyMessage: z.string().min(1, 'Reply cannot be empty.'),
+  replyMessage: z.string().min(1, 'Reply cannot be empty.').optional(),
+  attachment: z.instanceof(File).optional(),
 });
 
+type Reaction = { [key: string]: string }; // userEmail: emoji
+
 type Message = {
-  text: string;
+  id: string;
+  text?: string;
+  imageUrl?: string;
   sentAt: Timestamp | Date;
   sentBy: 'admin' | 'visitor';
   senderName: string;
   senderEmail: string;
+  readBy: { [key: string]: Timestamp };
+  reactions: Reaction;
 };
+
+type Presence = {
+  visitor?: Timestamp;
+  admin?: Timestamp;
+}
+
+type Typing = {
+  visitor?: boolean;
+  admin?: boolean;
+}
 
 type Conversation = {
   id: string;
@@ -52,10 +75,14 @@ type Conversation = {
   senderEmail: string;
   lastMessageAt: Timestamp;
   messages: Message[];
+  presence?: Presence;
+  typing?: Typing;
 };
 
 const ADMIN_EMAIL = 'sarthak040624@gmail.com';
+const ADMIN_NAME = 'Sarthak';
 
+const REACTION_EMOJIS = ['👍', '❤️', '😂', '😮', '😢', '🙏'];
 const EMOJIS = [
   '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
   '🙂', '🙃', '😉', '😌', '😍', '🥰', '😘', '😗', '😙', '😚',
@@ -65,17 +92,27 @@ const EMOJIS = [
   '🥵', '🥶', '😱', '😨', '😰', '😥', '😓', '🤗', '🤔', '🤭',
   '🤫', '🤥', '😶', '😐', '😑', '😬', '🙄', '😯', '😦', '😧',
   '😮', '😲', '🥱', '😴', '🤤', '😪', '😵', '🤐', '🥴', '🤢',
-  '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '👍', '👎', '❤️'
+  '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', ...REACTION_EMOJIS
 ];
+
 
 export default function AdminPage() {
   const { toast } = useToast();
   const firestore = useFirestore();
   const { user, isUserLoading } = useUser();
   const router = useRouter();
-  const [selectedConversation, setSelectedConversation] = useState<Conversation | null>(null);
+  const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const conversationRef = useMemoFirebase(() => {
+    if (!firestore || !selectedConversationId) return null;
+    return doc(firestore, 'conversations', selectedConversationId);
+  }, [firestore, selectedConversationId]);
+  
+  const { data: selectedConversation } = useDoc<Conversation>(conversationRef);
 
   useEffect(() => {
     if (!isUserLoading) {
@@ -106,39 +143,61 @@ export default function AdminPage() {
     defaultValues: { replyMessage: '' },
   });
 
+  const handleSetTyping = useCallback((isTyping: boolean) => {
+     if (!selectedConversationId || !firestore) return;
+      const convRef = doc(firestore, "conversations", selectedConversationId);
+      updateDoc(convRef, { "typing.admin": isTyping });
+  }, [selectedConversationId, firestore]);
+  
+  const handleTypingChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    handleSetTyping(true);
+    if(typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      handleSetTyping(false);
+    }, 2000);
+  }
+
   async function handleReply(values: z.infer<typeof replySchema>) {
-    if (!firestore || !user || !selectedConversation || user.email !== ADMIN_EMAIL) return;
-    
-    const conversationRef = doc(firestore, 'conversations', selectedConversation.id);
+    if (!firestore || !user || !selectedConversationId) return;
+    handleSetTyping(false);
+    if(typingTimeoutRef.current) clearTimeout(typingTimeoutRef.current);
+
+    const conversationRef = doc(firestore, 'conversations', selectedConversationId);
+    let imageUrl: string | undefined = undefined;
+
+    if (values.attachment) {
+      const storage = getStorage();
+      const filePath = `attachments/${selectedConversationId}/${Date.now()}_${values.attachment.name}`;
+      const fileRef = storageRef(storage, filePath);
+      await uploadBytes(fileRef, values.attachment);
+      imageUrl = await getDownloadURL(fileRef);
+    }
+
+    if (!values.replyMessage && !imageUrl) {
+        replyForm.reset();
+        return;
+    }
 
     const replyData = {
+      id: uuidv4(),
       text: values.replyMessage,
+      imageUrl,
       sentAt: new Date(),
       sentBy: 'admin' as const,
-      senderName: 'Sarthak', // Hardcoded admin name
-      senderEmail: user.email,
+      senderName: ADMIN_NAME,
+      senderEmail: user.email!,
+      readBy: {},
+      reactions: {},
     };
 
-    // Optimistic UI update
-    const updatedMessages = [...(selectedConversation.messages || []), replyData] as Message[];
-    const previousConversationState = selectedConversation;
-
-    setSelectedConversation({
-      ...selectedConversation,
-      messages: updatedMessages,
-      lastMessageAt: Timestamp.now(), // Visually update timestamp
-    });
     replyForm.reset();
 
     try {
-      // Asynchronously update Firestore
       await updateDoc(conversationRef, {
         messages: arrayUnion(replyData),
         lastMessageAt: serverTimestamp(),
       });
     } catch (e: any) {
-      // Revert UI on failure
-      setSelectedConversation(previousConversationState);
       toast({
         variant: 'destructive',
         title: 'Reply Failed',
@@ -146,6 +205,34 @@ export default function AdminPage() {
       });
     }
   }
+
+  const markMessagesAsRead = useCallback(async () => {
+    if (!firestore || !selectedConversation || !user) return;
+
+    const unreadMessages = selectedConversation.messages.filter(
+      (msg) => msg.sentBy === 'visitor' && !msg.readBy[user.email!]
+    );
+
+    if (unreadMessages.length === 0) return;
+
+    const batch = writeBatch(firestore);
+    const conversationRef = doc(firestore, 'conversations', selectedConversation.id);
+    const updatedMessages = selectedConversation.messages.map((msg) => {
+        if (unreadMessages.some(unread => unread.id === msg.id)) {
+            return { ...msg, readBy: { ...msg.readBy, [user.email!]: Timestamp.now() } };
+        }
+        return msg;
+    });
+
+    batch.update(conversationRef, { messages: updatedMessages });
+    await batch.commit();
+  }, [firestore, selectedConversation, user]);
+
+  useEffect(() => {
+    if (selectedConversation) {
+      markMessagesAsRead();
+    }
+  }, [selectedConversation, markMessagesAsRead]);
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
@@ -157,16 +244,11 @@ export default function AdminPage() {
   };
 
   useEffect(() => {
+    // Scroll to bottom when a new message is added or conversation changes
     if (selectedConversation) {
-      // Allow the DOM to update before scrolling
-      setTimeout(scrollToBottom, 0);
+      setTimeout(scrollToBottom, 50);
     }
-  }, [selectedConversation?.messages, selectedConversation]);
-  
-  const lastMessage = (convo: Conversation) => {
-    if (!convo.messages || convo.messages.length === 0) return { text: "No messages yet", sentAt: convo.lastMessageAt };
-    return convo.messages[convo.messages.length - 1];
-  }
+  }, [selectedConversation?.messages]);
 
   const getSentAtDate = (sentAt: Message['sentAt']) => {
     if (!sentAt) return new Date();
@@ -174,25 +256,35 @@ export default function AdminPage() {
       return sentAt.toDate();
     }
     return sentAt;
-  }
+  };
   
   const formatListTimestamp = (date: Date) => {
     if (isToday(date)) {
-      return format(date, 'p'); // e.g., 4:30 PM
+      return format(date, 'p');
     }
-    return format(date, 'P'); // e.g., 06/28/2024
-  }
+    return format(date, 'P');
+  };
 
   const formatMessageTimestamp = (date: Date) => {
     if (isToday(date)) {
-      return format(date, 'p'); // e.g., 4:30 PM
+      return format(date, 'p');
     }
     if (isThisYear(date)) {
-      return format(date, 'MMM d, p'); // e.g., Jun 28, 4:30 PM
+      return format(date, 'MMM d, p');
     }
-    return format(date, 'P, p'); // e.g., 06/28/2023, 4:30 PM
+    return format(date, 'P, p');
+  };
+  
+  const lastMessage = (convo: Conversation) => {
+    if (!convo.messages || convo.messages.length === 0) return { text: "No messages yet", sentAt: convo.lastMessageAt };
+    return convo.messages[convo.messages.length - 1];
   };
 
+  const isVisitorOnline = (convo: Conversation) => {
+    if (!convo.presence?.visitor) return false;
+    const lastSeen = convo.presence.visitor.toDate();
+    return isWithinInterval(lastSeen, { start: subMinutes(new Date(), 2), end: new Date() });
+  }
 
   if (isUserLoading || !isAuthorized) {
     return (
@@ -210,9 +302,41 @@ export default function AdminPage() {
   };
   
   const handleEmojiSelect = (emoji: string) => {
-    const currentMessage = replyForm.getValues('replyMessage');
+    const currentMessage = replyForm.getValues('replyMessage') || '';
     replyForm.setValue('replyMessage', currentMessage + emoji);
-  }
+  };
+  
+  const handleReaction = async (messageId: string, emoji: string) => {
+    if (!firestore || !user || !selectedConversation) return;
+
+    const messageIndex = selectedConversation.messages.findIndex(m => m.id === messageId);
+    if (messageIndex === -1) return;
+
+    const message = selectedConversation.messages[messageIndex];
+    const newReactions = { ...message.reactions };
+
+    if (newReactions[user.email!] === emoji) {
+      delete newReactions[user.email!]; // Toggle off reaction
+    } else {
+      newReactions[user.email!] = emoji; // Add/change reaction
+    }
+    
+    const updatedMessages = [...selectedConversation.messages];
+    updatedMessages[messageIndex] = { ...message, reactions: newReactions };
+    
+    const conversationRef = doc(firestore, 'conversations', selectedConversation.id);
+    await updateDoc(conversationRef, { messages: updatedMessages });
+  };
+  
+  const MessageStatus = ({ message }: { message: Message }) => {
+    if (message.sentBy !== 'admin' || !selectedConversation) return null;
+    const hasBeenRead = Object.keys(message.readBy).includes(selectedConversation.senderEmail);
+
+    if (hasBeenRead) {
+      return <CheckCheck className="h-4 w-4 text-blue-500" />;
+    }
+    return <Check className="h-4 w-4 text-muted-foreground" />;
+  };
 
   return (
     <section id="admin" className="h-screen w-full p-4 md:p-8">
@@ -221,7 +345,7 @@ export default function AdminPage() {
         <div
           className={cn(
             'w-full md:w-1/3 border-r transition-transform duration-300 ease-in-out flex flex-col',
-            selectedConversation && 'hidden md:flex'
+            selectedConversationId && 'hidden md:flex'
           )}
         >
           <div className="p-4 border-b">
@@ -235,25 +359,34 @@ export default function AdminPage() {
               )}
               {conversations?.map(convo => {
                 const latestMsg = lastMessage(convo);
+                const isOnline = isVisitorOnline(convo);
                 return (
                   <button
                     key={convo.id}
-                    onClick={() => setSelectedConversation(convo)}
+                    onClick={() => setSelectedConversationId(convo.id)}
                     className={cn(
                       'w-full text-left p-4 border-b hover:bg-muted/50 transition-colors duration-200',
-                      selectedConversation?.id === convo.id && 'bg-muted'
+                      selectedConversationId === convo.id && 'bg-muted'
                     )}
                   >
                     <div className="flex justify-between items-start">
-                        <div className="flex-1 overflow-hidden">
-                            <span className="font-semibold block truncate">{convo.senderName}</span>
-                            <span className="text-xs text-muted-foreground block truncate">{convo.senderEmail}</span>
+                        <div className="flex-1 overflow-hidden flex items-center gap-2">
+                            <div className="relative">
+                               <Avatar>
+                                 <AvatarFallback>{convo.senderName.charAt(0)}</AvatarFallback>
+                               </Avatar>
+                               {isOnline && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-card rounded-full" />}
+                            </div>
+                            <div>
+                                <span className="font-semibold block truncate">{convo.senderName}</span>
+                                <span className="text-xs text-muted-foreground block truncate">{convo.senderEmail}</span>
+                            </div>
                         </div>
                       <span className="text-xs text-muted-foreground ml-2 shrink-0">
                         {latestMsg.sentAt ? formatListTimestamp(getSentAtDate(latestMsg.sentAt)) : ''}
                       </span>
                     </div>
-                    <p className="text-sm text-muted-foreground truncate mt-1">{latestMsg.text}</p>
+                    <p className="text-sm text-muted-foreground truncate mt-1 pl-12">{convo.typing?.visitor ? 'typing...' : (latestMsg.text || 'Image')}</p>
                   </button>
                 )
               })}
@@ -262,19 +395,22 @@ export default function AdminPage() {
         </div>
 
         {/* Right Panel: Chat View */}
-        <div className={cn('w-full md:w-2/3 flex flex-col', !selectedConversation && 'hidden md:flex')}>
+        <div className={cn('w-full md:w-2/3 flex flex-col', !selectedConversationId && 'hidden md:flex')}>
           {selectedConversation ? (
             <>
               <div className="p-4 border-b flex items-center gap-4">
-                 <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSelectedConversation(null)}>
+                 <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSelectedConversationId(null)}>
                   <ArrowLeft className="w-4 h-4" />
                 </Button>
-                <Avatar>
-                  <AvatarFallback>{selectedConversation.senderName.charAt(0)}</AvatarFallback>
-                </Avatar>
+                <div className="relative">
+                    <Avatar>
+                      <AvatarFallback>{selectedConversation.senderName.charAt(0)}</AvatarFallback>
+                    </Avatar>
+                    {isVisitorOnline(selectedConversation) && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-card rounded-full" />}
+                </div>
                 <div className="flex-1">
                   <h3 className="font-semibold">{selectedConversation.senderName}</h3>
-                  <p className="text-xs text-muted-foreground">{selectedConversation.senderEmail}</p>
+                  <p className="text-xs text-muted-foreground">{selectedConversation.typing?.visitor ? 'typing...' : (isVisitorOnline(selectedConversation) ? 'Online' : 'Offline')}</p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="icon" onClick={showFeatureComingSoon}>
@@ -286,19 +422,43 @@ export default function AdminPage() {
                 </div>
               </div>
 
-              <ScrollArea className="flex-1 p-4" ref={scrollAreaRef}>
+              <ScrollArea className="flex-1 p-4 bg-muted/20" ref={scrollAreaRef}>
                 <div className="space-y-4">
-                  {selectedConversation.messages?.map((msg, index) => (
-                    <div key={index} className={cn("flex items-end gap-2.5", msg.sentBy === 'admin' && 'justify-end')}>
+                  {selectedConversation.messages?.map((msg) => (
+                    <div key={msg.id} className={cn("flex items-end gap-2.5 group", msg.sentBy === 'admin' && 'justify-end')}>
                        <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'admin' && 'items-end')}>
-                         <div className="flex items-center space-x-2 rtl:space-x-reverse">
-                             <span className="text-sm font-semibold text-card-foreground">{msg.senderName}</span>
+                         <div className={cn("leading-1.5 p-2 border-gray-200 relative", msg.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-s-xl rounded-ee-xl' : 'bg-card rounded-e-xl rounded-es-xl shadow-sm')}>
+                            {msg.imageUrl && (
+                                <Image src={msg.imageUrl} alt="attachment" width={300} height={200} className="rounded-md mb-2" />
+                            )}
+                            {msg.text && <p className="text-sm font-normal px-1">{msg.text}</p>}
+                            {Object.keys(msg.reactions).length > 0 && (
+                                <div className="absolute -bottom-3 right-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
+                                    {Object.values(msg.reactions).map((emoji, i) => <span key={i}>{emoji}</span>)}
+                                </div>
+                            )}
                          </div>
-                         <div className={cn("leading-1.5 p-3 border-gray-200", msg.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-s-xl rounded-ee-xl' : 'bg-muted rounded-e-xl rounded-es-xl')}>
-                             <p className="text-sm font-normal">{msg.text}</p>
+                          <div className="flex items-center gap-2">
+                            <span className="text-xs font-normal text-muted-foreground">{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
+                            <MessageStatus message={msg} />
                          </div>
-                         <span className="text-xs font-normal text-muted-foreground">{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
                        </div>
+                       <Popover>
+                          <PopoverTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                                  <Smile className="h-4 w-4" />
+                              </Button>
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-1 bg-card shadow-lg border rounded-lg">
+                              <div className="flex gap-1">
+                                  {REACTION_EMOJIS.map(emoji => (
+                                      <button key={emoji} onClick={() => handleReaction(msg.id, emoji)} className="text-xl p-1 rounded-md hover:bg-muted transition-colors">
+                                          {emoji}
+                                      </button>
+                                  ))}
+                              </div>
+                          </PopoverContent>
+                       </Popover>
                     </div>
                   ))}
                 </div>
@@ -316,7 +476,7 @@ export default function AdminPage() {
                              <Smile className="h-5 w-5" />
                            </Button>
                         </PopoverTrigger>
-                        <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent">
+                        <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent mb-2">
                             <div className="grid grid-cols-10 gap-0.5">
                                 {EMOJIS.map(emoji => (
                                     <button key={emoji} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-xl p-0.5 rounded-md hover:bg-muted transition-colors">
@@ -326,13 +486,18 @@ export default function AdminPage() {
                             </div>
                         </PopoverContent>
                     </Popover>
+                    <Button variant="ghost" size="icon" type="button" onClick={() => fileInputRef.current?.click()}>
+                        <Paperclip className="h-5 w-5" />
+                    </Button>
+                    <Input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => replyForm.setValue('attachment', e.target.files?.[0])} />
+
                     <FormField
                       control={replyForm.control}
                       name="replyMessage"
                       render={({ field }) => (
                         <FormItem className="flex-grow">
                           <FormControl>
-                            <Input placeholder="Type your reply..." {...field} autoComplete="off" />
+                            <Input placeholder="Type your reply..." {...field} autoComplete="off" onChange={(e) => {field.onChange(e); handleTypingChange(e); }} />
                           </FormControl>
                           <FormMessage />
                         </FormItem>

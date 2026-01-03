@@ -43,7 +43,7 @@ service cloud.firestore {
       allow get: if isAdmin() || (isSignedIn() && request.auth.token.email == conversationId);
       allow list: if isAdmin();
       allow create: if true;
-      allow update: if true;
+      allow update: if isAdmin() || (isSignedIn() && request.auth.token.email == conversationId);
       allow delete: if false;
     }
 
