@@ -103,6 +103,14 @@ export function ContactForm() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const getSentAtDate = (sentAt: ChatMessage['sentAt']) => {
+    if (!sentAt) return new Date();
+    if (sentAt instanceof Timestamp) {
+      return sentAt.toDate();
+    }
+    return sentAt;
+  };
+  
   useEffect(() => {
     if (user && !isUserLoading) {
       setUserDetails({
@@ -113,14 +121,6 @@ export function ContactForm() {
       setUserDetails(null);
     }
   }, [user, isUserLoading]);
-  
-  const getSentAtDate = (sentAt: ChatMessage['sentAt']) => {
-    if (!sentAt) return new Date();
-    if (sentAt instanceof Timestamp) {
-      return sentAt.toDate();
-    }
-    return sentAt;
-  };
 
   const conversationRef = useMemoFirebase(() => {
     if (!firestore || !userDetails?.email) return null;
@@ -166,7 +166,7 @@ export function ContactForm() {
   // -------------------------
 
   const markMessagesAsRead = useCallback(async () => {
-    if (!firestore || !conversationData || !userDetails) return;
+    if (!firestore || !conversationData || !userDetails || !conversationRef) return;
 
     const unreadMessages = conversationData.messages.filter(
       (msg) => msg.sentBy === 'admin' && (!msg.readBy || !msg.readBy[userDetails.email!])
@@ -182,7 +182,7 @@ export function ContactForm() {
         return msg;
     });
 
-    batch.update(conversationRef!, { messages: updatedMessages });
+    batch.update(conversationRef, { messages: updatedMessages });
     await batch.commit();
   }, [firestore, conversationData, userDetails, conversationRef]);
 
@@ -318,6 +318,71 @@ export function ContactForm() {
     }] : [];
 
   const displayedMessages = messages.length > 0 ? messages : initialWelcomeMessage;
+  
+  const renderChatContent = () => {
+    if (!user && (isUserLoading || isHistoryLoading)) {
+      return (
+        <div key="loading-state" className="flex justify-center items-center h-full">
+          <p className="text-muted-foreground">Loading Chat...</p>
+        </div>
+      );
+    }
+
+    if (!user && !isUserLoading) {
+      return (
+        <div key="login-prompt" className="flex flex-col items-center justify-center h-full text-center">
+          <p className="text-muted-foreground mb-4">You must be logged in to start a conversation.</p>
+          <Button asChild>
+            <Link href="/login">Login to Chat</Link>
+          </Button>
+        </div>
+      );
+    }
+    
+    if (user) {
+        return displayedMessages.map((msg) => (
+          <div key={msg.id} className={cn("flex items-end gap-2 group", msg.sentBy === 'visitor' && 'justify-end')}>
+             <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'visitor' && 'items-end')}>
+               <div className={cn("relative leading-1.5 p-2 rounded-xl", msg.sentBy === 'visitor' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none shadow-sm')}>
+                  {msg.imageUrl && (
+                      <Image src={msg.imageUrl} alt="attachment" width={300} height={200} className="rounded-md mb-2" />
+                  )}
+                  {msg.text && <p className="text-sm font-normal px-1 pb-2">{msg.text}</p>}
+                  
+                  <div className="absolute bottom-1 right-2 text-xs text-muted-foreground/80 flex items-center gap-1">
+                     {msg.sentBy === 'visitor' && <MessageStatus message={msg} />}
+                     <span>{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
+                  </div>
+
+                  {msg.reactions && Object.keys(msg.reactions).length > 0 && (
+                      <div className="absolute -bottom-3 left-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
+                          {Object.values(msg.reactions).map((emoji, i) => <span key={i}>{emoji}</span>)}
+                      </div>
+                  )}
+               </div>
+             </div>
+             <Popover>
+                  <PopoverTrigger asChild>
+                      <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Smile className="h-4 w-4" />
+                      </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-1 bg-card shadow-lg border rounded-lg">
+                      <div className="flex gap-1">
+                          {REACTION_EMOJIS.map(emoji => (
+                              <button key={emoji} onClick={() => handleReaction(msg.id, emoji)} className="text-xl p-1 rounded-md hover:bg-muted transition-colors">
+                                  {emoji}
+                              </button>
+                          ))}
+                      </div>
+                  </PopoverContent>
+              </Popover>
+          </div>
+        ));
+    }
+    
+    return null;
+  };
 
   return (
     <div className="mt-12 max-w-lg mx-auto">
@@ -347,58 +412,7 @@ export function ContactForm() {
           </div>
           <ScrollArea className="flex-1 p-4 bg-muted/20" ref={scrollAreaRef}>
             <div className="space-y-2">
-              {(isUserLoading || (user && isHistoryLoading)) && !user &&(
-                <div key="loading-state" className="flex justify-center items-center h-full">
-                  <p className="text-muted-foreground">Loading Chat...</p>
-                </div>
-              )}
-              {user && displayedMessages.map((msg) => (
-                <div key={msg.id} className={cn("flex items-end gap-2 group", msg.sentBy === 'visitor' && 'justify-end')}>
-                   <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'visitor' && 'items-end')}>
-                     <div className={cn("relative leading-1.5 p-2 rounded-xl", msg.sentBy === 'visitor' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none shadow-sm')}>
-                        {msg.imageUrl && (
-                            <Image src={msg.imageUrl} alt="attachment" width={300} height={200} className="rounded-md mb-2" />
-                        )}
-                        {msg.text && <p className="text-sm font-normal px-1 pb-2">{msg.text}</p>}
-                        
-                        <div className="absolute bottom-1 right-2 text-xs text-muted-foreground/80 flex items-center gap-1">
-                           {msg.sentBy === 'visitor' && <MessageStatus message={msg} />}
-                           <span>{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
-                        </div>
-
-                        {msg.reactions && Object.keys(msg.reactions).length > 0 && (
-                            <div className="absolute -bottom-3 left-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
-                                {Object.values(msg.reactions).map((emoji, i) => <span key={i}>{emoji}</span>)}
-                            </div>
-                        )}
-                     </div>
-                   </div>
-                   <Popover>
-                        <PopoverTrigger asChild>
-                            <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                                <Smile className="h-4 w-4" />
-                            </Button>
-                        </PopoverTrigger>
-                        <PopoverContent className="w-auto p-1 bg-card shadow-lg border rounded-lg">
-                            <div className="flex gap-1">
-                                {REACTION_EMOJIS.map(emoji => (
-                                    <button key={emoji} onClick={() => handleReaction(msg.id, emoji)} className="text-xl p-1 rounded-md hover:bg-muted transition-colors">
-                                        {emoji}
-                                    </button>
-                                ))}
-                            </div>
-                        </PopoverContent>
-                    </Popover>
-                </div>
-              ))}
-              {!user && !isUserLoading && (
-                <div key="login-prompt" className="flex flex-col items-center justify-center h-full text-center">
-                  <p className="text-muted-foreground mb-4">You must be logged in to start a conversation.</p>
-                  <Button asChild>
-                    <Link href="/login">Login to Chat</Link>
-                  </Button>
-                </div>
-              )}
+              {renderChatContent()}
             </div>
           </ScrollArea>
           <div className="p-4 border-t">
@@ -459,5 +473,3 @@ export function ContactForm() {
     </div>
   );
 }
-
-    
