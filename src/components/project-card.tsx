@@ -1,45 +1,35 @@
-import Image from "next/image";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { PlaceHolderImages } from "@/lib/placeholder-images";
+import { Repo } from "@/types";
+import { Github } from "lucide-react";
+import Link from "next/link";
 
 type ProjectCardProps = {
-  id: number;
-  title: string;
-  description: string;
-  tags: readonly string[];
-  image: string;
+  repo: Repo;
 };
 
-export function ProjectCard({ title, description, tags, image }: ProjectCardProps) {
-  const placeholder = PlaceHolderImages.find(p => p.id === image.replace('/placeholder-images.json/', ''));
+export function ProjectCard({ repo }: ProjectCardProps) {
 
   return (
-    <Card className="overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2">
-      <div className="relative h-60 w-full overflow-hidden">
-        {placeholder && (
-          <Image
-            src={placeholder.imageUrl}
-            alt={title}
-            fill
-            className="object-cover transition-transform duration-300 group-hover:scale-105"
-            data-ai-hint={placeholder.imageHint}
-          />
-        )}
-      </div>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-        <CardDescription>{description}</CardDescription>
-      </CardHeader>
-      <CardContent>
-        <div className="flex flex-wrap gap-2">
-          {tags.map((tag) => (
-            <Badge key={tag} variant="secondary">
-              {tag}
-            </Badge>
-          ))}
-        </div>
-      </CardContent>
-    </Card>
+    <Link href={repo.html_url} target="_blank" rel="noopener noreferrer" className="h-full block">
+        <Card className="h-full overflow-hidden group transition-all duration-300 hover:shadow-xl hover:shadow-primary/20 hover:-translate-y-2">
+            <div className="relative h-60 w-full overflow-hidden bg-muted flex items-center justify-center">
+                <Github className="w-24 h-24 text-muted-foreground/30 transition-transform duration-300 group-hover:scale-110 group-hover:text-primary/30" />
+            </div>
+            <CardHeader>
+                <CardTitle>{repo.name}</CardTitle>
+                <CardDescription className="h-10 line-clamp-2">{repo.description || "No description provided."}</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="flex flex-wrap gap-2">
+                {(repo.topics || []).map((tag) => (
+                    <Badge key={tag} variant="secondary">
+                    {tag}
+                    </Badge>
+                ))}
+                </div>
+            </CardContent>
+        </Card>
+    </Link>
   );
 }

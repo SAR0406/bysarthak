@@ -7,4 +7,5 @@ export type Repo = {
   forks_count: number;
   html_url: string;
   language: string | null;
+  topics: string[];
 };
