@@ -319,7 +319,7 @@ export default function AdminPage() {
                         <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent">
                             <div className="grid grid-cols-10 gap-0.5">
                                 {EMOJIS.map(emoji => (
-                                    <button key={emoji} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-2xl p-1 rounded-md hover:bg-muted transition-colors">
+                                    <button key={emoji} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-xl p-0.5 rounded-md hover:bg-muted transition-colors">
                                         {emoji}
                                     </button>
                                 ))}
