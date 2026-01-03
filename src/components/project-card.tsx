@@ -13,40 +13,40 @@ export function ProjectCard({ repo }: ProjectCardProps) {
 
   return (
     <Card className="h-full overflow-hidden group flex flex-col">
-        <div className="relative h-60 w-full overflow-hidden bg-muted flex items-center justify-center">
-            <Github className="w-24 h-24 text-muted-foreground/30 transition-transform duration-300 group-hover:scale-110 group-hover:text-primary/30" />
+        <div className="relative h-40 w-full overflow-hidden bg-muted flex items-center justify-center">
+            <Github className="w-20 h-20 text-muted-foreground/30 transition-transform duration-300 group-hover:scale-110 group-hover:text-primary/30" />
         </div>
-        <CardHeader>
-            <CardTitle>{repo.name}</CardTitle>
-            <CardDescription className="h-10 line-clamp-2">{repo.description || "No description provided."}</CardDescription>
+        <CardHeader className="p-4">
+            <CardTitle className="text-lg">{repo.name}</CardTitle>
+            <CardDescription className="h-10 text-xs line-clamp-2">{repo.description || "No description provided."}</CardDescription>
         </CardHeader>
-        <CardContent className="flex-grow">
-            <div className="flex flex-wrap gap-2">
-            {(repo.topics || []).map((tag) => (
-                <Badge key={tag} variant="secondary">
+        <CardContent className="flex-grow p-4">
+            <div className="flex flex-wrap gap-1">
+            {(repo.topics || []).slice(0, 3).map((tag) => (
+                <Badge key={tag} variant="secondary" className="text-xs">
                 {tag}
                 </Badge>
             ))}
             </div>
             {repo.language && (
-                <div className="flex items-center text-sm text-muted-foreground mt-4">
-                    <Code className="w-4 h-4 mr-2"/> 
+                <div className="flex items-center text-xs text-muted-foreground mt-3">
+                    <Code className="w-3 h-3 mr-1.5"/> 
                     <span>{repo.language}</span>
                 </div>
             )}
         </CardContent>
-        <CardFooter className="flex gap-2">
-            <Button asChild variant="outline" className="w-full">
+        <CardFooter className="flex gap-2 p-4">
+            <Button asChild variant="outline" size="sm">
                 <Link href={repo.html_url} target="_blank" rel="noopener noreferrer">
-                    <Github className="mr-2" />
+                    <Github className="mr-1.5" />
                     GitHub
                 </Link>
             </Button>
             {repo.homepage && (
-                <Button asChild className="w-full">
+                <Button asChild size="sm">
                     <Link href={repo.homepage} target="_blank" rel="noopener noreferrer">
-                        <ExternalLink className="mr-2" />
-                        Live Demo
+                        <ExternalLink className="mr-1.5" />
+                        Demo
                     </Link>
                 </Button>
             )}
