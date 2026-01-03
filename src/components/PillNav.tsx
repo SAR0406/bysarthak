@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useEffect, useRef, useState, useLayoutEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { gsap } from 'gsap';
 import { useAuth, useUser } from '@/firebase';
 import { signOut } from 'firebase/auth';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
@@ -16,6 +15,7 @@ import {
 } from './ui/dropdown-menu';
 import { LogOut, User as UserIcon } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { cn } from '@/lib/utils';
 
 export type PillNavItem = {
   label: string;
@@ -29,13 +29,10 @@ export interface PillNavProps {
   items: Readonly<PillNavItem[]>;
   activeHref?: string;
   className?: string;
-  ease?: string;
   baseColor?: string;
   pillColor?: string;
   hoveredPillTextColor?: string;
   pillTextColor?: string;
-  onMobileMenuClick?: () => void;
-  initialLoadAnimation?: boolean;
 }
 
 const PillNav: React.FC<PillNavProps> = ({
@@ -43,183 +40,29 @@ const PillNav: React.FC<PillNavProps> = ({
   items,
   activeHref,
   className = '',
-  ease = 'power3.easeOut',
   baseColor = 'hsl(var(--background))',
   pillColor = 'hsl(var(--foreground))',
   hoveredPillTextColor = 'hsl(var(--background))',
   pillTextColor,
-  initialLoadAnimation = true,
 }) => {
   const { user, isUserLoading } = useUser();
   const auth = useAuth();
   const router = useRouter();
 
   const handleLogout = async () => {
-    await signOut(auth);
+    if (auth) {
+      await signOut(auth);
+    }
     router.push('/');
+    if(isMobileMenuOpen) toggleMobileMenu();
   };
   
   const resolvedPillTextColor = pillTextColor ?? baseColor;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const circleRefs = useRef<Array<HTMLSpanElement | null>>([]);
-  const tlRefs = useRef<Array<gsap.core.Timeline | null>>([]);
-  const activeTweenRefs = useRef<Array<gsap.core.Tween | null>>([]);
-  const logoTweenRef = useRef<gsap.core.Tween | null>(null);
-  const hamburgerRef = useRef<HTMLButtonElement | null>(null);
-  const mobileMenuRef = useRef<HTMLDivElement | null>(null);
-  const navItemsRef = useRef<HTMLDivElement | null>(null);
-  const logoRef = useRef<HTMLAnchorElement | null>(null);
   const [activeLink, setActiveLink] = useState(activeHref);
 
-  useLayoutEffect(() => {
-    const layout = () => {
-      circleRefs.current.forEach((circle, index) => {
-        if (!circle?.parentElement) return;
-
-        const pill = circle.parentElement as HTMLElement;
-        const rect = pill.getBoundingClientRect();
-        const { width: w, height: h } = rect;
-        if(w === 0 || h === 0) return;
-        
-        const R = ((w * w) / 4 + h * h) / (2 * h);
-        const D = Math.ceil(2 * R) + 2;
-        const delta = Math.ceil(R - Math.sqrt(Math.max(0, R * R - (w * w) / 4))) + 1;
-        const originY = D - delta;
-
-        gsap.set(circle, {
-          width: D,
-          height: D,
-          bottom: -delta,
-          xPercent: -50,
-          scale: 0,
-          transformOrigin: `50% ${originY}px`
-        });
-
-        const label = pill.querySelector<HTMLElement>('.pill-label');
-        const white = pill.querySelector<HTMLElement>('.pill-label-hover');
-
-        if (label) gsap.set(label, { y: 0 });
-        if (white) gsap.set(white, { y: h + 12, opacity: 0 });
-
-        tlRefs.current[index]?.kill();
-        const tl = gsap.timeline({ paused: true });
-        tl.to(circle, { scale: 1.2, duration: 2, ease, overwrite: 'auto' }, 0);
-        if (label) tl.to(label, { y: -(h + 8), duration: 2, ease, overwrite: 'auto' }, 0);
-        if (white) {
-          gsap.set(white, { y: Math.ceil(h + 100), opacity: 0 });
-          tl.to(white, { y: 0, opacity: 1, duration: 2, ease, overwrite: 'auto' }, 0);
-        }
-        tlRefs.current[index] = tl;
-      });
-    };
-
-    layout();
-
-    const onResize = () => layout();
-    window.addEventListener('resize', onResize);
-
-    const menu = mobileMenuRef.current;
-    if (menu) {
-      gsap.set(menu, { visibility: 'hidden', opacity: 0, scaleY: 1, y: 0 });
-    }
-
-    if (initialLoadAnimation) {
-      const logoEl = logoRef.current;
-      const navItems = navItemsRef.current;
-
-      if (logoEl) {
-        gsap.fromTo(logoEl, { scale: 0 }, { scale: 1, duration: 0.6, ease });
-      }
-      if (navItems) {
-        gsap.fromTo(navItems, { width: 0 }, { width: 'auto', duration: 0.6, ease, overwrite: 'auto' });
-      }
-    }
-
-    return () => window.removeEventListener('resize', onResize);
-  }, [items, ease, initialLoadAnimation]);
-
-  const handleEnter = (i: number) => {
-    const tl = tlRefs.current[i];
-    if (!tl) return;
-    activeTweenRefs.current[i]?.kill();
-    activeTweenRefs.current[i] = tl.tweenTo(tl.duration(), {
-      duration: 0.3,
-      ease,
-      overwrite: 'auto'
-    });
-  };
-
-  const handleLeave = (i: number) => {
-    const tl = tlRefs.current[i];
-    if (!tl) return;
-    activeTweenRefs.current[i]?.kill();
-    activeTweenRefs.current[i] = tl.tweenTo(0, {
-      duration: 0.2,
-      ease,
-      overwrite: 'auto'
-    });
-  };
-
-  const handleLogoEnter = () => {
-    const logoEl = logoRef.current;
-    if (!logoEl) return;
-    logoTweenRef.current?.kill();
-    gsap.set(logoEl, { rotate: 0 });
-    logoTweenRef.current = gsap.to(logoEl, {
-      rotate: 360,
-      duration: 0.2,
-      ease,
-      overwrite: 'auto'
-    });
-  };
-
   const toggleMobileMenu = () => {
-    const newState = !isMobileMenuOpen;
-    setIsMobileMenuOpen(newState);
-
-    const hamburger = hamburgerRef.current;
-    const menu = mobileMenuRef.current;
-
-    if (hamburger) {
-      const lines = hamburger.querySelectorAll('.hamburger-line');
-      if (newState) {
-        gsap.to(lines[0], { rotation: 45, y: 3, duration: 0.3, ease });
-        gsap.to(lines[1], { rotation: -45, y: -3, duration: 0.3, ease });
-      } else {
-        gsap.to(lines[0], { rotation: 0, y: 0, duration: 0.3, ease });
-        gsap.to(lines[1], { rotation: 0, y: 0, duration: 0.3, ease });
-      }
-    }
-
-    if (menu) {
-      if (newState) {
-        gsap.set(menu, { visibility: 'visible' });
-        gsap.fromTo(
-          menu,
-          { opacity: 0, y: 10, scaleY: 1 },
-          {
-            opacity: 1,
-            y: 0,
-            scaleY: 1,
-            duration: 0.3,
-            ease,
-            transformOrigin: 'top center'
-          }
-        );
-      } else {
-        gsap.to(menu, {
-          opacity: 0,
-          y: 10,
-          scaleY: 1,
-          duration: 0.2,
-          ease,
-          transformOrigin: 'top center',
-          onComplete: () => {
-            gsap.set(menu, { visibility: 'hidden' });
-          }
-        });
-      }
-    }
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
   
   const handleLinkClick = (href:string) => (e: React.MouseEvent) => {
@@ -237,22 +80,17 @@ const PillNav: React.FC<PillNavProps> = ({
     }
   };
 
-
   const cssVars = {
     ['--base']: baseColor,
     ['--pill-bg']: pillColor,
     ['--hover-text']: hoveredPillTextColor,
     ['--pill-text']: resolvedPillTextColor,
-    ['--nav-h']: '34px',
-    ['--logo']: '32px',
-    ['--pill-pad-x']: '12px',
-    ['--pill-gap']: '3px'
   } as React.CSSProperties;
 
 
   return (
     <div
-      className={`relative w-[95%] md:w-auto mx-auto ${className}`}
+      className={cn("relative w-[95%] md:w-auto mx-auto", className)}
       style={cssVars}
     >
       <nav
@@ -262,101 +100,43 @@ const PillNav: React.FC<PillNavProps> = ({
         <Link
             href={items?.[0]?.href || '/'}
             aria-label="Home"
-            onMouseEnter={handleLogoEnter}
-            role="menuitem"
-            ref={logoRef}
             onClick={handleLinkClick(items?.[0]?.href || '/')}
-            className="rounded-full p-1 inline-flex items-center justify-center overflow-hidden"
-            style={{
-              width: 'var(--nav-h)',
-              height: 'var(--nav-h)',
-              background: 'var(--pill-bg)',
-              color: 'var(--pill-text)',
-            }}
+            className="rounded-full p-1 inline-flex items-center justify-center overflow-hidden h-9 w-9 bg-[--pill-bg] text-[--pill-text] transition-transform duration-300 hover:rotate-12"
           >
             <span className="text-lg leading-none">{logo}</span>
-          </Link>
+        </Link>
 
         <div
-          ref={navItemsRef}
-          className="relative items-center rounded-full hidden md:flex ml-2"
-          style={{
-            height: 'var(--nav-h)',
-            background: 'var(--base)'
-          }}
+          className="relative items-center rounded-full hidden md:flex ml-2 h-9 bg-[--base]"
         >
           <ul
             role="menubar"
-            className="list-none flex items-stretch m-0 p-[3px] h-full"
-            style={{ gap: 'var(--pill-gap)' }}
+            className="list-none flex items-stretch m-0 p-[3px] h-full gap-[3px]"
           >
-            {items.map((item, i) => {
+            {items.map((item) => {
               const isActive = activeLink === item.href;
-
-              const pillStyle: React.CSSProperties = {
-                background: 'var(--pill-bg)',
-                color: 'var(--pill-text)',
-                paddingLeft: 'var(--pill-pad-x)',
-                paddingRight: 'var(--pill-pad-x)'
-              };
-
-              const PillContent = (
-                <>
-                  <span
-                    className="hover-circle absolute left-1/2 bottom-0 rounded-full z-[1] block pointer-events-none"
-                    style={{
-                      background: 'var(--base)',
-                      willChange: 'transform'
-                    }}
-                    aria-hidden="true"
-                    ref={el => {
-                      circleRefs.current[i] = el;
-                    }}
-                  />
-                  <span className="label-stack relative inline-block leading-[1] z-[2]">
-                    <span
-                      className="pill-label relative z-[2] inline-block leading-[1] text-xs"
-                      style={{ willChange: 'transform', color: 'var(--pill-text)' }}
-                    >
-                      {item.label}
-                    </span>
-                    <span
-                      className="pill-label-hover absolute left-0 top-0 z-[3] inline-block text-xs"
-                      style={{
-                        color: 'var(--hover-text)',
-                        willChange: 'transform, opacity'
-                      }}
-                      aria-hidden="true"
-                    >
-                      {item.label}
-                    </span>
-                  </span>
-                  {isActive && (
-                    <span
-                      className="absolute left-1/2 -bottom-[6px] -translate-x-1/2 w-3 h-3 rounded-full z-[4]"
-                      style={{ background: 'var(--pill-bg)' }}
-                      aria-hidden="true"
-                    />
-                  )}
-                </>
-              );
-
-              const basePillClasses =
-                'relative overflow-hidden inline-flex items-center justify-center h-full no-underline rounded-full box-border font-semibold text-[14px] leading-[0] uppercase tracking-[0.2px] whitespace-nowrap cursor-pointer px-0';
 
               return (
                 <li key={item.href} role="none" className="flex h-full">
                   <Link
                       role="menuitem"
                       href={item.href}
-                      className={basePillClasses}
-                      style={pillStyle}
+                      className={cn("relative overflow-hidden inline-flex items-center justify-center h-full no-underline rounded-full box-border font-semibold text-[14px] leading-none uppercase tracking-[0.2px] whitespace-nowrap cursor-pointer px-3 group",
+                         "bg-[--pill-bg] text-[--pill-text]"
+                      )}
                       aria-label={item.ariaLabel || item.label}
-                      onMouseEnter={() => handleEnter(i)}
-                      onMouseLeave={() => handleLeave(i)}
                        onClick={handleLinkClick(item.href)}
                     >
-                      {PillContent}
+                      <span className="absolute inset-0 rounded-full bg-[--base] scale-0 transition-transform duration-300 ease-in-out group-hover:scale-100 z-[1]"></span>
+                      <span className="relative z-[2] transition-colors duration-300 group-hover:text-[--hover-text]">
+                        {item.label}
+                      </span>
+                      {isActive && (
+                        <span
+                          className="absolute left-1/2 -bottom-1 -translate-x-1/2 w-1.5 h-1.5 rounded-full z-[4] bg-[--pill-bg]"
+                          aria-hidden="true"
+                        />
+                      )}
                     </Link>
                 </li>
               );
@@ -367,13 +147,7 @@ const PillNav: React.FC<PillNavProps> = ({
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
-                        className="relative overflow-hidden inline-flex items-center justify-center h-full no-underline rounded-full box-border font-semibold text-[14px] leading-[0] uppercase tracking-[0.2px] whitespace-nowrap cursor-pointer"
-                        style={{
-                          background: 'var(--pill-bg)',
-                          color: 'var(--pill-text)',
-                           paddingLeft: 'var(--pill-pad-x)',
-                           paddingRight: 'var(--pill-pad-x)'
-                        }}
+                        className="relative overflow-hidden inline-flex items-center justify-center h-full no-underline rounded-full box-border font-semibold text-[14px] leading-[0] uppercase tracking-[0.2px] whitespace-nowrap cursor-pointer px-3 bg-[--pill-bg] text-[--pill-text]"
                       >
                         <Avatar className="w-6 h-6">
                           <AvatarImage src={user.photoURL ?? undefined} />
@@ -395,15 +169,10 @@ const PillNav: React.FC<PillNavProps> = ({
                 ) : (
                   <Link
                     href="/login"
-                    className="relative overflow-hidden inline-flex items-center justify-center h-full no-underline rounded-full box-border font-semibold text-[14px] leading-[0] uppercase tracking-[0.2px] whitespace-nowrap cursor-pointer px-0"
-                     style={{
-                      background: 'var(--pill-bg)',
-                      color: 'var(--pill-text)',
-                      paddingLeft: 'var(--pill-pad-x)',
-                      paddingRight: 'var(--pill-pad-x)'
-                    }}
+                    className="relative overflow-hidden inline-flex items-center justify-center h-full no-underline rounded-full box-border font-semibold text-[14px] leading-none uppercase tracking-[0.2px] whitespace-nowrap cursor-pointer px-3 bg-[--pill-bg] text-[--pill-text] group"
                   >
-                   Login
+                    <span className="absolute inset-0 rounded-full bg-[--base] scale-0 transition-transform duration-300 ease-in-out group-hover:scale-100 z-[1]"></span>
+                    <span className="relative z-[2] transition-colors duration-300 group-hover:text-[--hover-text]">Login</span>
                   </Link>
                 )}
               </li>
@@ -412,40 +181,34 @@ const PillNav: React.FC<PillNavProps> = ({
         </div>
 
         <button
-          ref={hamburgerRef}
           onClick={toggleMobileMenu}
           aria-label="Toggle menu"
           aria-expanded={isMobileMenuOpen}
-          className="md:hidden rounded-full border-0 flex flex-col items-center justify-center gap-1 cursor-pointer p-0 relative"
-          style={{
-            width: 'var(--nav-h)',
-            height: 'var(--nav-h)',
-            background: 'var(--pill-bg)'
-          }}
+          className="md:hidden rounded-full border-0 flex flex-col items-center justify-center gap-1 cursor-pointer p-0 relative h-9 w-9 bg-[--pill-bg]"
         >
           <span
-            className="hamburger-line w-4 h-0.5 rounded origin-center transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)]"
-            style={{ background: 'var(--pill-text)' }}
+            className={cn("w-4 h-0.5 rounded origin-center transition-all duration-300 ease-in-out bg-[--pill-text]", isMobileMenuOpen && "rotate-45 translate-y-0.5")}
           />
           <span
-            className="hamburger-line w-4 h-0.5 rounded origin-center transition-all duration-[10ms] ease-[cubic-bezier(0.25,0.1,0.25,1)]"
-            style={{ background: 'var(--pill-text)' }}
+            className={cn("w-4 h-0.5 rounded origin-center transition-all duration-300 ease-in-out bg-[--pill-text]", isMobileMenuOpen ? "-rotate-45 -translate-y-0.5" : "mt-0.5")}
           />
         </button>
       </nav>
 
       <div
-        ref={mobileMenuRef}
-        className="md:hidden absolute top-full mt-2 left-0 right-0 rounded-[27px] shadow-[0_8px_32px_rgba(0,0,0,0.12)] z-[998] origin-top bg-background"
+        className={cn(
+          "md:hidden absolute top-full mt-2 left-0 right-0 rounded-2xl shadow-lg z-[998] origin-top bg-background transition-all duration-300 ease-in-out",
+          isMobileMenuOpen ? 'opacity-100 scale-100' : 'opacity-0 scale-95 pointer-events-none'
+        )}
       >
-        <ul className="list-none m-0 p-[3px] flex flex-col gap-[3px]">
-          {[...items, { label: user ? 'Logout' : 'Login', href: user ? '#' : '/login' }].map(item => {
+        <ul className="list-none m-0 p-1 flex flex-col gap-1">
+          {[...items, { label: user ? 'Logout' : 'Login', href: user ? '#' : '/login', ariaLabel: user ? 'Logout' : 'Login' }].map(item => {
              const isLogout = user && item.label === 'Logout';
             return (
               <li key={item.href}>
                  <Link
                     href={item.href}
-                    className="block py-3 px-4 text-base font-medium rounded-full transition-colors duration-200 text-foreground bg-secondary hover:bg-primary hover:text-primary-foreground"
+                    className="block py-3 px-4 text-base font-medium rounded-full transition-colors duration-200 text-foreground bg-secondary hover:bg-primary hover:text-primary-foreground text-center"
                     onClick={(e) => {
                       if (isLogout) {
                         e.preventDefault();
