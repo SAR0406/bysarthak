@@ -66,7 +66,7 @@ service cloud.firestore {
      *   Conversation groups. Only admins can perform any action on groups.
      */
     match /groups/{groupId} {
-      allow read, write: if isAdmin();
+      allow get, list, write: if isAdmin();
     }
   }
 }
