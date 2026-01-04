@@ -34,6 +34,10 @@
             "description": "Indicates which users are online.",
             "properties": {}
         },
+        "groupId": {
+            "type": "string",
+            "description": "The ID of the group this conversation belongs to."
+        },
         "messages": {
           "type": "array",
           "description": "An array of messages within the conversation.",
@@ -124,6 +128,29 @@
         "username",
         "age"
       ]
+    },
+    "Group": {
+      "title": "Conversation Group",
+      "type": "object",
+      "description": "Represents a group of conversations.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the group."
+        },
+        "name": {
+          "type": "string",
+          "description": "Name of the group."
+        },
+        "members": {
+          "type": "array",
+          "description": "An array of conversation IDs that are members of this group.",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "required": ["id", "name", "members"]
     }
   },
   "auth": {
@@ -167,10 +194,24 @@
             }
           ]
         }
+      },
+      {
+        "path": "/groups/{groupId}",
+        "definition": {
+          "entityName": "Group",
+          "schema": {
+            "$ref": "#/backend/entities/Group"
+          },
+          "description": "Stores conversation groups. Only admins can manage groups.",
+          "params": [
+            {
+              "name": "groupId",
+              "description": "Unique identifier for the group document."
+            }
+          ]
+        }
       }
     ],
-    "reasoning": "This design prioritizes security and scalability. A top-level `/conversations` collection stores message threads, identified by the sender's email to group messages. This avoids hierarchical complexities. A separate `/users` collection stores user profiles, linking them by UID to Firebase Authentication. This separation allows for distinct security rules for public user data versus private conversations."
+    "reasoning": "This design prioritizes security and scalability. A top-level `/conversations` collection stores message threads, identified by the sender's email to group messages. A separate `/users` collection stores user profiles, linking them by UID to Firebase Authentication. A new `/groups` collection allows admins to organize conversations. This separation allows for distinct security rules."
   }
 }
-
-    

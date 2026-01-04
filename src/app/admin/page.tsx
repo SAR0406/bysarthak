@@ -13,10 +13,11 @@ import {
   FormField,
   FormItem,
   FormMessage,
+  FormLabel,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { Send, ArrowLeft, Phone, Video, Smile, Paperclip, Check, CheckCheck, MoreHorizontal } from 'lucide-react';
+import { Send, ArrowLeft, Phone, Video, Smile, Paperclip, Check, CheckCheck, PlusCircle, Users } from 'lucide-react';
 import { useFirestore, useUser, useMemoFirebase, useCollection, useDoc } from '@/firebase';
 import {
   collection,
@@ -28,6 +29,8 @@ import {
   orderBy,
   Timestamp,
   writeBatch,
+  addDoc,
+  where,
 } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -35,12 +38,19 @@ import { format, isToday } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Checkbox } from '@/components/ui/checkbox';
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
 
 const replySchema = z.object({
   replyMessage: z.string().min(1, 'Reply cannot be empty.').optional(),
   attachment: z.instanceof(File).optional(),
+});
+
+const createGroupSchema = z.object({
+  groupName: z.string().min(1, 'Group name cannot be empty.'),
+  members: z.array(z.string()).min(1, 'Select at least one member.'),
 });
 
 type Message = {
@@ -63,7 +73,14 @@ type Conversation = {
   messages: Message[];
   typing?: { [key: string]: boolean };
   presence?: { [key: string]: 'online' | 'offline' };
+  groupId?: string;
 };
+
+type Group = {
+    id: string;
+    name: string;
+    members: string[]; // array of conversationIds
+}
 
 const ADMIN_EMAIL = 'sarthak040624@gmail.com';
 const ADMIN_NAME = 'Sarthak';
@@ -86,17 +103,12 @@ export default function AdminPage() {
   const { user, isUserLoading } = useUser();
   const router = useRouter();
   const [selectedConversationId, setSelectedConversationId] = useState<string | null>(null);
+  const [selectedGroupId, setSelectedGroupId] = useState<string | null>(null);
   const [isAuthorized, setIsAuthorized] = useState(false);
+  const [isGroupModalOpen, setGroupModalOpen] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
-  const conversationRef = useMemoFirebase(() => {
-    if (!firestore || !selectedConversationId) return null;
-    return doc(firestore, 'conversations', selectedConversationId);
-  }, [firestore, selectedConversationId]);
-
-  const { data: selectedConversation } = useDoc<Conversation>(conversationRef);
 
   // Authorize Admin
   useEffect(() => {
@@ -112,13 +124,36 @@ export default function AdminPage() {
     }
   }, [user, isUserLoading, router, toast]);
 
+  const conversationRef = useMemoFirebase(() => {
+    if (!firestore || !selectedConversationId) return null;
+    return doc(firestore, 'conversations', selectedConversationId);
+  }, [firestore, selectedConversationId]);
+
+  const { data: selectedConversation } = useDoc<Conversation>(conversationRef);
+  
+  const groupsQuery = useMemoFirebase(() => {
+    if (!firestore || !isAuthorized) return null;
+    return query(collection(firestore, 'groups'), orderBy('name', 'asc'));
+  }, [firestore, isAuthorized]);
+  const { data: groups, isLoading: isLoadingGroups } = useCollection<Group>(groupsQuery);
+
+
   const conversationsQuery = useMemoFirebase(() => {
+    if (!firestore || !isAuthorized) return null;
+    if (selectedGroupId) {
+        return query(collection(firestore, 'conversations'), where('groupId', '==', selectedGroupId), orderBy('lastMessageAt', 'desc'));
+    }
+    return query(collection(firestore, 'conversations'), orderBy('lastMessageAt', 'desc'));
+  }, [firestore, isAuthorized, selectedGroupId]);
+  const { data: conversations, isLoading: isLoadingConversations } = useCollection<Conversation>(conversationsQuery);
+  
+  const allConversationsQuery = useMemoFirebase(() => {
     if (!firestore || !isAuthorized) return null;
     return query(collection(firestore, 'conversations'), orderBy('lastMessageAt', 'desc'));
   }, [firestore, isAuthorized]);
+  const { data: allConversations } = useCollection<Conversation>(allConversationsQuery);
 
-  const { data: conversations, isLoading } = useCollection<Conversation>(conversationsQuery);
-  
+
   const getSentAtDate = (sentAt: Message['sentAt']) => {
     if (!sentAt) return new Date();
     return sentAt instanceof Timestamp ? sentAt.toDate() : sentAt;
@@ -129,6 +164,11 @@ export default function AdminPage() {
   const replyForm = useForm<z.infer<typeof replySchema>>({
     resolver: zodResolver(replySchema),
     defaultValues: { replyMessage: '' },
+  });
+  
+  const createGroupForm = useForm<z.infer<typeof createGroupSchema>>({
+    resolver: zodResolver(createGroupSchema),
+    defaultValues: { groupName: '', members: [] },
   });
 
   const handleTyping = useCallback(() => {
@@ -194,6 +234,29 @@ export default function AdminPage() {
       toast({ variant: 'destructive', title: 'Reply Failed', description: e.message || "Could not send reply. Please try again." });
     }
   }
+  
+  async function handleCreateGroup(values: z.infer<typeof createGroupSchema>) {
+    if (!firestore) return;
+    try {
+        const groupRef = await addDoc(collection(firestore, 'groups'), {
+            name: values.groupName,
+            members: values.members,
+        });
+
+        const batch = writeBatch(firestore);
+        values.members.forEach(conversationId => {
+            const convRef = doc(firestore, 'conversations', conversationId);
+            batch.update(convRef, { groupId: groupRef.id });
+        });
+        await batch.commit();
+
+        toast({ title: "Group Created", description: `Group "${values.groupName}" has been created.` });
+        setGroupModalOpen(false);
+        createGroupForm.reset();
+    } catch (e: any) {
+        toast({ variant: 'destructive', title: 'Group Creation Failed', description: e.message || "Could not create group." });
+    }
+}
 
   const handleReaction = async (messageId: string, emoji: string) => {
       if (!conversationRef || !user?.email || !selectedConversation) return;
@@ -269,6 +332,11 @@ export default function AdminPage() {
     if (!convo.messages || convo.messages.length === 0) return { text: "No messages yet", sentAt: convo.lastMessageAt };
     return convo.messages[convo.messages.length - 1];
   };
+  
+  const handleSelectGroup = (groupId: string | null) => {
+    setSelectedGroupId(groupId);
+    setSelectedConversationId(null);
+  };
 
   if (isUserLoading || !isAuthorized) {
     return <div className="container mx-auto flex min-h-screen items-center justify-center"><p>Loading...</p></div>;
@@ -294,13 +362,100 @@ export default function AdminPage() {
     <section id="admin" className="h-screen w-full p-4 md:p-8">
       <div className="h-full rounded-lg border bg-card text-card-foreground shadow-sm flex overflow-hidden">
         <div className={cn('w-full md:w-1/3 border-r transition-transform duration-300 ease-in-out flex flex-col', selectedConversationId && 'hidden md:flex')}>
-          <div className="p-4 border-b">
+          <div className="p-4 border-b flex items-center justify-between">
             <h2 className="font-headline text-xl font-bold">Messages</h2>
+            <Dialog open={isGroupModalOpen} onOpenChange={setGroupModalOpen}>
+                <DialogTrigger asChild>
+                    <Button variant="ghost" size="icon"><PlusCircle className="w-5 h-5"/></Button>
+                </DialogTrigger>
+                <DialogContent>
+                    <DialogHeader>
+                        <DialogTitle>Create New Group</DialogTitle>
+                    </DialogHeader>
+                     <Form {...createGroupForm}>
+                        <form onSubmit={createGroupForm.handleSubmit(handleCreateGroup)} className="space-y-4">
+                            <FormField
+                                control={createGroupForm.control}
+                                name="groupName"
+                                render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Group Name</FormLabel>
+                                        <FormControl>
+                                            <Input placeholder="Enter group name..." {...field} />
+                                        </FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <FormField
+                                control={createGroupForm.control}
+                                name="members"
+                                render={() => (
+                                    <FormItem>
+                                        <div className="mb-4">
+                                            <FormLabel className="text-base">Members</FormLabel>
+                                        </div>
+                                         <ScrollArea className="h-48">
+                                            {allConversations?.map((convo) => (
+                                                <FormField
+                                                    key={convo.id}
+                                                    control={createGroupForm.control}
+                                                    name="members"
+                                                    render={({ field }) => {
+                                                        return (
+                                                        <FormItem
+                                                            key={convo.id}
+                                                            className="flex flex-row items-start space-x-3 space-y-0 p-2 hover:bg-muted rounded-md"
+                                                        >
+                                                            <FormControl>
+                                                            <Checkbox
+                                                                checked={field.value?.includes(convo.id)}
+                                                                onCheckedChange={(checked) => {
+                                                                return checked
+                                                                    ? field.onChange([...field.value, convo.id])
+                                                                    : field.onChange(
+                                                                        field.value?.filter(
+                                                                        (value) => value !== convo.id
+                                                                        )
+                                                                    )
+                                                                }}
+                                                            />
+                                                            </FormControl>
+                                                            <FormLabel className="font-normal w-full cursor-pointer">
+                                                                {convo.senderName}
+                                                            </FormLabel>
+                                                        </FormItem>
+                                                        )
+                                                    }}
+                                                />
+                                            ))}
+                                        </ScrollArea>
+                                        <FormMessage />
+                                    </FormItem>
+                                )}
+                            />
+                            <Button type="submit" disabled={createGroupForm.formState.isSubmitting}>Create Group</Button>
+                        </form>
+                    </Form>
+                </DialogContent>
+            </Dialog>
           </div>
           <ScrollArea className="flex-1">
             <div className="flex flex-col">
-              {isLoading && <p className="p-4">Loading messages...</p>}
-              {!isLoading && (!conversations || conversations.length === 0) && <p className="p-4 text-muted-foreground">No messages yet.</p>}
+              {isLoadingGroups && <p className="p-4">Loading groups...</p>}
+               <button onClick={() => handleSelectGroup(null)} className={cn('w-full text-left p-4 border-b hover:bg-muted/50 transition-colors duration-200 flex items-center gap-3', !selectedGroupId && 'bg-muted')}>
+                  <Users className="w-5 h-5"/>
+                  <span className="font-semibold">All Conversations</span>
+              </button>
+              {groups?.map(group => (
+                  <button key={group.id} onClick={() => handleSelectGroup(group.id)} className={cn('w-full text-left p-4 border-b hover:bg-muted/50 transition-colors duration-200', selectedGroupId === group.id && 'bg-muted')}>
+                      <span className="font-semibold">{group.name}</span>
+                  </button>
+              ))}
+              <div className="p-2 text-xs text-center text-muted-foreground">Conversations</div>
+
+              {isLoadingConversations && <p className="p-4">Loading messages...</p>}
+              {!isLoadingConversations && (!conversations || conversations.length === 0) && <p className="p-4 text-muted-foreground">No messages yet.</p>}
               {conversations?.map(convo => {
                 const latestMsg = lastMessage(convo);
                 const isOnline = convo.presence?.[convo.senderEmail] === 'online';

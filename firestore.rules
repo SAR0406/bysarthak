@@ -1,7 +1,7 @@
 
 /**
  * This ruleset implements a secure "dropbox" model for a public contact form,
- * and secures user profile data.
+ * secures user profile data, and manages conversation groups.
  *
  * Core Philosophy:
  * - Conversations: Anyone can create a conversation or add messages to it.
@@ -9,10 +9,12 @@
  *   their own conversation history.
  * - User Profiles: Users can read their own profile and other public profiles,
  *   but can only create and update their own.
+ * - Groups: Only admins can create, read, update, and delete groups.
  *
  * Data Structure:
- * - /conversations/{conversationId}: Stores message threads, identified by the user's email.
+ * - /conversations/{conversationId}: Stores message threads.
  * - /users/{userId}: Stores public user profiles.
+ * - /groups/{groupId}: Stores conversation groups.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -57,6 +59,14 @@ service cloud.firestore {
       allow create: if isOwner(userId);
       allow update: if isOwner(userId);
       allow delete: if false;
+    }
+
+    /**
+     * @description
+     *   Conversation groups. Only admins can perform any action on groups.
+     */
+    match /groups/{groupId} {
+      allow read, write: if isAdmin();
     }
   }
 }
