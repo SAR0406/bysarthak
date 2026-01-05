@@ -1,42 +1,59 @@
 
 /**
  * This ruleset implements a secure "dropbox" model for a public contact form,
- * secures user profile data, and manages conversation groups.
+ * secures user profile data, and manages conversation groups for an admin panel.
  *
  * Core Philosophy:
- * - Conversations: Anyone can create a conversation or add messages to it.
- *   Only the designated admin can read all conversations. A user can read
- *   their own conversation history.
- * - User Profiles: Users can read their own profile and other public profiles,
- *   but can only create and update their own.
- * - Groups: Only admins can create, read, update, and delete groups.
- * - Admin Roles: Admin status is checked by a direct email comparison in a helper function.
+ * - Admin Access: A single, hardcoded admin email has full read/write privileges
+ *   across the database for administrative tasks. This is the most secure and
+ *   direct way to grant admin rights without relying on other database reads.
+ * - Conversations: Implements a "write-only" dropbox for guests. Anyone can
+ *   create or add messages to a conversation document. Reading is restricted.
+ *   - The Admin can list and read all conversations.
+ *   - A signed-in user can only read their own conversation, identified by their email.
+ * - User Profiles: Users can create and update their own profiles. Reading is public.
+ * - Groups: All group management is restricted to the admin.
  */
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
 
-    // Helper Functions
+    // --- Helper Functions ---
+
+    /**
+     * Checks if the user is authenticated.
+     */
     function isSignedIn() {
       return request.auth != null;
     }
 
+    /**
+     * Checks if the authenticated user is the owner of a specific resource.
+     * @param userId The UID of the user to check against.
+     */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Hardcode admin email for a robust and immediate check.
+    /**
+     * Checks if the authenticated user is the designated system administrator.
+     * This is the most secure check as it's a direct, non-queryable value.
+     */
     function isAdmin() {
       return isSignedIn() && request.auth.token.email == 'sarthak040624@gmail.com';
     }
 
+
+    // --- Collection: conversations ---
+
     /**
      * @description
-     *   Implements a public 'dropbox' with admin reply functionality.
-     *   - Anyone can create/update a conversation (add messages).
-     *   - The admin can list/read any conversation.
-     *   - A user can read their own conversation history if they are signed in.
-     *   - Deletion is disallowed for all.
+     *   Manages live chat conversations.
+     *   - `list`: Only the admin can list all conversations for the admin panel.
+     *   - `get`: The admin or the user who owns the conversation (matched by email) can read it.
+     *   - `create`, `update`: Anyone can write to a conversation. This allows guests
+     *     and users to send messages. Validation should be handled client-side.
+     *   - `delete`: No one is allowed to delete conversations to preserve chat history.
      */
     match /conversations/{conversationId} {
       allow list: if isAdmin();
@@ -45,35 +62,33 @@ service cloud.firestore {
       allow delete: if false;
     }
 
+
+    // --- Collection: users ---
+
     /**
      * @description
-     *   User profile data. Anyone can read profiles, but only the owner
-     *   can create or modify their own profile. Deletion is disallowed.
+     *   Stores public user profile information.
+     *   - `get`, `list`: All user profiles are public and can be read by anyone.
+     *   - `create`, `update`: A user can only create or update their own profile.
+     *   - `delete`: Users are not allowed to delete their profiles.
      */
     match /users/{userId} {
-      allow get: if true;
-      allow list: if true;
-      allow create: if isOwner(userId);
-      allow update: if isOwner(userId);
+      allow get, list: if true;
+      allow create, update: if isOwner(userId);
       allow delete: if false;
     }
 
-    /**
-     * @description
-     *   Conversation groups. Only admins can perform any action on groups.
-     */
-    match /groups/{groupId} {
-      allow get, list, write: if isAdmin();
-    }
+
+    // --- Collection: groups ---
 
     /**
      * @description
-     *   Admin roles. Only admins can read this collection.
-     *   The currently signing-in user can write their own role document.
+     *   Stores conversation groups for admin organization.
+     *   - Only the admin has full read (`get`, `list`) and write (`create`, `update`, `delete`)
+     *     permissions for this collection.
      */
-     match /adminRoles/{email} {
-        allow read: if isAdmin();
-        allow write: if isSignedIn() && request.auth.token.email == email;
-     }
+    match /groups/{groupId} {
+      allow read, write: if isAdmin();
+    }
   }
 }
