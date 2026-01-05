@@ -32,7 +32,7 @@ import {
   signInWithPopup,
   User,
 } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp, getDoc } from 'firebase/firestore';
+import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import Stepper, { Step } from '@/components/ui/stepper';
 import { Github, ToyBrick, LogIn, UserPlus } from 'lucide-react';
@@ -49,8 +49,6 @@ const loginSchema = z.object({
   email: z.string().email('Invalid email address.'),
   password: z.string().min(6, 'Password must be at least 6 characters.'),
 });
-
-const ADMIN_EMAIL = 'sarthak040624@gmail.com';
 
 export default function LoginPage() {
   const [flow, setFlow] = useState<'welcome' | 'login' | 'signup'>('welcome');
@@ -69,27 +67,9 @@ export default function LoginPage() {
     defaultValues: { email: '', password: '' },
   });
 
-  // Jugaad: Ensure admin role document exists for security rules
-  const ensureAdminRole = async (user: User) => {
-    if (user.email === ADMIN_EMAIL && firestore) {
-      const adminRoleRef = doc(firestore, 'adminRoles', user.email);
-      const adminRoleSnap = await getDoc(adminRoleRef);
-      if (!adminRoleSnap.exists()) {
-        try {
-          await setDoc(adminRoleRef, { isAdmin: true });
-          console.log('Admin role document created.');
-        } catch (e) {
-          console.error('Failed to create admin role document:', e);
-        }
-      }
-    }
-  };
-  
   const handleSuccessfulLogin = async (user: User) => {
     if(!firestore) return;
     
-    await ensureAdminRole(user);
-
     await setDoc(doc(firestore, 'users', user.uid), {
       email: user.email,
       name: user.displayName,

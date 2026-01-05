@@ -10,7 +10,7 @@
  * - User Profiles: Users can read their own profile and other public profiles,
  *   but can only create and update their own.
  * - Groups: Only admins can create, read, update, and delete groups.
- * - Admin Roles: A separate collection to robustly verify admin status.
+ * - Admin Roles: Admin status is checked by a direct email comparison in a helper function.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -25,10 +25,9 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // "Jugaad" Admin Check: Verify by checking for an admin role document.
-    // This is more robust for queries than a simple email string comparison.
+    // Hardcode admin email for a robust and immediate check.
     function isAdmin() {
-      return isSignedIn() && exists(/databases/$(database)/documents/adminRoles/$(request.auth.token.email));
+      return isSignedIn() && request.auth.token.email == 'sarthak040624@gmail.com';
     }
 
     /**
