@@ -1,0 +1,50 @@
+
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // --- Helper Functions ---
+
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * Checks if the authenticated user has the 'isAdmin' flag on their profile.
+     * This is a secure and query-efficient way to check for admin privileges.
+     */
+    function isAdmin() {
+      // The user must be signed in and their user document must have `isAdmin: true`.
+      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    }
+
+
+    // --- Collection: conversations ---
+    match /conversations/{conversationId} {
+      allow list: if isAdmin();
+      allow get: if isAdmin() || (isSignedIn() && request.auth.token.email == conversationId);
+      allow create, update: if true;
+      allow delete: if false;
+    }
+
+
+    // --- Collection: users ---
+    match /users/{userId} {
+      allow get, list: if true;
+      allow create: if isOwner(userId);
+      // Prevent a user from elevating their own privileges.
+      allow update: if isOwner(userId) && !(request.resource.data.isAdmin == true && resource.data.isAdmin != true);
+      allow delete: if false;
+    }
+
+
+    // --- Collection: groups ---
+    match /groups/{groupId} {
+      allow read, write: if isAdmin();
+    }
+  }
+}

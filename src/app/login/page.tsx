@@ -68,41 +68,42 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
-  
-  const ensureAdminRole = async (user: User) => {
-    if (user.email === ADMIN_EMAIL && firestore) {
-      const userRef = doc(firestore, 'users', user.uid);
-      const userSnap = await getDoc(userRef);
-      if (userSnap.exists() && userSnap.data()?.isAdmin) {
-        return; // Admin role already set
-      }
-      // Set the admin flag
-      await setDoc(userRef, { isAdmin: true }, { merge: true });
-    }
-  };
 
   const handleSuccessfulLogin = async (user: User) => {
-    if(!firestore) return;
-    
-    // Ensure the user document exists and has the admin role if applicable
+    if (!firestore) return;
+  
     const userRef = doc(firestore, 'users', user.uid);
     const userSnap = await getDoc(userRef);
-
+    const userData: any = {};
+  
+    // Check if the user document doesn't exist
     if (!userSnap.exists()) {
-        await setDoc(userRef, {
-            email: user.email,
-            name: user.displayName,
-            createdAt: serverTimestamp(),
-        }, { merge: true });
+      userData.email = user.email;
+      userData.name = user.displayName || 'Anonymous';
+      userData.createdAt = serverTimestamp();
     }
-
-    await ensureAdminRole(user);
-
+  
+    // Explicitly set isAdmin flag for the admin user
+    if (user.email === ADMIN_EMAIL) {
+      userData.isAdmin = true;
+    }
+  
+    // Write to Firestore only if there's something to write
+    if (Object.keys(userData).length > 0) {
+      await setDoc(userRef, userData, { merge: true });
+    }
+  
     toast({
       title: 'Login Successful',
       description: "You're now logged in.",
     });
-    router.push('/');
+    
+    // Redirect to admin page if user is admin
+    if (user.email === ADMIN_EMAIL) {
+      router.push('/admin');
+    } else {
+      router.push('/');
+    }
   }
 
   const handleOAuth = async (provider: GoogleAuthProvider | GithubAuthProvider) => {
@@ -129,13 +130,19 @@ export default function LoginPage() {
       );
       const user = userCredential.user;
 
-      await setDoc(doc(firestore, 'users', user.uid), {
+      const userData: any = {
         email: user.email,
         name: values.name,
         age: values.age,
         username: values.username,
         createdAt: serverTimestamp(),
-      });
+      };
+
+      if (user.email === ADMIN_EMAIL) {
+          userData.isAdmin = true;
+      }
+
+      await setDoc(doc(firestore, 'users', user.uid), userData);
       
       await handleSuccessfulLogin(user);
 
