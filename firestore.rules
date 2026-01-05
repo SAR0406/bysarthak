@@ -70,7 +70,7 @@ service cloud.firestore {
     /**
      * @description
      *   Admin roles. Only admins can read this collection.
-     *   Anyone can write their own role document during login flow.
+     *   The currently signing-in user can write their own role document.
      */
      match /adminRoles/{email} {
         allow read: if isAdmin();
