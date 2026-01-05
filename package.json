@@ -48,12 +48,12 @@
     "genkit": "^1.20.0",
     "lucide-react": "^0.475.0",
     "motion": "^10.18.0",
-    "next": "14.2.3",
+    "next": "16.1.1",
     "next-themes": "^0.4.0",
     "patch-package": "^8.0.0",
-    "react": "^18.3.1",
-    "react-day-picker": "^8.10.1",
-    "react-dom": "^18.3.1",
+    "react": "19.2.3",
+    "react-day-picker": "^9.13.0",
+    "react-dom": "19.2.3",
     "react-hook-form": "^7.54.2",
     "react-icons": "^5.2.1",
     "react-intersection-observer": "^9.10.3",
@@ -67,14 +67,18 @@
   "devDependencies": {
     "@types/canvas-confetti": "^1.6.4",
     "@types/node": "^20",
-    "@types/react": "^18",
-    "@types/react-dom": "^18",
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3",
     "@types/three": "^0.167.0",
     "@types/uuid": "^9.0.8",
-    "eslint-config-next": "14.2.3",
+    "eslint-config-next": "16.1.1",
     "genkit-cli": "^1.20.0",
     "postcss": "^8",
     "tailwindcss": "^3.4.1",
     "typescript": "^5"
+  },
+  "overrides": {
+    "@types/react": "19.2.7",
+    "@types/react-dom": "19.2.3"
   }
 }

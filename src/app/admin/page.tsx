@@ -31,6 +31,7 @@ import {
   writeBatch,
   addDoc,
   where,
+  getDoc,
 } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
@@ -82,7 +83,10 @@ type Group = {
     members: string[]; // array of conversationIds
 }
 
-const ADMIN_EMAIL = 'sarthak040624@gmail.com';
+type UserProfile = {
+    isAdmin?: boolean;
+}
+
 const ADMIN_NAME = 'Sarthak';
 
 const EMOJIS = [
@@ -110,19 +114,28 @@ export default function AdminPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+  const userProfileRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return doc(firestore, 'users', user.uid);
+  }, [firestore, user]);
+  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileRef);
+
   // Authorize Admin
   useEffect(() => {
-    if (!isUserLoading) {
-      if (!user) {
+    if (isUserLoading || isProfileLoading) return;
+    
+    if (!user) {
         router.push('/login');
-      } else if (user.email !== ADMIN_EMAIL) {
+        return;
+    }
+
+    if (userProfile?.isAdmin) {
+        setIsAuthorized(true);
+    } else {
         toast({ variant: 'destructive', title: 'Unauthorized', description: 'You do not have permission to access this page.' });
         router.push('/');
-      } else {
-        setIsAuthorized(true);
-      }
     }
-  }, [user, isUserLoading, router, toast]);
+  }, [user, isUserLoading, userProfile, isProfileLoading, router, toast]);
 
   const conversationRef = useMemoFirebase(() => {
     if (!firestore || !selectedConversationId) return null;
@@ -338,7 +351,7 @@ export default function AdminPage() {
     setSelectedConversationId(null);
   };
 
-  if (isUserLoading || !isAuthorized) {
+  if (isUserLoading || isProfileLoading || !isAuthorized) {
     return <div className="container mx-auto flex min-h-screen items-center justify-center"><p>Loading...</p></div>;
   }
 
@@ -585,5 +598,3 @@ export default function AdminPage() {
     </section>
   );
 }
-
-    

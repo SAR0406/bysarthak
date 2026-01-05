@@ -32,7 +32,7 @@ import {
   signInWithPopup,
   User,
 } from 'firebase/auth';
-import { doc, setDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import Stepper, { Step } from '@/components/ui/stepper';
 import { Github, ToyBrick, LogIn, UserPlus } from 'lucide-react';
@@ -50,6 +50,8 @@ const loginSchema = z.object({
   password: z.string().min(6, 'Password must be at least 6 characters.'),
 });
 
+const ADMIN_EMAIL = 'sarthak040624@gmail.com';
+
 export default function LoginPage() {
   const [flow, setFlow] = useState<'welcome' | 'login' | 'signup'>('welcome');
   const { toast } = useToast();
@@ -66,15 +68,35 @@ export default function LoginPage() {
     resolver: zodResolver(loginSchema),
     defaultValues: { email: '', password: '' },
   });
+  
+  const ensureAdminRole = async (user: User) => {
+    if (user.email === ADMIN_EMAIL && firestore) {
+      const userRef = doc(firestore, 'users', user.uid);
+      const userSnap = await getDoc(userRef);
+      if (userSnap.exists() && userSnap.data()?.isAdmin) {
+        return; // Admin role already set
+      }
+      // Set the admin flag
+      await setDoc(userRef, { isAdmin: true }, { merge: true });
+    }
+  };
 
   const handleSuccessfulLogin = async (user: User) => {
     if(!firestore) return;
     
-    await setDoc(doc(firestore, 'users', user.uid), {
-      email: user.email,
-      name: user.displayName,
-      createdAt: serverTimestamp(),
-    }, { merge: true });
+    // Ensure the user document exists and has the admin role if applicable
+    const userRef = doc(firestore, 'users', user.uid);
+    const userSnap = await getDoc(userRef);
+
+    if (!userSnap.exists()) {
+        await setDoc(userRef, {
+            email: user.email,
+            name: user.displayName,
+            createdAt: serverTimestamp(),
+        }, { merge: true });
+    }
+
+    await ensureAdminRole(user);
 
     toast({
       title: 'Login Successful',
