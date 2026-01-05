@@ -412,7 +412,7 @@ export default function AdminPage() {
                                                                 checked={field.value?.includes(convo.id)}
                                                                 onCheckedChange={(checked) => {
                                                                 return checked
-                                                                    ? field.onChange([...field.value, convo.id])
+                                                                    ? field.onChange([...(field.value || []), convo.id])
                                                                     : field.onChange(
                                                                         field.value?.filter(
                                                                         (value) => value !== convo.id
@@ -505,8 +505,8 @@ export default function AdminPage() {
 
               <ScrollArea className="flex-1 p-4 bg-muted/20" ref={scrollAreaRef}>
                  <div className="space-y-1">
-                  {displayedMessages.map((msg) => (
-                    <div key={msg.id} className={cn("flex items-end gap-2.5 group", msg.sentBy === 'admin' && 'justify-end')}>
+                  {displayedMessages.map((msg, index) => (
+                    <div key={`${msg.id}-${index}`} className={cn("flex items-end gap-2.5 group", msg.sentBy === 'admin' && 'justify-end')}>
                        <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.sentBy === 'admin' && 'items-end')}>
                          <div className={cn("relative leading-1.5 p-2 rounded-xl", msg.sentBy === 'admin' ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none shadow-sm')}>
                             {msg.imageUrl && <Image src={msg.imageUrl} alt="attachment" width={300} height={200} className="rounded-md mb-2" />}
@@ -585,3 +585,5 @@ export default function AdminPage() {
     </section>
   );
 }
+
+    
