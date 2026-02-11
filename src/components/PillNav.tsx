@@ -147,6 +147,7 @@ const PillNav: React.FC<PillNavProps> = ({
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <button
+                        aria-label="User menu"
                         className="relative overflow-hidden inline-flex items-center justify-center h-full no-underline rounded-full box-border font-semibold text-[14px] leading-[0] uppercase tracking-[0.2px] whitespace-nowrap cursor-pointer px-3 bg-[--pill-bg] text-[--pill-text]"
                       >
                         <Avatar className="w-6 h-6">

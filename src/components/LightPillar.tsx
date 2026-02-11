@@ -69,7 +69,7 @@ const LightPillar: React.FC<LightPillarProps> = ({
       renderer = new THREE.WebGLRenderer({
         antialias: false,
         alpha: true,
-        powerPreference: 'high-performance',
+        powerPreference: 'default',
         precision: 'lowp',
         stencil: false,
         depth: false
