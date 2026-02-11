@@ -3,7 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portfolio — Creative Coder & AI Developer</title>
+<title>Sarthak Upadhyay — Creative Coder & AI Explorer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
 <style>
 /* ══════════════════════════════════════════
    DESIGN TOKENS — LUXURY EDITORIAL PALETTE
@@ -18,8 +21,8 @@
   --cream:     #F0EAE0;       /* Warm white for headings */
   --dust:      #B0A898;       /* Muted body text */
   --line:      rgba(212,168,84,0.12); /* Dividers */
-  --font-display: 'Georgia', serif;
-  --font-body:    'Arial', sans-serif;
+  --font-display: 'Cormorant Garamond', Georgia, serif;
+  --font-body:    'Outfit', sans-serif;
 }
 
 /* ══════════════════════ RESET & BASE ══════════════════════ */
@@ -62,6 +65,30 @@ body {
 body.hovering .cursor-dot { width: 12px; height: 12px; background: var(--cream); }
 body.hovering .cursor-ring { width: 52px; height: 52px; border-color: var(--gold); }
 
+/* ══════════════════════ GRAIN OVERLAY ══════════════════════ */
+body::after {
+  content: '';
+  position: fixed;
+  inset: -200%;
+  width: 400%; height: 400%;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+  opacity: 0.025;
+  pointer-events: none;
+  z-index: 9997;
+  animation: grain 0.5s steps(2) infinite;
+}
+@keyframes grain {
+  0%,100% { transform: translate(0,0); }
+  10% { transform: translate(-2%,-3%); }
+  20% { transform: translate(-4%,1%); }
+  30% { transform: translate(3%,-4%); }
+  40% { transform: translate(4%,2%); }
+  50% { transform: translate(-1%,5%); }
+  60% { transform: translate(2%,-2%); }
+  70% { transform: translate(-5%,3%); }
+  80% { transform: translate(5%,-1%); }
+  90% { transform: translate(-3%,4%); }
+}
 
 /* ══════════════════════ CURSOR GLOW ══════════════════════ */
 #cursor-glow {
@@ -174,7 +201,41 @@ nav.scrolled {
   padding: 0 60px;
   overflow: hidden;
 }
-
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+}
+/* Atmospheric gradient blobs */
+.hero-blob-1 {
+  position: absolute;
+  width: 700px; height: 700px;
+  background: radial-gradient(circle, rgba(212,168,84,0.08) 0%, transparent 65%);
+  top: -200px; right: -100px;
+  border-radius: 50%;
+  animation: float-slow 12s ease-in-out infinite;
+}
+.hero-blob-2 {
+  position: absolute;
+  width: 500px; height: 500px;
+  background: radial-gradient(circle, rgba(138,150,168,0.05) 0%, transparent 65%);
+  bottom: -100px; left: 10%;
+  border-radius: 50%;
+  animation: float-slow 16s ease-in-out infinite reverse;
+}
+@keyframes float-slow {
+  0%,100% { transform: translate(0,0) scale(1); }
+  50% { transform: translate(20px,-30px) scale(1.05); }
+}
+/* Subtle grid lines */
+.hero-grid {
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(rgba(212,168,84,0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(212,168,84,0.03) 1px, transparent 1px);
+  background-size: 80px 80px;
+}
 .hero-content {
   position: relative;
   z-index: 2;
@@ -280,6 +341,24 @@ nav.scrolled {
   color: var(--silver);
   z-index: 2;
 }
+.scroll-line {
+  width: 60px; height: 1px;
+  background: var(--silver);
+  position: relative;
+  overflow: hidden;
+}
+.scroll-line::after {
+  content: '';
+  position: absolute;
+  top: 0; left: -100%;
+  width: 100%; height: 100%;
+  background: var(--gold);
+  animation: scroll-line 2.5s ease-in-out infinite;
+}
+@keyframes scroll-line {
+  0% { left: -100%; }
+  100% { left: 100%; }
+}
 
 /* Hero stats */
 .hero-stats {
@@ -306,20 +385,126 @@ nav.scrolled {
   color: var(--silver);
 }
 
+/* ══════════════════════ MARQUEE ══════════════════════ */
+.marquee-section {
+  padding: 20px 0;
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+  position: relative;
+  z-index: 2;
+}
+.marquee-track {
+  display: flex;
+  gap: 0;
+  animation: marquee 28s linear infinite;
+  white-space: nowrap;
+}
+.marquee-item {
+  display: inline-flex;
+  align-items: center;
+  gap: 30px;
+  padding: 14px 40px;
+  font-size: 0.7rem;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--silver);
+  font-weight: 400;
+  flex-shrink: 0;
+}
+.marquee-item .sep {
+  color: var(--gold);
+  font-style: italic;
+  font-family: var(--font-display);
+  font-size: 1.2rem;
+}
+@keyframes marquee {
+  0% { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+
 /* ══════════════════════ ABOUT ══════════════════════ */
 .about {
   display: grid;
-  grid-template-columns: 1fr;
-  min-height: auto;
-  padding: 120px 0;
+  grid-template-columns: 1fr 1fr;
+  min-height: 90vh;
 }
-
+.about-visual {
+  position: relative;
+  overflow: hidden;
+  background: var(--ink-2);
+}
+.about-image-placeholder {
+  width: 100%; height: 100%;
+  min-height: 600px;
+  background: linear-gradient(135deg, #0e0e1c 0%, #1a1226 50%, #0e1520 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+/* Decorative circular element */
+.about-circle {
+  width: 380px; height: 380px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, rgba(212,168,84,0.12) 0%, rgba(138,150,168,0.08) 100%);
+  border: 1px solid rgba(212,168,84,0.15);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+.about-circle::before {
+  content: '';
+  position: absolute;
+  inset: 20px;
+  border-radius: 50%;
+  border: 1px dashed rgba(212,168,84,0.1);
+  animation: spin-slow 30s linear infinite;
+}
+.about-circle::after {
+  content: '';
+  position: absolute;
+  inset: 50px;
+  border-radius: 50%;
+  border: 1px solid rgba(212,168,84,0.06);
+}
+@keyframes spin-slow { to { transform: rotate(360deg); } }
+.about-initials {
+  font-family: var(--font-display);
+  font-size: 7rem;
+  font-weight: 300;
+  color: var(--gold);
+  opacity: 0.4;
+  letter-spacing: -0.05em;
+  line-height: 1;
+}
+/* Skill pills floating */
+.about-skill-pill {
+  position: absolute;
+  padding: 8px 18px;
+  background: rgba(14,14,28,0.9);
+  border: 1px solid rgba(212,168,84,0.2);
+  border-radius: 100px;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  color: var(--cream);
+  white-space: nowrap;
+  backdrop-filter: blur(10px);
+}
+.pill-1 { top: 20%; left: -10px; animation: float-pill 6s ease-in-out infinite; }
+.pill-2 { bottom: 28%; right: -10px; animation: float-pill 7s ease-in-out infinite reverse; }
+.pill-3 { top: 60%; left: 30px; animation: float-pill 8s ease-in-out infinite 1s; }
+@keyframes float-pill {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
 .about-content {
-  padding: 0 80px;
+  padding: 100px 80px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  text-align: center;
+  border-left: 1px solid var(--line);
 }
 .section-label {
   font-size: 0.7rem;
@@ -331,7 +516,6 @@ nav.scrolled {
   display: flex;
   align-items: center;
   gap: 12px;
-  justify-content: center;
 }
 .section-label::before {
   content: '';
@@ -355,15 +539,13 @@ nav.scrolled {
   font-size: 1rem;
   line-height: 1.9;
   color: var(--dust);
-  margin: 0 auto 40px auto;
-  max-width: 700px;
+  margin-bottom: 40px;
 }
 .about-bio strong { color: var(--cream); font-weight: 400; }
 .about-links {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
-  justify-content: center;
 }
 .social-link {
   width: 44px; height: 44px;
@@ -388,11 +570,10 @@ nav.scrolled {
   display: flex;
   align-items: center;
   gap: 8px;
-  justify-content: center;
 }
 #live-clock { color: var(--cream); font-weight: 400; }
 
-/* ══════════════════════ EXPERTISE ══════════════════════ */
+/* ══════════════════════ SERVICES ══════════════════════ */
 .services {
   padding: 120px 60px;
   position: relative;
@@ -644,7 +825,6 @@ nav.scrolled {
 }
 .step-desc { font-size: 0.9rem; line-height: 1.8; color: var(--dust); }
 
-
 /* ══════════════════════ CONTACT ══════════════════════ */
 .contact {
   padding: 140px 60px;
@@ -780,33 +960,8 @@ footer {
 .corner-dec.tl { top: 20px; left: 20px; }
 .corner-dec.br { bottom: 20px; right: 20px; transform: rotate(180deg); }
 
-/* Static list for skills */
-.skills-list {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 12px 32px;
-    padding: 20px 0;
-    border-top: 1px solid var(--line);
-    border-bottom: 1px solid var(--line);
-    position: relative;
-    z-index: 2;
-}
-.skill-item {
-    font-size: 0.7rem;
-    letter-spacing: 0.2em;
-    text-transform: uppercase;
-    color: var(--silver);
-    font-weight: 400;
-}
-.skill-item .sep {
-    color: var(--gold);
-    font-style: italic;
-    font-family: var(--font-display);
-    font-size: 1.2rem;
-    padding: 0 10px;
-}
-
+/* Testimonials section removed */
+.testimonials { display: none; }
 </style>
 </head>
 <body>
@@ -814,14 +969,14 @@ footer {
 <!-- Custom Cursor -->
 <div class="cursor-dot" id="cursorDot"></div>
 <div class="cursor-ring" id="cursorRing"></div>
-
+<div id="cursor-glow"></div>
 
 <!-- ══════════════════════ NAVIGATION ══════════════════════ -->
 <nav id="navbar">
-  <a href="#" class="nav-logo">S<span>.</span>U</a>
+  <a href="#" class="nav-logo">S<span>.</span>Upadhyay</a>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
-    <li><a href="#expertise">Expertise</a></li>
+    <li><a href="#services">Expertise</a></li>
     <li><a href="#work">Work</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -830,61 +985,96 @@ footer {
 
 <!-- ══════════════════════ HERO ══════════════════════ -->
 <section class="hero">
+  <div class="hero-bg">
+    <div class="hero-blob-1"></div>
+    <div class="hero-blob-2"></div>
+    <div class="hero-grid"></div>
+  </div>
 
   <div class="hero-content">
     <div class="status-badge">
       <span class="status-dot"></span>
-      Available for Projects
+      Available for Collaboration
     </div>
-    <p class="hero-eyebrow">Creative Coder & <span>AI Explorer</span></p>
+    <p class="hero-eyebrow">Creative Coder & <span>AI Explorer</span> — Based in India</p>
     <h1 class="hero-headline">
       Code that<br>
       <em>builds</em> intelligent<br>
       <span class="outline">futures.</span>
     </h1>
     <p class="hero-subtext">
-      I build AI-driven solutions and web experiences that are not just functional, but smart, intuitive, and efficient.
+      I craft robust applications and AI-driven experiences that don't just function—they innovate.
     </p>
     <div class="hero-actions">
-      <a href="#work" class="btn-primary">View Selected Work ↗</a>
-      <a href="#contact" class="btn-secondary">Start a Project</a>
+      <a href="#work" class="btn-primary">View My Projects ↗</a>
+      <a href="#contact" class="btn-secondary">Start a Conversation</a>
     </div>
   </div>
 
   <div class="hero-scroll">
+    <div class="scroll-line"></div>
     Scroll to Explore
   </div>
 
   <div class="hero-stats">
     <div class="hero-stat">
-      <div class="stat-value">4<span>+</span></div>
-      <div class="stat-label">Years of Coding</div>
+      <div class="stat-value">10<span>th</span></div>
+      <div class="stat-label">Grade Student</div>
     </div>
     <div class="hero-stat">
-      <div class="stat-value">30<span>+</span></div>
+      <div class="stat-value">15<span>+</span></div>
       <div class="stat-label">Projects Built</div>
     </div>
     <div class="hero-stat">
-      <div class="stat-value">10<span>k</span></div>
-      <div class="stat-label">Hours Coded</div>
+      <div class="stat-value">2<span>+</span></div>
+      <div class="stat-label">Years of Coding</div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════ SKILLS ══════════════════════ -->
-<div class="skills-list">
-    <span class="skill-item">Python <span class="sep">✦</span></span>
-    <span class="skill-item">Computer Vision <span class="sep">✦</span></span>
-    <span class="skill-item">AI / ML <span class="sep">✦</span></span>
-    <span class="skill-item">Next.js <span class="sep">✦</span></span>
-    <span class="skill-item">OpenCV <span class="sep">✦</span></span>
-    <span class="skill-item">Automation <span class="sep">✦</span></span>
-    <span class="skill-item">Node.js</span>
+<!-- ══════════════════════ MARQUEE ══════════════════════ -->
+<div class="marquee-section">
+  <div class="marquee-track">
+    <!-- duplicated for infinite loop -->
+    <span class="marquee-item">Python <span class="sep">✦</span></span>
+    <span class="marquee-item">OpenCV <span class="sep">✦</span></span>
+    <span class="marquee-item">Computer Vision <span class="sep">✦</span></span>
+    <span class="marquee-item">AI / ML <span class="sep">✦</span></span>
+    <span class="marquee-item">Next.js & React <span class="sep">✦</span></span>
+    <span class="marquee-item">Firebase <span class="sep">✦</span></span>
+    <span class="marquee-item">Node.js <span class="sep">✦</span></span>
+    <span class="marquee-item">Python <span class="sep">✦</span></span>
+    <span class="marquee-item">OpenCV <span class="sep">✦</span></span>
+    <span class="marquee-item">Computer Vision <span class="sep">✦</span></span>
+    <span class="marquee-item">AI / ML <span class="sep">✦</span></span>
+    <span class="marquee-item">Next.js & React <span class="sep">✦</span></span>
+    <span class="marquee-item">Firebase <span class="sep">✦</span></span>
+    <span class="marquee-item">Node.js <span class="sep">✦</span></span>
+  </div>
 </div>
-
 
 <!-- ══════════════════════ ABOUT ══════════════════════ -->
 <section class="about" id="about">
+  <div class="about-visual">
+    <div class="about-image-placeholder">
+      <svg width="100%" height="100%" style="position:absolute;inset:0;opacity:0.15" viewBox="0 0 600 700" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="300" cy="280" r="200" stroke="#D4A854" stroke-width="0.5"/>
+        <circle cx="300" cy="280" r="160" stroke="#D4A854" stroke-width="0.3"/>
+        <line x1="0" y1="280" x2="600" y2="280" stroke="#D4A854" stroke-width="0.3"/>
+        <line x1="300" y1="0" x2="300" y2="700" stroke="#D4A854" stroke-width="0.3"/>
+        <circle cx="300" cy="280" r="5" fill="#D4A854"/>
+        <path d="M100 400 Q300 500 500 400" stroke="#D4A854" stroke-width="0.5" fill="none"/>
+        <path d="M150 150 L300 80 L450 150" stroke="#8A96A8" stroke-width="0.3" fill="none"/>
+      </svg>
+      <div class="about-circle">
+        <span class="about-initials">SU</span>
+      </div>
+      <div class="about-skill-pill pill-1">Python</div>
+      <div class="about-skill-pill pill-2">AI / ML</div>
+      <div class="about-skill-pill pill-3">Next.js</div>
+    </div>
+  </div>
+
   <div class="about-content">
     <span class="section-label">About</span>
     <h2 class="section-heading">
@@ -892,40 +1082,40 @@ footer {
       I'm <em>Sarthak Upadhyay</em>
     </h2>
     <p class="about-bio">
-       I’m building Iron Man–level ideas with student-level resources — limitations don’t stop innovation. Currently a <strong>Class 10 student</strong>, I'm deeply passionate about Python and Computer Vision, creating real-time camera intelligence projects and AI assistants.
+      A Class 10 student and passionate developer building with <strong>Python, AI, and modern web technologies</strong>. I specialize in turning complex problems into elegant, intelligent solutions.
       <br><br>
-      My journey is about balancing rigorous academics with a love for building practical automation tools, scripts, and experiments that explore the boundaries of what's possible with code.
+      My journey is driven by a curiosity for how things work, from real-time <strong>camera intelligence with OpenCV</strong> to building smart, JARVIS-style assistants. I believe in learning by doing and thrive on the challenge of balancing academics with my passion for code.
     </p>
     <div class="about-links">
-      <a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" target="_blank" rel="noopener noreferrer" class="social-link" title="LinkedIn">in</a>
-      <a href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer" class="social-link" title="GitHub">GH</a>
-      <a href="https://x.com/Sarthak44201143" target="_blank" rel="noopener noreferrer" class="social-link" title="X/Twitter">𝕏</a>
+      <a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" class="social-link" title="LinkedIn">in</a>
+      <a href="https://github.com/SAR0406" class="social-link" title="GitHub">Gh</a>
+      <a href="https://x.com/Sarthak44201143" class="social-link" title="X/Twitter">𝕏</a>
     </div>
     <div class="about-time">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      My Local Time: <span id="live-clock">--:--:--</span>
+      Local time: <span id="live-clock">--:--:--</span>
     </div>
   </div>
 </section>
 
 <!-- ══════════════════════ EXPERTISE ══════════════════════ -->
-<section class="services" id="expertise">
+<section class="services" id="services">
   <div class="services-header reveal">
     <div>
-      <span class="section-label">What I Build</span>
+      <span class="section-label">Areas of Expertise</span>
       <h2 class="section-heading">
-        Areas of<br><em>Expertise</em>
+        My <em>Skillset</em>
       </h2>
     </div>
     <p class="services-intro">
-      I focus on practical applications of modern technology, turning complex problems into elegant, efficient solutions.
+      I focus on core areas where technology, creativity, and user experience converge. My goal is to build things that are not only functional but also intelligent and intuitive.
     </p>
   </div>
   <div class="services-grid reveal reveal-delay-1">
     <div class="service-card">
       <span class="service-num">01.</span>
       <h3 class="service-title">Computer Vision</h3>
-      <p class="service-desc">Using Python with OpenCV and MediaPipe for real-time camera intelligence, including person detection, interaction, and automation.</p>
+      <p class="service-desc">Using Python with OpenCV and MediaPipe to give applications the power of sight for real-time detection and automation.</p>
       <div class="service-tags">
         <span class="tag">OpenCV</span>
         <span class="tag">MediaPipe</span>
@@ -935,34 +1125,34 @@ footer {
     <div class="service-card">
       <span class="service-num">02.</span>
       <h3 class="service-title">AI & Automation</h3>
-      <p class="service-desc">Building beginner-to-intermediate AI/JARVIS-style assistants that integrate vision, voice, and logic to perform complex tasks.</p>
+      <p class="service-desc">Building beginner-to-intermediate AI systems and JARVIS-style assistants that integrate vision, voice, and logic.</p>
       <div class="service-tags">
         <span class="tag">Python</span>
-        <span class="tag">AI Logic</span>
-        <span class="tag">Automation Scripts</span>
+        <span class="tag">AI/ML</span>
+        <span class="tag">Automation</span>
       </div>
     </div>
     <div class="service-card">
       <span class="service-num">03.</span>
       <h3 class="service-title">Full-Stack Web</h3>
-      <p class="service-desc">Developing responsive and modern web applications using frameworks like Next.js, with a focus on clean code and user experience.</p>
+      <p class="service-desc">Crafting modern, performant web applications with a focus on clean code, great UI, and robust backend services.</p>
       <div class="service-tags">
         <span class="tag">Next.js</span>
-        <span class="tag">React</span>
+        <span class="tag">Firebase</span>
         <span class="tag">Node.js</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════ WORK / PROJECTS ══════════════════════ -->
+<!-- ══════════════════════ WORK ══════════════════════ -->
 <section class="work" id="work">
   <div class="work-header reveal">
     <div>
       <span class="section-label">Selected Work</span>
       <h2 class="section-heading">Recent <em>Projects</em></h2>
     </div>
-    <a href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer" class="view-all">View All on GitHub →</a>
+    <a href="https://github.com/SAR0406" class="view-all" target="_blank" rel="noopener noreferrer">View All Projects →</a>
   </div>
   <div class="projects-grid reveal reveal-delay-1">
 
@@ -982,7 +1172,7 @@ footer {
       <div class="project-info">
         <div class="project-category">Computer Vision · 2024</div>
         <h3 class="project-name">Real-Time<br>Vision AI</h3>
-        <p class="project-detail">An OpenCV-based system for real-time person detection and interaction automation.</p>
+        <p class="project-detail">An application using OpenCV for real-time person detection, interaction, and automation from a camera feed.</p>
       </div>
     </div>
 
@@ -1000,9 +1190,9 @@ footer {
       <div class="project-overlay"></div>
       <div class="project-arrow">↗</div>
       <div class="project-info">
-        <div class="project-category">AI Assistant · 2024</div>
+        <div class="project-category">AI / ML · 2024</div>
         <h3 class="project-name">JARVIS-Style<br>Assistant Core</h3>
-        <p class="project-detail">The foundational logic for an AI assistant integrating vision, voice, and task execution.</p>
+        <p class="project-detail">A foundational AI system that integrates vision, voice, and logic to perform automated tasks.</p>
       </div>
     </div>
 
@@ -1019,9 +1209,9 @@ footer {
       <div class="project-overlay"></div>
       <div class="project-arrow">↗</div>
       <div class="project-info">
-        <div class="project-category">Automation · 2023</div>
-        <h3 class="project-name">Automated<br>Scripting Tools</h3>
-        <p class="project-detail">A collection of small but powerful Python scripts for automating daily digital tasks.</p>
+        <div class="project-category">Web Development · 2024</div>
+        <h3 class="project-name">Personal<br>Portfolio v1</h3>
+        <p class="project-detail">My main portfolio site, built with Next.js, Firebase, and Tailwind CSS to showcase my work.</p>
       </div>
     </div>
 
@@ -1040,9 +1230,9 @@ footer {
       <div class="project-overlay"></div>
       <div class="project-arrow">↗</div>
       <div class="project-info">
-        <div class="project-category">Web Development · 2023</div>
-        <h3 class="project-name">Portfolio<br>Showcase</h3>
-        <p class="project-detail">A personal portfolio built with Next.js and modern web technologies to showcase my projects.</p>
+        <div class="project-category">Automation · 2023</div>
+        <h3 class="project-name">Productivity<br>Scripts</h3>
+        <p class="project-detail">A collection of small but powerful automation tools and scripts to streamline daily tasks.</p>
       </div>
     </div>
 
@@ -1059,34 +1249,33 @@ footer {
     <div class="process-step reveal">
       <div class="step-num">01</div>
       <div class="step-content">
-        <h3 class="step-title">Problem & Strategy</h3>
-        <p class="step-desc">I start by deeply understanding the problem. What are the core goals? Who is it for? This strategic foundation guides all technical decisions.</p>
+        <h3 class="step-title">Ideation & Planning</h3>
+        <p class="step-desc">Every great project starts with a clear idea. I dive deep into the problem to understand the core goals and define a strategic path forward before writing a single line of code.</p>
       </div>
     </div>
     <div class="process-step reveal reveal-delay-1">
       <div class="step-num">02</div>
       <div class="step-content">
-        <h3 class="step-title">Prototype & Architecture</h3>
-        <p class="step-desc">I design the system architecture and create prototypes. This phase is about exploring solutions and finding the most efficient path forward.</p>
+        <h3 class="step-title">Prototyping & Design</h3>
+        <p class="step-desc">I create functional prototypes and design mockups to visualize the user experience. This phase is about exploring possibilities and refining the product's feel and flow.</p>
       </div>
     </div>
     <div class="process-step reveal reveal-delay-2">
       <div class="step-num">03</div>
       <div class="step-content">
-        <h3 class="step-title">Code & Build</h3>
-        <p class="step-desc">This is where the vision comes to life. I write clean, structured code, focusing on performance, scalability, and maintainability.</p>
+        <h3 class="step-title">Development & Build</h3>
+        <p class="step-desc">This is where ideas become reality. I write clean, efficient, and scalable code, focusing on robust architecture and a seamless user experience.</p>
       </div>
     </div>
     <div class="process-step reveal reveal-delay-3">
       <div class="step-num">04</div>
       <div class="step-content">
-        <h3 class="step-title">Test & Iterate</h3>
-        <p class="step-desc">A project isn't done when it launches. I believe in rigorous testing and continuous iteration to refine and improve the final product.</p>
+        <h3 class="step-title">Launch & Iterate</h3>
+        <p class="step-desc">A project isn't done at launch. I provide support, gather feedback, and continue to iterate, ensuring the solution evolves and improves over time.</p>
       </div>
     </div>
   </div>
 </section>
-
 
 <!-- ══════════════════════ CONTACT ══════════════════════ -->
 <section class="contact" id="contact">
@@ -1097,7 +1286,7 @@ footer {
       <em>together</em>
     </h2>
     <p class="contact-subtext reveal reveal-delay-2">
-      Have a project in mind, a question, or just want to connect? I'm always open to new ideas and collaborations.
+      Have an idea or a project in mind? I'm always open to collaboration. Let's start a conversation.
     </p>
     <div class="contact-info reveal reveal-delay-3">
       <div class="contact-item">
@@ -1106,11 +1295,11 @@ footer {
       </div>
       <div class="contact-item">
         <span class="contact-label">Based In</span>
-        <span class="contact-value">Open to Remote Collaboration</span>
+        <span class="contact-value">India · Open to Remote</span>
       </div>
       <div class="contact-item">
         <span class="contact-label">Response Time</span>
-        <span class="contact-value">Within 24 hours</span>
+        <span class="contact-value">Within 24-48 hours</span>
       </div>
     </div>
   </div>
@@ -1132,7 +1321,7 @@ footer {
     </div>
     <div class="form-group">
       <label class="form-label">Project Type</label>
-      <input class="form-input" type="text" placeholder="AI / Computer Vision / Web App ...">
+      <input class="form-input" type="text" placeholder="AI Project / Web App / Collaboration ...">
     </div>
     <div class="form-group">
       <label class="form-label">Tell Me About Your Project</label>
@@ -1147,7 +1336,7 @@ footer {
 <!-- ══════════════════════ FOOTER ══════════════════════ -->
 <footer>
   <div class="footer-logo">S<span>.</span>Upadhyay</div>
-  <div class="footer-copy">© 2025 Sarthak Upadhyay. Crafted with <span>♡</span></div>
+  <div class="footer-copy">© <span id="footer-year"></span> Sarthak Upadhyay. Crafted with <span>♡</span></div>
   <div class="footer-socials">
     <a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" target="_blank" rel="noopener noreferrer" class="footer-social">LinkedIn</a>
     <a href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer" class="footer-social">GitHub</a>
@@ -1159,13 +1348,26 @@ footer {
 /* ══════════════════════ CURSOR ══════════════════════ */
 const dot   = document.getElementById('cursorDot');
 const ring  = document.getElementById('cursorRing');
+const glow  = document.getElementById('cursor-glow');
+let mx = 0, my = 0, rx = 0, ry = 0;
 
 document.addEventListener('mousemove', e => {
-  dot.style.left  = e.clientX + 'px';
-  dot.style.top   = e.clientY + 'px';
-  ring.style.left = e.clientX + 'px';
-  ring.style.top  = e.clientY + 'px';
+  mx = e.clientX; my = e.clientY;
+  dot.style.left  = mx + 'px';
+  dot.style.top   = my + 'px';
+  glow.style.left = mx + 'px';
+  glow.style.top  = my + 'px';
 });
+
+// Ring follows with lag
+function animateCursor() {
+  rx += (mx - rx) * 0.12;
+  ry += (my - ry) * 0.12;
+  ring.style.left = rx + 'px';
+  ring.style.top  = ry + 'px';
+  requestAnimationFrame(animateCursor);
+}
+animateCursor();
 
 // Hovering state
 document.querySelectorAll('a, button, .project-card, .service-card').forEach(el => {
@@ -1179,25 +1381,25 @@ window.addEventListener('scroll', () => {
   navbar.classList.toggle('scrolled', window.scrollY > 50);
 });
 
-/* ══════════════════════ LIVE CLOCK ══════════════════════ */
+/* ══════════════════════ LIVE CLOCK & YEAR ══════════════════════ */
 function updateClock() {
-    try {
-        const now = new Date();
-        // Set a default timezone, e.g., UTC, or try to guess.
-        // For this example, let's use the user's local time as a fallback.
-        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
-        const opts = { timeZone: timeZone, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false };
-        const clockEl = document.getElementById('live-clock');
-        if (clockEl) {
-            clockEl.textContent = now.toLocaleTimeString('en-US', opts);
-        }
-    } catch (e) {
-        const clockEl = document.getElementById('live-clock');
-        if(clockEl) clockEl.textContent = '...';
+  const now = new Date();
+  const opts = { timeZone: 'Asia/Kolkata', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false };
+  const clockEl = document.getElementById('live-clock');
+  if (clockEl) {
+      clockEl.textContent = now.toLocaleTimeString('en-US', opts);
+  }
+}
+function updateYear() {
+    const yearEl = document.getElementById('footer-year');
+    if (yearEl) {
+        yearEl.textContent = new Date().getFullYear();
     }
 }
 setInterval(updateClock, 1000);
 updateClock();
+updateYear();
+
 
 /* ══════════════════════ SCROLL REVEAL ══════════════════════ */
 const revealEls = document.querySelectorAll('.reveal');
@@ -1212,20 +1414,36 @@ const observer = new IntersectionObserver((entries) => {
 revealEls.forEach(el => observer.observe(el));
 
 /* ══════════════════════ HERO TEXT ANIMATION ══════════════════════ */
+/* Stagger the hero content on load */
 window.addEventListener('load', () => {
   const heroItems = document.querySelectorAll('.status-badge, .hero-eyebrow, .hero-headline, .hero-subtext, .hero-actions, .hero-scroll, .hero-stats');
   heroItems.forEach((el, i) => {
-    if (el instanceof HTMLElement) {
-        el.style.opacity = '0';
-        el.style.transform = 'translateY(24px)';
-        el.style.transition = `opacity 0.7s ease ${i * 0.12}s, transform 0.7s ease ${i * 0.12}s`;
-        requestAnimationFrame(() => {
-          setTimeout(() => {
-            el.style.opacity = '1';
-            el.style.transform = 'translateY(0)';
-          }, 50);
-        });
-    }
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(24px)';
+    el.style.transition = `opacity 0.7s ease ${i * 0.12}s, transform 0.7s ease ${i * 0.12}s`;
+    requestAnimationFrame(() => {
+      setTimeout(() => {
+        el.style.opacity = '1';
+        el.style.transform = 'translateY(0)';
+      }, 50);
+    });
+  });
+});
+
+/* ══════════════════════ MAGNETIC BUTTON EFFECT ══════════════════════ */
+document.querySelectorAll('.btn-primary, .btn-secondary, .nav-cta').forEach(btn => {
+  btn.addEventListener('mousemove', e => {
+    const rect = btn.getBoundingClientRect();
+    const x = e.clientX - rect.left - rect.width / 2;
+    const y = e.clientY - rect.top - rect.height / 2;
+    btn.style.transform = `translate(${x * 0.15}px, ${y * 0.25}px)`;
+  });
+  btn.addEventListener('mouseleave', () => {
+    btn.style.transform = 'translate(0, 0)';
+    btn.style.transition = 'transform 0.4s ease';
+  });
+  btn.addEventListener('mouseenter', () => {
+    btn.style.transition = 'transform 0.1s linear, background 0.2s, color 0.2s, border-color 0.2s';
   });
 });
 </script>
