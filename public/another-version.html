@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portfolio — Creative Designer & Developer</title>
+<title>Portfolio — Creative Coder & Developer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
@@ -397,7 +397,7 @@ nav.scrolled {
 .marquee-track {
   display: flex;
   gap: 0;
-  animation: marquee 28s linear infinite;
+  animation: marquee 35s linear infinite;
   white-space: nowrap;
 }
 .marquee-item {
@@ -825,63 +825,6 @@ nav.scrolled {
 }
 .step-desc { font-size: 0.9rem; line-height: 1.8; color: var(--dust); }
 
-/* ══════════════════════ TESTIMONIALS ══════════════════════ */
-.testimonials {
-  padding: 120px 60px;
-  border-top: 1px solid var(--line);
-  overflow: hidden;
-}
-.testimonials-track {
-  display: flex;
-  gap: 24px;
-  animation: slide-testi 40s linear infinite;
-  margin-top: 70px;
-}
-.testimonials-track:hover { animation-play-state: paused; }
-@keyframes slide-testi {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
-}
-.testi-card {
-  min-width: 420px;
-  background: var(--ink-2);
-  border: 1px solid var(--line);
-  border-radius: 4px;
-  padding: 40px;
-  flex-shrink: 0;
-}
-.testi-quote-mark {
-  font-family: var(--font-display);
-  font-size: 4rem;
-  font-weight: 300;
-  color: var(--gold);
-  line-height: 0.5;
-  margin-bottom: 20px;
-  opacity: 0.5;
-}
-.testi-text {
-  font-size: 0.95rem;
-  line-height: 1.8;
-  color: var(--dust);
-  margin-bottom: 28px;
-}
-.testi-author { display: flex; align-items: center; gap: 14px; }
-.testi-avatar {
-  width: 42px; height: 42px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, var(--gold-dim), var(--ink-3));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-family: var(--font-display);
-  font-size: 1rem;
-  color: var(--gold);
-  font-weight: 400;
-  flex-shrink: 0;
-}
-.testi-name { font-size: 0.88rem; font-weight: 500; color: var(--cream); margin-bottom: 2px; }
-.testi-role { font-size: 0.75rem; color: var(--silver); }
-
 /* ══════════════════════ CONTACT ══════════════════════ */
 .contact {
   padding: 140px 60px;
@@ -1027,7 +970,7 @@ footer {
 
 <!-- ══════════════════════ NAVIGATION ══════════════════════ -->
 <nav id="navbar">
-  <a href="#" class="nav-logo">A<span>.</span>Reeves</a>
+  <a href="#" class="nav-logo">S<span>.</span>Sharma</a>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
     <li><a href="#services">Services</a></li>
@@ -1050,14 +993,14 @@ footer {
       <span class="status-dot"></span>
       Available for Projects — 2025
     </div>
-    <p class="hero-eyebrow">Creative Director & <span>UI/UX Designer</span> — Based in New York</p>
+    <p class="hero-eyebrow">Creative Coder & <span>AI Developer</span> — Based in India</p>
     <h1 class="hero-headline">
-      Design that<br>
-      <em>moves</em> people<br>
-      <span class="outline">forward.</span>
+      Engineering<br>
+      <em>intelligent</em><br>
+      <span class="outline">experiences.</span>
     </h1>
     <p class="hero-subtext">
-      I craft brand identities and digital experiences that don't just look extraordinary — they feel inevitable.
+      I build intelligent systems and digital experiences that don't just function flawlessly — they feel alive.
     </p>
     <div class="hero-actions">
       <a href="#work" class="btn-primary">View Selected Work ↗</a>
@@ -1072,16 +1015,16 @@ footer {
 
   <div class="hero-stats">
     <div class="hero-stat">
-      <div class="stat-value">7<span>+</span></div>
-      <div class="stat-label">Years of Craft</div>
+      <div class="stat-value">3<span>+</span></div>
+      <div class="stat-label">Years of Coding</div>
     </div>
     <div class="hero-stat">
-      <div class="stat-value">90<span>+</span></div>
-      <div class="stat-label">Projects Delivered</div>
+      <div class="stat-value">20<span>+</span></div>
+      <div class="stat-label">Projects Built</div>
     </div>
     <div class="hero-stat">
-      <div class="stat-value">24<span>k</span></div>
-      <div class="stat-label">Hours Designed</div>
+      <div class="stat-value">5<span>+</span></div>
+      <div class="stat-label">Languages Known</div>
     </div>
   </div>
 </section>
@@ -1090,20 +1033,20 @@ footer {
 <div class="marquee-section">
   <div class="marquee-track">
     <!-- duplicated for infinite loop -->
-    <span class="marquee-item">Brand Identity <span class="sep">✦</span></span>
-    <span class="marquee-item">UI / UX Design <span class="sep">✦</span></span>
-    <span class="marquee-item">Motion & Animation <span class="sep">✦</span></span>
-    <span class="marquee-item">Interaction Design <span class="sep">✦</span></span>
-    <span class="marquee-item">Design Systems <span class="sep">✦</span></span>
-    <span class="marquee-item">Web Development <span class="sep">✦</span></span>
-    <span class="marquee-item">Art Direction <span class="sep">✦</span></span>
-    <span class="marquee-item">Brand Identity <span class="sep">✦</span></span>
-    <span class="marquee-item">UI / UX Design <span class="sep">✦</span></span>
-    <span class="marquee-item">Motion & Animation <span class="sep">✦</span></span>
-    <span class="marquee-item">Interaction Design <span class="sep">✦</span></span>
-    <span class="marquee-item">Design Systems <span class="sep">✦</span></span>
-    <span class="marquee-item">Web Development <span class="sep">✦</span></span>
-    <span class="marquee-item">Art Direction <span class="sep">✦</span></span>
+    <span class="marquee-item">Python Development <span class="sep">✦</span></span>
+    <span class="marquee-item">Computer Vision <span class="sep">✦</span></span>
+    <span class="marquee-item">AI & Automation <span class="sep">✦</span></span>
+    <span class="marquee-item">Next.js & React <span class="sep">✦</span></span>
+    <span class="marquee-item">Robotics <span class="sep">✦</span></span>
+    <span class="marquee-item">Full-Stack Development <span class="sep">✦</span></span>
+    <span class="marquee-item">System Design <span class="sep">✦</span></span>
+    <span class="marquee-item">Python Development <span class="sep">✦</span></span>
+    <span class="marquee-item">Computer Vision <span class="sep">✦</span></span>
+    <span class="marquee-item">AI & Automation <span class="sep">✦</span></span>
+    <span class="marquee-item">Next.js & React <span class="sep">✦</span></span>
+    <span class="marquee-item">Robotics <span class="sep">✦</span></span>
+    <span class="marquee-item">Full-Stack Development <span class="sep">✦</span></span>
+    <span class="marquee-item">System Design <span class="sep">✦</span></span>
   </div>
 </div>
 
@@ -1122,11 +1065,11 @@ footer {
         <path d="M150 150 L300 80 L450 150" stroke="#8A96A8" stroke-width="0.3" fill="none"/>
       </svg>
       <div class="about-circle">
-        <span class="about-initials">AR</span>
+        <span class="about-initials">SS</span>
       </div>
-      <div class="about-skill-pill pill-1">Brand Identity</div>
-      <div class="about-skill-pill pill-2">UI Systems</div>
-      <div class="about-skill-pill pill-3">Motion Design</div>
+      <div class="about-skill-pill pill-1">Python & OpenCV</div>
+      <div class="about-skill-pill pill-2">AI Assistants</div>
+      <div class="about-skill-pill pill-3">Web Apps</div>
     </div>
   </div>
 
@@ -1134,23 +1077,21 @@ footer {
     <span class="section-label">About</span>
     <h2 class="section-heading">
       Hello,<br>
-      I'm <em>Alex Reeves</em>
+      I'm <em>Sarthak Sharma</em>
     </h2>
     <p class="about-bio">
-      A New York-based creative director with <strong>7 years of experience</strong> turning ambitious ideas into iconic digital realities. I work at the intersection of strategy, brand, and technology.
-      <br><br>
-      My process starts with <strong>deep listening</strong>, moves through rigorous concept exploration, and lands on solutions that feel both inevitable and surprising. I've partnered with startups, cultural institutions, and Fortune 500 brands alike.
+        A passionate creative coder and AI enthusiast from India. I thrive at the intersection of <strong>computer vision, automation, and web technology</strong>.
+        <br><br>
+        My process starts with <strong>deep curiosity</strong>, moves through rigorous experimentation, and lands on solutions that are both intelligent and intuitive. I've built projects for personal learning, open-source contributions, and to explore the future of human-computer interaction.
     </p>
     <div class="about-links">
-      <a href="#" class="social-link" title="LinkedIn">in</a>
-      <a href="#" class="social-link" title="Dribbble">Dr</a>
-      <a href="#" class="social-link" title="Behance">Be</a>
-      <a href="#" class="social-link" title="X/Twitter">𝕏</a>
-      <a href="#" class="social-link" title="Instagram">IG</a>
+      <a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" class="social-link" title="LinkedIn">in</a>
+      <a href="https://github.com/SAR0406" class="social-link" title="GitHub">gh</a>
+      <a href="https://x.com/Sarthak44201143" class="social-link" title="X/Twitter">𝕏</a>
     </div>
     <div class="about-time">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      Local time in New York: <span id="live-clock">--:--:--</span>
+      Local time in India (IST): <span id="live-clock">--:--:--</span>
     </div>
   </div>
 </section>
@@ -1165,51 +1106,51 @@ footer {
       </h2>
     </div>
     <p class="services-intro">
-      Every engagement is bespoke. I bring full ownership — from the first concept sketch to the final pixel — ensuring coherence, quality, and creative vision throughout.
+      Every engagement is a learning opportunity. I bring full ownership — from the first concept sketch to the final line of code — ensuring coherence, quality, and creative vision throughout.
     </p>
   </div>
   <div class="services-grid reveal reveal-delay-1">
     <div class="service-card">
       <span class="service-num">01.</span>
-      <h3 class="service-title">Brand Identity</h3>
-      <p class="service-desc">Complete visual identity systems — logo design, typography, colour, imagery — built for longevity and recognisability.</p>
+      <h3 class="service-title">Computer Vision</h3>
+      <p class="service-desc">Building intelligent systems that see and understand the world. From object detection to real-time interaction automation.</p>
       <div class="service-tags">
-        <span class="tag">Logo Systems</span>
-        <span class="tag">Style Guides</span>
-        <span class="tag">Brand Voice</span>
+        <span class="tag">OpenCV</span>
+        <span class="tag">MediaPipe</span>
+        <span class="tag">YOLO</span>
       </div>
     </div>
     <div class="service-card">
       <span class="service-num">02.</span>
-      <h3 class="service-title">UI / UX Design</h3>
-      <p class="service-desc">Intuitive interfaces backed by user research. From information architecture to polished high-fidelity prototypes.</p>
+      <h3 class="service-title">AI & Automation</h3>
+      <p class="service-desc">Developing JARVIS-style assistants and smart tools that integrate vision, voice, and logic to simplify complex tasks.</p>
       <div class="service-tags">
-        <span class="tag">Wireframing</span>
-        <span class="tag">Prototyping</span>
-        <span class="tag">Research</span>
+        <span class="tag">Python</span>
+        <span class="tag">Genkit</span>
+        <span class="tag">Node.js</span>
       </div>
     </div>
     <div class="service-card">
       <span class="service-num">03.</span>
-      <h3 class="service-title">Web & Motion</h3>
-      <p class="service-desc">Production-grade websites with purposeful animations. Framer, Webflow, and custom-coded experiences that perform.</p>
+      <h3 class="service-title">Full-Stack Web Apps</h3>
+      <p class="service-desc">Crafting performant, modern web experiences with Next.js and React, backed by robust Firebase services.</p>
       <div class="service-tags">
-        <span class="tag">Framer</span>
-        <span class="tag">Webflow</span>
-        <span class="tag">GSAP</span>
+        <span class="tag">Next.js</span>
+        <span class="tag">React</span>
+        <span class="tag">Firebase</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════ WORK ══════════════════════ -->
+<!-- ══════════════════════ WORK / PROJECTS ══════════════════════ -->
 <section class="work" id="work">
   <div class="work-header reveal">
     <div>
       <span class="section-label">Selected Work</span>
       <h2 class="section-heading">Recent <em>Projects</em></h2>
     </div>
-    <a href="#" class="view-all">View All Projects →</a>
+    <a href="https://github.com/SAR0406" class="view-all" target="_blank" rel="noopener noreferrer">View All Projects →</a>
   </div>
   <div class="projects-grid reveal reveal-delay-1">
 
@@ -1227,9 +1168,9 @@ footer {
       <div class="project-overlay"></div>
       <div class="project-arrow">↗</div>
       <div class="project-info">
-        <div class="project-category">Brand Identity · 2024</div>
-        <h3 class="project-name">Aurum<br>Financial</h3>
-        <p class="project-detail">Complete rebrand for a London-based investment firm. Identity, motion guidelines, and digital presence.</p>
+        <div class="project-category">Computer Vision · 2024</div>
+        <h3 class="project-name">Project:<br>Sentinel</h3>
+        <p class="project-detail">A real-time person detection and interaction system using OpenCV for automated monitoring.</p>
       </div>
     </div>
 
@@ -1247,9 +1188,9 @@ footer {
       <div class="project-overlay"></div>
       <div class="project-arrow">↗</div>
       <div class="project-info">
-        <div class="project-category">Product Design · 2024</div>
-        <h3 class="project-name">Verdant<br>Health App</h3>
-        <p class="project-detail">Mobile UX and design system for a wellness startup. Raised $4M Series A post-launch.</p>
+        <div class="project-category">AI Assistant · 2024</div>
+        <h3 class="project-name">Project:<br>Nexus AI</h3>
+        <p class="project-detail">An intelligent assistant integrating vision and logic to automate daily digital tasks and workflows.</p>
       </div>
     </div>
 
@@ -1266,9 +1207,9 @@ footer {
       <div class="project-overlay"></div>
       <div class="project-arrow">↗</div>
       <div class="project-info">
-        <div class="project-category">Web Design · 2024</div>
-        <h3 class="project-name">Kestrel<br>Analytics</h3>
-        <p class="project-detail">Data visualisation platform interface. Complex datasets made beautiful and instantly legible.</p>
+        <div class="project-category">Web Development · 2023</div>
+        <h3 class="project-name">Interactive<br>Portfolio V1</h3>
+        <p class="project-detail">My primary portfolio site built with Next.js, showcasing interactive animations and a live chat feature.</p>
       </div>
     </div>
 
@@ -1287,9 +1228,9 @@ footer {
       <div class="project-overlay"></div>
       <div class="project-arrow">↗</div>
       <div class="project-info">
-        <div class="project-category">Art Direction · 2023</div>
-        <h3 class="project-name">Meridian<br>Campaign</h3>
-        <p class="project-detail">Global brand campaign for a luxury travel brand. Photography direction, visual system, and digital rollout.</p>
+        <div class="project-category">Robotics · 2023</div>
+        <h3 class="project-name">Project:<br>VisionBot</h3>
+        <p class="project-detail">An experimental robotics project combining a simple chassis with a camera for autonomous navigation.</p>
       </div>
     </div>
 
@@ -1307,128 +1248,28 @@ footer {
       <div class="step-num">01</div>
       <div class="step-content">
         <h3 class="step-title">Discovery & Strategy</h3>
-        <p class="step-desc">Every great design starts with great questions. I immerse myself in your world — your users, competitors, and ambitions — before touching a single frame.</p>
+        <p class="step-desc">Every great project starts with great questions. I immerse myself in the problem domain — your users, goals, and technical constraints — before touching a single line of code.</p>
       </div>
     </div>
     <div class="process-step reveal reveal-delay-1">
       <div class="step-num">02</div>
       <div class="step-content">
         <h3 class="step-title">Concept & Direction</h3>
-        <p class="step-desc">I develop multiple distinct creative directions, each with its own logic and rationale. Clients choose not just a look but a story.</p>
+        <p class="step-desc">I develop multiple distinct technical approaches, each with its own logic and rationale. We choose not just a solution but a scalable architecture.</p>
       </div>
     </div>
     <div class="process-step reveal reveal-delay-2">
       <div class="step-num">03</div>
       <div class="step-content">
         <h3 class="step-title">Design & Build</h3>
-        <p class="step-desc">Meticulous execution in Figma, refined in Framer or code. Every decision is intentional — typeface, spacing, colour, motion.</p>
+        <p class="step-desc">Meticulous execution in code. Every decision is intentional — algorithms, data structures, performance, and user experience.</p>
       </div>
     </div>
     <div class="process-step reveal reveal-delay-3">
       <div class="step-num">04</div>
       <div class="step-content">
         <h3 class="step-title">Launch & Evolve</h3>
-        <p class="step-desc">A brand isn't a deliverable — it's a living system. I provide full handoff documentation and ongoing partnership as needed.</p>
-      </div>
-    </div>
-  </div>
-</section>
-
-<!-- ══════════════════════ TESTIMONIALS ══════════════════════ -->
-<section class="testimonials">
-  <div class="reveal">
-    <span class="section-label">Kind Words</span>
-    <h2 class="section-heading">What Clients <em>Say</em></h2>
-  </div>
-  <div class="testimonials-track">
-    <!-- First set -->
-    <div class="testi-card">
-      <div class="testi-quote-mark">"</div>
-      <p class="testi-text">Alex transformed our brand identity from something generic into something that genuinely turns heads. The strategic thinking behind every visual decision was remarkable.</p>
-      <div class="testi-author">
-        <div class="testi-avatar">SL</div>
-        <div>
-          <div class="testi-name">Sarah Lin</div>
-          <div class="testi-role">CEO, Aurum Financial</div>
-        </div>
-      </div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-quote-mark">"</div>
-      <p class="testi-text">Our conversion rate increased 47% after the redesign. But beyond metrics, our team finally feels proud to show the product. Alex made it feel inevitable.</p>
-      <div class="testi-author">
-        <div class="testi-avatar">MK</div>
-        <div>
-          <div class="testi-name">Marcus König</div>
-          <div class="testi-role">CTO, Verdant Health</div>
-        </div>
-      </div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-quote-mark">"</div>
-      <p class="testi-text">Exceptional attention to craft. Alex understood our voice better than we did — and gave it form. We've received more press enquiries since launch than in our previous three years combined.</p>
-      <div class="testi-author">
-        <div class="testi-avatar">JP</div>
-        <div>
-          <div class="testi-name">Julia Patel</div>
-          <div class="testi-role">Creative Director, Meridian</div>
-        </div>
-      </div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-quote-mark">"</div>
-      <p class="testi-text">Working with Alex is unlike any design agency experience. There's no brief-to-delivery black box. It's a genuine creative partnership from day one.</p>
-      <div class="testi-author">
-        <div class="testi-avatar">TN</div>
-        <div>
-          <div class="testi-name">Tom Nakamura</div>
-          <div class="testi-role">Founder, Kestrel Labs</div>
-        </div>
-      </div>
-    </div>
-    <!-- Duplicate for infinite scroll -->
-    <div class="testi-card">
-      <div class="testi-quote-mark">"</div>
-      <p class="testi-text">Alex transformed our brand identity from something generic into something that genuinely turns heads. The strategic thinking behind every visual decision was remarkable.</p>
-      <div class="testi-author">
-        <div class="testi-avatar">SL</div>
-        <div>
-          <div class="testi-name">Sarah Lin</div>
-          <div class="testi-role">CEO, Aurum Financial</div>
-        </div>
-      </div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-quote-mark">"</div>
-      <p class="testi-text">Our conversion rate increased 47% after the redesign. But beyond metrics, our team finally feels proud to show the product. Alex made it feel inevitable.</p>
-      <div class="testi-author">
-        <div class="testi-avatar">MK</div>
-        <div>
-          <div class="testi-name">Marcus König</div>
-          <div class="testi-role">CTO, Verdant Health</div>
-        </div>
-      </div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-quote-mark">"</div>
-      <p class="testi-text">Exceptional attention to craft. Alex understood our voice better than we did — and gave it form. We've received more press enquiries since launch than in our previous three years combined.</p>
-      <div class="testi-author">
-        <div class="testi-avatar">JP</div>
-        <div>
-          <div class="testi-name">Julia Patel</div>
-          <div class="testi-role">Creative Director, Meridian</div>
-        </div>
-      </div>
-    </div>
-    <div class="testi-card">
-      <div class="testi-quote-mark">"</div>
-      <p class="testi-text">Working with Alex is unlike any design agency experience. There's no brief-to-delivery black box. It's a genuine creative partnership from day one.</p>
-      <div class="testi-author">
-        <div class="testi-avatar">TN</div>
-        <div>
-          <div class="testi-name">Tom Nakamura</div>
-          <div class="testi-role">Founder, Kestrel Labs</div>
-        </div>
+        <p class="step-desc">A project isn't a deliverable — it's a living system. I provide full handoff documentation and ongoing partnership as needed.</p>
       </div>
     </div>
   </div>
@@ -1439,20 +1280,20 @@ footer {
   <div>
     <span class="section-label reveal">Let's Create</span>
     <h2 class="contact-headline reveal reveal-delay-1">
-      Let's work<br>
+      Let's build<br>
       <em>together</em>
     </h2>
     <p class="contact-subtext reveal reveal-delay-2">
-      Have a project in mind? I'm currently accepting new briefs. Let's start a conversation.
+      Have an idea or want to collaborate? I'm always open to new challenges. Let's start a conversation.
     </p>
     <div class="contact-info reveal reveal-delay-3">
       <div class="contact-item">
         <span class="contact-label">Email</span>
-        <a href="mailto:hello@alexreeves.co" class="contact-value">hello@alexreeves.co</a>
+        <a href="mailto:sarthak040624@gmail.com" class="contact-value">sarthak040624@gmail.com</a>
       </div>
       <div class="contact-item">
         <span class="contact-label">Based In</span>
-        <span class="contact-value">New York, NY · Open to Global</span>
+        <span class="contact-value">India · Open to Global</span>
       </div>
       <div class="contact-item">
         <span class="contact-label">Response Time</span>
@@ -1465,11 +1306,11 @@ footer {
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">First Name</label>
-        <input class="form-input" type="text" placeholder="Alex">
+        <input class="form-input" type="text" placeholder="Sarthak">
       </div>
       <div class="form-group">
         <label class="form-label">Last Name</label>
-        <input class="form-input" type="text" placeholder="Smith">
+        <input class="form-input" type="text" placeholder="Sharma">
       </div>
     </div>
     <div class="form-group">
@@ -1478,7 +1319,7 @@ footer {
     </div>
     <div class="form-group">
       <label class="form-label">Project Type</label>
-      <input class="form-input" type="text" placeholder="Brand Identity / Web Design / UI / UX ...">
+      <input class="form-input" type="text" placeholder="Computer Vision / Web App / AI Bot ...">
     </div>
     <div class="form-group">
       <label class="form-label">Tell Me About Your Project</label>
@@ -1492,13 +1333,12 @@ footer {
 
 <!-- ══════════════════════ FOOTER ══════════════════════ -->
 <footer>
-  <div class="footer-logo">A<span>.</span>Reeves</div>
-  <div class="footer-copy">© 2025 Alex Reeves. Crafted with <span>♡</span></div>
+  <div class="footer-logo">S<span>.</span>Sharma</div>
+  <div class="footer-copy">© <span id="footer-year">2024</span> Sarthak Sharma. Crafted with <span>♡</span></div>
   <div class="footer-socials">
-    <a href="#" class="footer-social">LinkedIn</a>
-    <a href="#" class="footer-social">Dribbble</a>
-    <a href="#" class="footer-social">Behance</a>
-    <a href="#" class="footer-social">Twitter</a>
+    <a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" target="_blank" rel="noopener noreferrer" class="footer-social">LinkedIn</a>
+    <a href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer" class="footer-social">GitHub</a>
+    <a href="https://x.com/Sarthak44201143" target="_blank" rel="noopener noreferrer" class="footer-social">Twitter</a>
   </div>
 </footer>
 
@@ -1542,11 +1382,21 @@ window.addEventListener('scroll', () => {
 /* ══════════════════════ LIVE CLOCK ══════════════════════ */
 function updateClock() {
   const now = new Date();
-  const opts = { timeZone: 'America/New_York', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false };
-  document.getElementById('live-clock').textContent = now.toLocaleTimeString('en-US', opts);
+  const opts = { timeZone: 'Asia/Kolkata', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false };
+  const clockEl = document.getElementById('live-clock');
+  if (clockEl) {
+    clockEl.textContent = now.toLocaleTimeString('en-US', opts);
+  }
 }
 setInterval(updateClock, 1000);
 updateClock();
+
+/* ══════════════════════ FOOTER YEAR ══════════════════════ */
+const yearEl = document.getElementById('footer-year');
+if (yearEl) {
+    yearEl.textContent = new Date().getFullYear();
+}
+
 
 /* ══════════════════════ SCROLL REVEAL ══════════════════════ */
 const revealEls = document.querySelectorAll('.reveal');
