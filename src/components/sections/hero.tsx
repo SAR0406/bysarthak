@@ -36,8 +36,13 @@ export function Hero() {
               rotationInterval={2000}
             />
           </div>
-          <div className="animate-fade-in-up" style={{ animationDelay: '1s' }}>
-            <StarButton />
+          <div className="flex items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '1s' }}>
+            <StarButton href="#work" ariaLabel="Explore My World, scroll to work section">
+              Explore My World
+            </StarButton>
+            <StarButton href="/another-version.html" ariaLabel="Check another version of me">
+              Check another version
+            </StarButton>
           </div>
         </div>
         <div className="w-full max-w-4xl animate-fade-in-up mt-12" style={{ animationDelay: '1.2s' }}>
