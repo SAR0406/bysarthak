@@ -47,8 +47,8 @@ export default function RootLayout({
         <FirebaseClientProvider>
             <div className="fixed top-0 left-0 w-full h-screen -z-10">
               <LightPillar
-                topColor="#f7b43b"
-                bottomColor="#f5a616"
+                topColor="#43c57c"
+                bottomColor="#229a56"
                 intensity={0.8}
                 rotationSpeed={0.2}
                 interactive={false}
