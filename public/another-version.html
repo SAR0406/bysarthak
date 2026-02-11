@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portfolio — Creative Coder & Developer</title>
+<title>Sarthak Upadhyay — Creative Coder & AI Developer</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400;1,500&family=Outfit:wght@200;300;400;500;600&display=swap" rel="stylesheet">
@@ -360,31 +360,6 @@ nav.scrolled {
   100% { left: 100%; }
 }
 
-/* Hero stats */
-.hero-stats {
-  position: absolute;
-  bottom: 40px; right: 60px;
-  display: flex;
-  gap: 48px;
-  z-index: 2;
-}
-.hero-stat { text-align: right; }
-.stat-value {
-  font-family: var(--font-display);
-  font-size: 2.4rem;
-  font-weight: 300;
-  color: var(--cream);
-  line-height: 1;
-  margin-bottom: 4px;
-}
-.stat-value span { color: var(--gold); font-style: italic; }
-.stat-label {
-  font-size: 0.68rem;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  color: var(--silver);
-}
-
 /* ══════════════════════ MARQUEE ══════════════════════ */
 .marquee-section {
   padding: 20px 0;
@@ -397,7 +372,7 @@ nav.scrolled {
 .marquee-track {
   display: flex;
   gap: 0;
-  animation: marquee 35s linear infinite;
+  animation: marquee 28s linear infinite;
   white-space: nowrap;
 }
 .marquee-item {
@@ -442,6 +417,14 @@ nav.scrolled {
   align-items: center;
   justify-content: center;
   position: relative;
+}
+.about-image {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 0;
 }
 /* Decorative circular element */
 .about-circle {
@@ -559,6 +542,7 @@ nav.scrolled {
   font-size: 0.85rem;
   transition: border-color 0.2s, color 0.2s, background 0.2s;
 }
+.social-link svg { width: 18px; height: 18px; fill: currentColor; }
 .social-link:hover { border-color: var(--gold); color: var(--gold); }
 .about-time {
   margin-top: 48px;
@@ -571,7 +555,6 @@ nav.scrolled {
   align-items: center;
   gap: 8px;
 }
-#live-clock { color: var(--cream); font-weight: 400; }
 
 /* ══════════════════════ SERVICES ══════════════════════ */
 .services {
@@ -952,13 +935,30 @@ footer {
 .gold { color: var(--gold); }
 .w-full { width: 100%; }
 
-/* ══════════════════════ SVG DECORATIONS ══════════════════════ */
-.corner-dec {
-  position: absolute;
-  width: 80px; height: 80px;
+/* ══════════════════════ MEDIA QUERIES ══════════════════════ */
+@media (max-width: 1024px) {
+  .about, .services-header, .contact { grid-template-columns: 1fr; }
+  .about-content, .services, .work, .process, .contact { padding-left: 40px; padding-right: 40px; }
+  .services-grid { grid-template-columns: 1fr; }
+  .projects-grid { grid-template-columns: 1fr; }
+  .step-content { grid-template-columns: 1fr; gap: 16px; }
+  .step-title { padding-top: 0; }
+  .hero-stats { display: none; }
+  nav { padding: 20px 40px; }
+  footer { flex-direction: column; gap: 20px; text-align: center; }
 }
-.corner-dec.tl { top: 20px; left: 20px; }
-.corner-dec.br { bottom: 20px; right: 20px; transform: rotate(180deg); }
+@media (max-width: 768px) {
+  nav { padding: 20px; }
+  .nav-links { display: none; } /* Basic mobile nav, could be improved with JS */
+  .hero, .about-content, .services, .work, .process, .contact { padding-left: 20px; padding-right: 20px; }
+  .hero-headline { font-size: clamp(48px, 14vw, 80px); }
+  .hero-actions { flex-direction: column; align-items: stretch; }
+  .btn-primary, .btn-secondary { justify-content: center; }
+  .hero-scroll { display: none; }
+  .contact-headline { font-size: clamp(42px, 12vw, 72px); }
+  footer { padding: 30px 20px; }
+}
+
 </style>
 </head>
 <body>
@@ -970,14 +970,14 @@ footer {
 
 <!-- ══════════════════════ NAVIGATION ══════════════════════ -->
 <nav id="navbar">
-  <a href="#" class="nav-logo">S<span>.</span>Sharma</a>
+  <a href="#" class="nav-logo">S<span>.</span>Upadhyay</a>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
-    <li><a href="#services">Services</a></li>
+    <li><a href="#services">Expertise</a></li>
     <li><a href="#work">Work</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
-  <a href="#contact" class="nav-cta">Let's Talk →</a>
+  <a href="#contact" class="nav-cta">Get In Touch →</a>
 </nav>
 
 <!-- ══════════════════════ HERO ══════════════════════ -->
@@ -991,19 +991,19 @@ footer {
   <div class="hero-content">
     <div class="status-badge">
       <span class="status-dot"></span>
-      Available for Projects — 2025
+      Available for Projects
     </div>
-    <p class="hero-eyebrow">Creative Coder & <span>AI Developer</span> — Based in India</p>
+    <p class="hero-eyebrow">Creative Coder & <span>AI Explorer</span></p>
     <h1 class="hero-headline">
-      Engineering<br>
-      <em>intelligent</em><br>
-      <span class="outline">experiences.</span>
+      Code that <em>thinks</em>,<br>
+      Systems that see &<br>
+      <span class="outline">act.</span>
     </h1>
     <p class="hero-subtext">
-      I build intelligent systems and digital experiences that don't just function flawlessly — they feel alive.
+      I build intelligent systems and web experiences that don't just function—they learn, perceive, and interact with the world.
     </p>
     <div class="hero-actions">
-      <a href="#work" class="btn-primary">View Selected Work ↗</a>
+      <a href="#work" class="btn-primary">View My Work ↗</a>
       <a href="#contact" class="btn-secondary">Start a Project</a>
     </div>
   </div>
@@ -1012,41 +1012,26 @@ footer {
     <div class="scroll-line"></div>
     Scroll to Explore
   </div>
-
-  <div class="hero-stats">
-    <div class="hero-stat">
-      <div class="stat-value">3<span>+</span></div>
-      <div class="stat-label">Years of Coding</div>
-    </div>
-    <div class="hero-stat">
-      <div class="stat-value">20<span>+</span></div>
-      <div class="stat-label">Projects Built</div>
-    </div>
-    <div class="hero-stat">
-      <div class="stat-value">5<span>+</span></div>
-      <div class="stat-label">Languages Known</div>
-    </div>
-  </div>
 </section>
 
 <!-- ══════════════════════ MARQUEE ══════════════════════ -->
 <div class="marquee-section">
   <div class="marquee-track">
     <!-- duplicated for infinite loop -->
-    <span class="marquee-item">Python Development <span class="sep">✦</span></span>
-    <span class="marquee-item">Computer Vision <span class="sep">✦</span></span>
-    <span class="marquee-item">AI & Automation <span class="sep">✦</span></span>
-    <span class="marquee-item">Next.js & React <span class="sep">✦</span></span>
-    <span class="marquee-item">Robotics <span class="sep">✦</span></span>
-    <span class="marquee-item">Full-Stack Development <span class="sep">✦</span></span>
-    <span class="marquee-item">System Design <span class="sep">✦</span></span>
-    <span class="marquee-item">Python Development <span class="sep">✦</span></span>
-    <span class="marquee-item">Computer Vision <span class="sep">✦</span></span>
-    <span class="marquee-item">AI & Automation <span class="sep">✦</span></span>
-    <span class="marquee-item">Next.js & React <span class="sep">✦</span></span>
-    <span class="marquee-item">Robotics <span class="sep">✦</span></span>
-    <span class="marquee-item">Full-Stack Development <span class="sep">✦</span></span>
-    <span class="marquee-item">System Design <span class="sep">✦</span></span>
+    <span class="marquee-item">Python<span class="sep">✦</span></span>
+    <span class="marquee-item">Computer Vision<span class="sep">✦</span></span>
+    <span class="marquee-item">OpenCV<span class="sep">✦</span></span>
+    <span class="marquee-item">AI / ML<span class="sep">✦</span></span>
+    <span class="marquee-item">Next.js<span class="sep">✦</span></span>
+    <span class="marquee-item">Node.js<span class="sep">✦</span></span>
+    <span class="marquee-item">Firebase<span class="sep">✦</span></span>
+    <span class="marquee-item">Python<span class="sep">✦</span></span>
+    <span class="marquee-item">Computer Vision<span class="sep">✦</span></span>
+    <span class="marquee-item">OpenCV<span class="sep">✦</span></span>
+    <span class="marquee-item">AI / ML<span class="sep">✦</span></span>
+    <span class="marquee-item">Next.js<span class="sep">✦</span></span>
+    <span class="marquee-item">Node.js<span class="sep">✦</span></span>
+    <span class="marquee-item">Firebase<span class="sep">✦</span></span>
   </div>
 </div>
 
@@ -1054,22 +1039,7 @@ footer {
 <section class="about" id="about">
   <div class="about-visual">
     <div class="about-image-placeholder">
-      <!-- Decorative Abstract Portrait Placeholder -->
-      <svg width="100%" height="100%" style="position:absolute;inset:0;opacity:0.15" viewBox="0 0 600 700" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <circle cx="300" cy="280" r="200" stroke="#D4A854" stroke-width="0.5"/>
-        <circle cx="300" cy="280" r="160" stroke="#D4A854" stroke-width="0.3"/>
-        <line x1="0" y1="280" x2="600" y2="280" stroke="#D4A854" stroke-width="0.3"/>
-        <line x1="300" y1="0" x2="300" y2="700" stroke="#D4A854" stroke-width="0.3"/>
-        <circle cx="300" cy="280" r="5" fill="#D4A854"/>
-        <path d="M100 400 Q300 500 500 400" stroke="#D4A854" stroke-width="0.5" fill="none"/>
-        <path d="M150 150 L300 80 L450 150" stroke="#8A96A8" stroke-width="0.3" fill="none"/>
-      </svg>
-      <div class="about-circle">
-        <span class="about-initials">SS</span>
-      </div>
-      <div class="about-skill-pill pill-1">Python & OpenCV</div>
-      <div class="about-skill-pill pill-2">AI Assistants</div>
-      <div class="about-skill-pill pill-3">Web Apps</div>
+       <img src="https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg" alt="Sarthak Upadhyay" class="about-image">
     </div>
   </div>
 
@@ -1077,21 +1047,23 @@ footer {
     <span class="section-label">About</span>
     <h2 class="section-heading">
       Hello,<br>
-      I'm <em>Sarthak Sharma</em>
+      I'm <em>Sarthak Upadhyay</em>
     </h2>
     <p class="about-bio">
-        A passionate creative coder and AI enthusiast from India. I thrive at the intersection of <strong>computer vision, automation, and web technology</strong>.
-        <br><br>
-        My process starts with <strong>deep curiosity</strong>, moves through rigorous experimentation, and lands on solutions that are both intelligent and intuitive. I've built projects for personal learning, open-source contributions, and to explore the future of human-computer interaction.
+      I'm a Class 10 student building <strong>Iron Man–level ideas</strong> with student-level resources. My passion lies at the intersection of computer vision, automation, and full-stack web development.
+      <br><br>
+      I specialize in using <strong>Python and OpenCV</strong> for real-time camera intelligence and creating beginner-to-intermediate <strong>AI/JARVIS-style assistant systems</strong> that integrate vision, voice, and logic.
     </p>
     <div class="about-links">
-      <a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" class="social-link" title="LinkedIn">in</a>
-      <a href="https://github.com/SAR0406" class="social-link" title="GitHub">gh</a>
-      <a href="https://x.com/Sarthak44201143" class="social-link" title="X/Twitter">𝕏</a>
-    </div>
-    <div class="about-time">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      Local time in India (IST): <span id="live-clock">--:--:--</span>
+        <a href="https://github.com/SAR0406" class="social-link" title="GitHub" target="_blank" rel="noopener noreferrer">
+            <svg viewBox="0 0 16 16" fill="currentColor"><path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82.64-.18 1.32-.27 2-.27.68 0 1.36.09 2 .27 1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.013 8.013 0 0 0 16 8c0-4.42-3.58-8-8-8z"></path></svg>
+        </a>
+        <a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" class="social-link" title="LinkedIn" target="_blank" rel="noopener noreferrer">
+             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M20.5 2h-17A1.5 1.5 0 0 0 2 3.5v17A1.5 1.5 0 0 0 3.5 22h17a1.5 1.5 0 0 0 1.5-1.5v-17A1.5 1.5 0 0 0 20.5 2ZM8 19H5v-9h3zM6.5 8.25A1.75 1.75 0 1 1 8.25 6.5 1.75 1.75 0 0 1 6.5 8.25ZM19 19h-3v-4.75c0-1.4-1.2-2.5-2.5-2.5S11 12.85 11 14.25V19h-3v-9h2.9v1.3a3.11 3.11 0 0 1 2.6-1.4c1.8 0 3.5 1.4 3.5 4.6Z"></path></svg>
+        </a>
+        <a href="https://x.com/Sarthak44201143" class="social-link" title="X/Twitter" target="_blank" rel="noopener noreferrer">
+             <svg viewBox="0 0 16 16" fill="currentColor"><path d="M12.6.75h2.454l-5.36 6.142L16 15.25h-4.937l-3.867-5.07-4.425 5.07H.316l5.733-6.57L0 .75h5.063l3.495 4.633L12.602.75Zm-1.283 13.022h1.43L4.156 2.05H2.6L11.32 13.772Z"></path></svg>
+        </a>
     </div>
   </div>
 </section>
@@ -1100,40 +1072,40 @@ footer {
 <section class="services" id="services">
   <div class="services-header reveal">
     <div>
-      <span class="section-label">What I Do</span>
+      <span class="section-label">What I Build</span>
       <h2 class="section-heading">
-        Services &<br><em>Expertise</em>
+        Areas of<br><em>Expertise</em>
       </h2>
     </div>
     <p class="services-intro">
-      Every engagement is a learning opportunity. I bring full ownership — from the first concept sketch to the final line of code — ensuring coherence, quality, and creative vision throughout.
+      I focus on practical application and building things that solve real-world problems. My expertise lies in these key areas.
     </p>
   </div>
   <div class="services-grid reveal reveal-delay-1">
     <div class="service-card">
       <span class="service-num">01.</span>
       <h3 class="service-title">Computer Vision</h3>
-      <p class="service-desc">Building intelligent systems that see and understand the world. From object detection to real-time interaction automation.</p>
+      <p class="service-desc">Using Python and OpenCV to create systems that can detect, track, and interact with objects and people in real-time.</p>
       <div class="service-tags">
-        <span class="tag">OpenCV</span>
-        <span class="tag">MediaPipe</span>
-        <span class="tag">YOLO</span>
+        <span class="tag">Person Detection</span>
+        <span class="tag">Interaction</span>
+        <span class="tag">Automation</span>
       </div>
     </div>
     <div class="service-card">
       <span class="service-num">02.</span>
       <h3 class="service-title">AI & Automation</h3>
-      <p class="service-desc">Developing JARVIS-style assistants and smart tools that integrate vision, voice, and logic to simplify complex tasks.</p>
+      <p class="service-desc">Building the logic and integration core for JARVIS-style assistants that combine vision, voice processing, and intelligent action.</p>
       <div class="service-tags">
-        <span class="tag">Python</span>
-        <span class="tag">Genkit</span>
-        <span class="tag">Node.js</span>
+        <span class="tag">AI Assistants</span>
+        <span class="tag">Logic Systems</span>
+        <span class="tag">Voice & Vision</span>
       </div>
     </div>
     <div class="service-card">
       <span class="service-num">03.</span>
-      <h3 class="service-title">Full-Stack Web Apps</h3>
-      <p class="service-desc">Crafting performant, modern web experiences with Next.js and React, backed by robust Firebase services.</p>
+      <h3 class="service-title">Full-Stack Web</h3>
+      <p class="service-desc">Crafting modern, performant web applications with cutting-edge technologies for seamless user experiences.</p>
       <div class="service-tags">
         <span class="tag">Next.js</span>
         <span class="tag">React</span>
@@ -1143,18 +1115,17 @@ footer {
   </div>
 </section>
 
-<!-- ══════════════════════ WORK / PROJECTS ══════════════════════ -->
+<!-- ══════════════════════ WORK ══════════════════════ -->
 <section class="work" id="work">
   <div class="work-header reveal">
     <div>
-      <span class="section-label">Selected Work</span>
+      <span class="section-label">My Work</span>
       <h2 class="section-heading">Recent <em>Projects</em></h2>
     </div>
     <a href="https://github.com/SAR0406" class="view-all" target="_blank" rel="noopener noreferrer">View All Projects →</a>
   </div>
   <div class="projects-grid reveal reveal-delay-1">
 
-    <!-- Project 1 -->
     <div class="project-card">
       <div class="project-art">
         <svg width="100%" height="100%" viewBox="0 0 600 400" fill="none">
@@ -1169,12 +1140,11 @@ footer {
       <div class="project-arrow">↗</div>
       <div class="project-info">
         <div class="project-category">Computer Vision · 2024</div>
-        <h3 class="project-name">Project:<br>Sentinel</h3>
-        <p class="project-detail">A real-time person detection and interaction system using OpenCV for automated monitoring.</p>
+        <h3 class="project-name">Real-Time<br>Vision AI</h3>
+        <p class="project-detail">An OpenCV-based system for real-time person detection and interaction automation.</p>
       </div>
     </div>
 
-    <!-- Project 2 -->
     <div class="project-card">
       <div class="project-art">
         <svg width="100%" height="100%" viewBox="0 0 600 400" fill="none">
@@ -1188,13 +1158,12 @@ footer {
       <div class="project-overlay"></div>
       <div class="project-arrow">↗</div>
       <div class="project-info">
-        <div class="project-category">AI Assistant · 2024</div>
-        <h3 class="project-name">Project:<br>Nexus AI</h3>
-        <p class="project-detail">An intelligent assistant integrating vision and logic to automate daily digital tasks and workflows.</p>
+        <div class="project-category">AI / ML · 2024</div>
+        <h3 class="project-name">AI Assistant<br>Core</h3>
+        <p class="project-detail">The logic and integration core for a JARVIS-style assistant using vision and voice.</p>
       </div>
     </div>
 
-    <!-- Project 3 -->
     <div class="project-card">
       <div class="project-art">
         <svg width="100%" height="100%" viewBox="0 0 600 400" fill="none">
@@ -1207,13 +1176,12 @@ footer {
       <div class="project-overlay"></div>
       <div class="project-arrow">↗</div>
       <div class="project-info">
-        <div class="project-category">Web Development · 2023</div>
-        <h3 class="project-name">Interactive<br>Portfolio V1</h3>
-        <p class="project-detail">My primary portfolio site built with Next.js, showcasing interactive animations and a live chat feature.</p>
+        <div class="project-category">Web Development · 2024</div>
+        <h3 class="project-name">This Portfolio<br>Site</h3>
+        <p class="project-detail">This portfolio itself, showcasing modern web development techniques and design principles.</p>
       </div>
     </div>
 
-    <!-- Project 4 -->
     <div class="project-card">
       <div class="project-art">
         <svg width="100%" height="100%" viewBox="0 0 600 400" fill="none">
@@ -1228,9 +1196,9 @@ footer {
       <div class="project-overlay"></div>
       <div class="project-arrow">↗</div>
       <div class="project-info">
-        <div class="project-category">Robotics · 2023</div>
-        <h3 class="project-name">Project:<br>VisionBot</h3>
-        <p class="project-detail">An experimental robotics project combining a simple chassis with a camera for autonomous navigation.</p>
+        <div class="project-category">Open Source · 2023</div>
+        <h3 class="project-name">Student<br>Automation Tools</h3>
+        <p class="project-detail">A collection of open-source scripts and tools designed to help students learn and code smarter.</p>
       </div>
     </div>
 
@@ -1247,33 +1215,34 @@ footer {
     <div class="process-step reveal">
       <div class="step-num">01</div>
       <div class="step-content">
-        <h3 class="step-title">Discovery & Strategy</h3>
-        <p class="step-desc">Every great project starts with great questions. I immerse myself in the problem domain — your users, goals, and technical constraints — before touching a single line of code.</p>
+        <h3 class="step-title">Problem & Ideation</h3>
+        <p class="step-desc">Every great project starts with a clear problem. I immerse myself in the challenge — understanding the constraints, users, and goals — before writing a single line of code.</p>
       </div>
     </div>
     <div class="process-step reveal reveal-delay-1">
       <div class="step-num">02</div>
       <div class="step-content">
-        <h3 class="step-title">Concept & Direction</h3>
-        <p class="step-desc">I develop multiple distinct technical approaches, each with its own logic and rationale. We choose not just a solution but a scalable architecture.</p>
+        <h3 class="step-title">Prototyping & Architecture</h3>
+        <p class="step-desc">I develop multiple approaches and system designs. This involves exploring different algorithms, data structures, and architectural patterns to find the most robust solution.</p>
       </div>
     </div>
     <div class="process-step reveal reveal-delay-2">
       <div class="step-num">03</div>
       <div class="step-content">
-        <h3 class="step-title">Design & Build</h3>
-        <p class="step-desc">Meticulous execution in code. Every decision is intentional — algorithms, data structures, performance, and user experience.</p>
+        <h3 class="step-title">Code & Integration</h3>
+        <p class="step-desc">Meticulous execution. I write clean, efficient, and well-documented code, focusing on performance and scalability. Every decision is intentional.</p>
       </div>
     </div>
     <div class="process-step reveal reveal-delay-3">
       <div class="step-num">04</div>
       <div class="step-content">
-        <h3 class="step-title">Launch & Evolve</h3>
-        <p class="step-desc">A project isn't a deliverable — it's a living system. I provide full handoff documentation and ongoing partnership as needed.</p>
+        <h3 class="step-title">Test, Deploy & Iterate</h3>
+        <p class="step-desc">A project isn't finished when it's deployed. I rigorously test, gather feedback, and believe in continuous improvement to evolve the solution.</p>
       </div>
     </div>
   </div>
 </section>
+
 
 <!-- ══════════════════════ CONTACT ══════════════════════ -->
 <section class="contact" id="contact">
@@ -1284,7 +1253,7 @@ footer {
       <em>together</em>
     </h2>
     <p class="contact-subtext reveal reveal-delay-2">
-      Have an idea or want to collaborate? I'm always open to new challenges. Let's start a conversation.
+      I’m looking to collaborate on Computer Vision projects, beginner-friendly AI/robotics, and open-source tools for students. Let's start a conversation.
     </p>
     <div class="contact-info reveal reveal-delay-3">
       <div class="contact-item">
@@ -1293,7 +1262,7 @@ footer {
       </div>
       <div class="contact-item">
         <span class="contact-label">Based In</span>
-        <span class="contact-value">India · Open to Global</span>
+        <span class="contact-value">Open to Global Collaboration</span>
       </div>
       <div class="contact-item">
         <span class="contact-label">Response Time</span>
@@ -1310,7 +1279,7 @@ footer {
       </div>
       <div class="form-group">
         <label class="form-label">Last Name</label>
-        <input class="form-input" type="text" placeholder="Sharma">
+        <input class="form-input" type="text" placeholder="Upadhyay">
       </div>
     </div>
     <div class="form-group">
@@ -1319,7 +1288,7 @@ footer {
     </div>
     <div class="form-group">
       <label class="form-label">Project Type</label>
-      <input class="form-input" type="text" placeholder="Computer Vision / Web App / AI Bot ...">
+      <input class="form-input" type="text" placeholder="AI / Computer Vision / Web App ...">
     </div>
     <div class="form-group">
       <label class="form-label">Tell Me About Your Project</label>
@@ -1333,12 +1302,12 @@ footer {
 
 <!-- ══════════════════════ FOOTER ══════════════════════ -->
 <footer>
-  <div class="footer-logo">S<span>.</span>Sharma</div>
-  <div class="footer-copy">© <span id="footer-year">2024</span> Sarthak Sharma. Crafted with <span>♡</span></div>
+  <div class="footer-logo">S<span>.</span>Upadhyay</div>
+  <div class="footer-copy">© 2024 Sarthak Upadhyay. Crafted with <span>♡</span></div>
   <div class="footer-socials">
-    <a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" target="_blank" rel="noopener noreferrer" class="footer-social">LinkedIn</a>
-    <a href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer" class="footer-social">GitHub</a>
-    <a href="https://x.com/Sarthak44201143" target="_blank" rel="noopener noreferrer" class="footer-social">Twitter</a>
+    <a href="https://github.com/SAR0406" class="footer-social" target="_blank" rel="noopener noreferrer">GitHub</a>
+    <a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" class="footer-social" target="_blank" rel="noopener noreferrer">LinkedIn</a>
+    <a href="https://x.com/Sarthak44201143" class="footer-social" target="_blank" rel="noopener noreferrer">Twitter</a>
   </div>
 </footer>
 
@@ -1378,25 +1347,6 @@ const navbar = document.getElementById('navbar');
 window.addEventListener('scroll', () => {
   navbar.classList.toggle('scrolled', window.scrollY > 50);
 });
-
-/* ══════════════════════ LIVE CLOCK ══════════════════════ */
-function updateClock() {
-  const now = new Date();
-  const opts = { timeZone: 'Asia/Kolkata', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false };
-  const clockEl = document.getElementById('live-clock');
-  if (clockEl) {
-    clockEl.textContent = now.toLocaleTimeString('en-US', opts);
-  }
-}
-setInterval(updateClock, 1000);
-updateClock();
-
-/* ══════════════════════ FOOTER YEAR ══════════════════════ */
-const yearEl = document.getElementById('footer-year');
-if (yearEl) {
-    yearEl.textContent = new Date().getFullYear();
-}
-
 
 /* ══════════════════════ SCROLL REVEAL ══════════════════════ */
 const revealEls = document.querySelectorAll('.reveal');
@@ -1443,6 +1393,15 @@ document.querySelectorAll('.btn-primary, .btn-secondary, .nav-cta').forEach(btn 
     btn.style.transition = 'transform 0.1s linear, background 0.2s, color 0.2s, border-color 0.2s';
   });
 });
+
+// Update footer year dynamically
+document.addEventListener('DOMContentLoaded', () => {
+    const yearSpan = document.querySelector('.footer-copy');
+    if (yearSpan) {
+        yearSpan.innerHTML = `© ${new Date().getFullYear()} Sarthak Upadhyay. Crafted with <span>♡</span>`;
+    }
+});
+
 </script>
 </body>
 </html>
