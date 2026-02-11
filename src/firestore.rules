@@ -35,9 +35,14 @@ service cloud.firestore {
     // --- Collection: users ---
     match /users/{userId} {
       allow get, list: if true;
-      allow create: if isOwner(userId);
-      // Prevent a user from elevating their own privileges.
-      allow update: if isOwner(userId) && !(request.resource.data.isAdmin == true && resource.data.isAdmin != true);
+      allow create: if isOwner(userId) &&
+                       (request.resource.data.isAdmin == true ?
+                         request.auth.token.email == 'sarthak040624@gmail.com'
+                         : true);
+      allow update: if isOwner(userId) &&
+                       ( (request.resource.data.isAdmin == true && resource.data.isAdmin != true) ?
+                           request.auth.token.email == 'sarthak040624@gmail.com'
+                           : true );
       allow delete: if false;
     }
 
