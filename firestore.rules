@@ -82,9 +82,8 @@ service cloud.firestore {
                          request.auth.token.email == 'sarthak040624@gmail.com'
                          : true);
       allow update: if isOwner(userId) &&
-                       ( (request.resource.data.isAdmin == true && resource.data.isAdmin != true) ?
-                           request.auth.token.email == 'sarthak040624@gmail.com'
-                           : true );
+                       (request.resource.data.isAdmin == resource.data.isAdmin ||
+                        request.auth.token.email == 'sarthak040624@gmail.com');
       allow delete: if false;
     }
 
