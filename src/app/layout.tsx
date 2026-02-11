@@ -34,7 +34,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} dark`} suppressHydrationWarning>
+    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable}`} suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -45,11 +45,11 @@ export default function RootLayout({
         className='font-body antialiased'
       >
         <FirebaseClientProvider>
-            <div className="fixed top-0 left-0 w-full h-screen -z-10">
+            <div className="fixed top-0 left-0 w-full h-screen -z-10 opacity-70">
               <LightPillar
-                topColor="#7C6AED"
-                bottomColor="#5f4bdd"
-                intensity={0.8}
+                topColor="#3F4EF2"
+                bottomColor="#0FB9A7"
+                intensity={0.4}
                 rotationSpeed={0.2}
                 interactive={false}
                 glowAmount={0.003}
@@ -57,6 +57,7 @@ export default function RootLayout({
                 pillarHeight={0.3}
                 noiseIntensity={0.3}
                 pillarRotation={25}
+                mixBlendMode="multiply"
               />
             </div>
             <header className='fixed top-0 left-0 z-[1000] w-full py-2 bg-background/30 backdrop-blur-sm'>
