@@ -17,16 +17,19 @@ const techLogos = [
 export function Hero() {
   return (
     <section id="home" className="relative h-screen w-full flex items-center justify-center text-center">
-     
+
       <div className="relative z-10 flex flex-col items-center gap-8 px-4">
         <div className="flex flex-col items-center gap-6">
+          <p className="caption-sm animate-fade-in-up" style={{ animationDelay: '0.4s' }}>
+            Full-Stack Developer
+          </p>
           <AnimatedText
-            text="Hi, I’m Sarthak 👋"
-            className="font-headline text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white"
+            text="Hi, I’m Sarthak"
+            className="display-xl max-line-headline text-white"
           />
-          <div className="w-full max-w-4xl text-lg md:text-xl text-white animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+          <div className="w-full max-line-body body-md text-white animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
             <RotatingText
-              texts={['Creative Coder', 'Explorer of Modern Web Experiences']}
+              texts={['Creative Developer for thoughtful digital products', 'Building modern web experiences with speed and clarity']}
               staggerFrom={"last"}
               initial={{ y: 25, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -39,7 +42,7 @@ export function Hero() {
           </div>
           <div className="animate-fade-in-up" style={{ animationDelay: '1s' }}>
             <Button asChild size="lg" className="bg-white/10 border border-white/20 text-white shadow-lg backdrop-blur-md hover:bg-white/20 hover:shadow-2xl hover:shadow-primary/50 hover:-translate-y-1 transition-all duration-300">
-              <Link href="#work">Explore My World</Link>
+              <Link href="#work">View Selected Work</Link>
             </Button>
           </div>
         </div>
