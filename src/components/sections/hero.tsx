@@ -1,8 +1,22 @@
+'use client';
+
+import { useState, useEffect } from 'react';
+import Link from 'next/link';
 import { AnimatedText } from "../animated-text";
 import RotatingText from '../RotatingText';
 import LogoLoop from "../LogoLoop";
 import { SiReact, SiNextdotjs, SiTypescript, SiTailwindcss, SiFirebase, SiNodedotjs } from 'react-icons/si';
 import StarButton from "../StarButton";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const techLogos = [
   { node: <SiReact />, title: "React" },
@@ -14,6 +28,62 @@ const techLogos = [
 ];
 
 export function Hero() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    // This check ensures window is defined, for SSR compatibility
+    if (typeof window !== 'undefined') {
+      const checkMobile = () => {
+        setIsMobile(window.innerWidth < 768);
+      };
+
+      // Initial check
+      checkMobile();
+
+      // Listener for window resize
+      window.addEventListener('resize', checkMobile);
+
+      // Cleanup
+      return () => {
+        window.removeEventListener('resize', checkMobile);
+      };
+    }
+  }, []);
+
+  const handleOpenInNewTab = () => {
+    window.open('/another-version.html', '_blank');
+  };
+
+  const anotherVersionButton = isMobile ? (
+    <AlertDialog>
+      <AlertDialogTrigger asChild>
+        <StarButton ariaLabel="Check another version of me">
+          Check another version
+        </StarButton>
+      </AlertDialogTrigger>
+      <AlertDialogContent>
+        <AlertDialogHeader>
+          <AlertDialogTitle>Mobile Experience Notice</AlertDialogTitle>
+          <AlertDialogDescription>
+            This portfolio version is designed for a desktop experience. For the best view, please open it in a browser on a larger screen.
+          </AlertDialogDescription>
+        </AlertDialogHeader>
+        <AlertDialogFooter>
+          <AlertDialogCancel>Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleOpenInNewTab}>
+            Open Anyway
+          </AlertDialogAction>
+        </AlertDialogFooter>
+      </AlertDialogContent>
+    </AlertDialog>
+  ) : (
+    <Link href="/another-version.html" passHref>
+      <StarButton ariaLabel="Check another version of me">
+        Check another version
+      </StarButton>
+    </Link>
+  );
+
   return (
     <section id="home" className="relative h-screen w-full flex items-center justify-center text-center">
      
@@ -37,12 +107,12 @@ export function Hero() {
             />
           </div>
           <div className="flex items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '1s' }}>
-            <StarButton href="#work" ariaLabel="Explore My World, scroll to work section">
-              Explore My World
-            </StarButton>
-            <StarButton href="/another-version.html" ariaLabel="Check another version of me">
-              Check another version
-            </StarButton>
+            <Link href="#work" passHref>
+                <StarButton ariaLabel="Explore My World, scroll to work section">
+                  Explore My World
+                </StarButton>
+            </Link>
+            {anotherVersionButton}
           </div>
         </div>
         <div className="w-full max-w-4xl animate-fade-in-up mt-12" style={{ animationDelay: '1.2s' }}>
