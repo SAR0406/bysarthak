@@ -47,8 +47,8 @@ export default function RootLayout({
         <FirebaseClientProvider>
             <div className="fixed top-0 left-0 w-full h-screen -z-10">
               <LightPillar
-                topColor="#ad71e8"
-                bottomColor="#8c43e0"
+                topColor="#f7b43b"
+                bottomColor="#f5a616"
                 intensity={0.8}
                 rotationSpeed={0.2}
                 interactive={false}
@@ -65,7 +65,7 @@ export default function RootLayout({
                 items={navLinks}
                 baseColor="hsl(var(--card))"
                 pillColor="hsl(var(--primary))"
-                hoveredPillTextColor="hsl(var(--primary))"
+                hoveredPillTextColor="hsl(var(--primary-foreground))"
                 pillTextColor="hsl(var(--primary-foreground))"
               />
             </header>
