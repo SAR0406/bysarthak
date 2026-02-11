@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portfolio — Sarthak Upadhyay</title>
+<title>Portfolio — Creative Coder & AI Explorer</title>
 
 <!-- FONT STRATEGY: 3-font editorial system -->
 <!-- Playfair Display: Drama, fashion, luxury serifs — no AI portfolio uses this -->
@@ -63,64 +63,6 @@ body {
   font-weight: 300;
   overflow-x: hidden;
   cursor: none;
-}
-
-/* Page load reveal */
-body.loading { overflow: hidden; }
-
-/* ═══════════════════ PRELOADER ═══════════════════ */
-#preloader {
-  position: fixed;
-  inset: 0;
-  background: var(--bg-0);
-  z-index: 9999;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-direction: column;
-  gap: 20px;
-  transition: opacity 0.6s ease, visibility 0.6s;
-}
-#preloader.hidden { opacity: 0; visibility: hidden; pointer-events: none; }
-
-.preloader-name {
-  font-family: var(--ff-display);
-  font-size: clamp(2rem, 5vw, 4rem);
-  font-weight: 700;
-  color: var(--text-0);
-  letter-spacing: -0.02em;
-  overflow: hidden;
-  height: 1.2em;
-}
-.preloader-name span {
-  display: inline-block;
-  transform: translateY(110%);
-  animation: slideUp 0.6s 0.3s cubic-bezier(0.16,1,0.3,1) forwards;
-}
-@keyframes slideUp { to { transform: translateY(0); } }
-
-.preloader-bar {
-  width: 200px; height: 1px;
-  background: var(--text-3);
-  position: relative;
-  overflow: hidden;
-}
-.preloader-bar::after {
-  content: '';
-  position: absolute;
-  top: 0; left: 0;
-  height: 100%;
-  background: var(--gold);
-  width: 0;
-  animation: loadBar 1.2s 0.4s ease forwards;
-}
-@keyframes loadBar { to { width: 100%; } }
-
-.preloader-pct {
-  font-family: var(--ff-ui);
-  font-size: 0.7rem;
-  letter-spacing: 0.15em;
-  color: var(--text-2);
 }
 
 /* ═══════════════════ CUSTOM CURSOR ═══════════════════ */
@@ -1170,86 +1112,135 @@ nav.scrolled {
   color: var(--text-2);
 }
 
-<!-- ════════════════════════════════════════════════
-     CONTACT
-═══════════════════════════════════════════════════ -->
-<section id="contact">
-  <div class="contact-left">
-    <div class="sr">
-      <div class="section-eyebrow">Let's Work Together <span class="num">05</span></div>
-      <h2 class="contact-h2">
-        Start a<br>
-        <em>Project</em><br>
-        <span class="stroke">Today.</span>
-      </h2>
-    </div>
-    <p class="contact-sub sr sr-d1">
-      I'm currently accepting new briefs. Whether you need an AI-powered tool, a computer vision model, or a web presence built from scratch — let's make something extraordinary.
-    </p>
-    <div class="contact-details sr sr-d2">
-      <div class="cd-item">
-        <span class="cd-label">Email</span>
-        <a class="cd-value" href="mailto:sarthak040624@gmail.com">sarthak040624@gmail.com</a>
-      </div>
-      <div class="cd-item">
-        <span class="cd-label">Location</span>
-        <span class="cd-value">India · Open to Collaboration</span>
-      </div>
-      <div class="cd-item">
-        <span class="cd-label">Response Time</span>
-        <span class="cd-value">Within 24 hours</span>
-      </div>
-      <div class="cd-item">
-        <span class="cd-label">Availability</span>
-        <span class="cd-value" style="color:var(--gold)">Open to Projects</span>
-      </div>
-    </div>
-  </div>
+/* ═══════════════════ CONTACT ═══════════════════ */
+#contact {
+  background: var(--bg-0);
+  border-top: 1px solid var(--line-soft);
+  padding: 0;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 85vh;
+}
+.contact-left {
+  padding: 120px 80px;
+  background: var(--bg-1);
+  border-right: 1px solid var(--line-soft);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+.contact-right {
+  padding: 120px 80px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 
-  <div class="contact-right">
-    <div class="sr sr-d1">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">First Name</label>
-          <input class="form-control" type="text" placeholder="Your name">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Last Name</label>
-          <input class="form-control" type="text" placeholder="Your surname">
-        </div>
-      </div>
-      <div class="form-group">
-        <label class="form-label">Email Address</label>
-        <input class="form-control" type="email" placeholder="you@company.com">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Project Type</label>
-        <input class="form-control" type="text" placeholder="AI / Vision / Web / Automation…">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Budget Range</label>
-        <input class="form-control" type="text" placeholder="Let's discuss">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Tell Me About Your Vision</label>
-        <textarea class="form-control" placeholder="What are you building? What does success look like? What's the timeline?"></textarea>
-      </div>
-      <button class="form-submit">
-        Send Message
-        <span style="font-size:1.1rem">→</span>
-      </button>
-    </div>
-  </div>
-</section>
+.contact-h2 {
+  font-family: var(--ff-display);
+  font-size: clamp(52px, 6vw, 88px);
+  font-weight: 900;
+  color: var(--text-0);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
+  margin-bottom: 32px;
+}
+.contact-h2 em { font-style: italic; color: var(--gold); }
+.contact-h2 .stroke {
+  -webkit-text-stroke: 1.5px rgba(237,232,224,0.2);
+  color: transparent;
+}
 
-<!-- ════════════════════════════════════════════════
-     FOOTER
-═══════════════════════════════════════════════════ -->
+.contact-sub {
+  font-size: 0.95rem;
+  line-height: 1.9;
+  color: var(--text-1);
+  margin-bottom: 56px;
+  max-width: 380px;
+}
+
+.contact-details { display: flex; flex-direction: column; }
+.cd-item {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line-soft);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+.cd-item:first-child { border-top: 1px solid var(--line-soft); }
+.cd-label {
+  font-family: var(--ff-ui);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.cd-value {
+  font-family: var(--ff-display);
+  font-size: 1.1rem;
+  font-weight: 400;
+  color: var(--text-0);
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a.cd-value:hover { color: var(--gold); }
+
+/* Form */
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-group { display: flex; flex-direction: column; gap: 8px; margin-bottom: 16px; }
+.form-label {
+  font-family: var(--ff-ui);
+  font-size: 0.62rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--text-2);
+}
+.form-control {
+  background: var(--bg-2);
+  border: 1px solid var(--text-3);
+  padding: 14px 18px;
+  font-family: var(--ff-body);
+  font-size: 0.9rem;
+  font-weight: 300;
+  color: var(--text-0);
+  outline: none;
+  transition: border-color 0.2s;
+  border-radius: 0;
+  width: 100%;
+}
+.form-control:focus { border-color: var(--gold); }
+.form-control::placeholder { color: var(--text-3); }
+textarea.form-control { resize: vertical; min-height: 130px; }
+
+.form-submit {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: 100%;
+  padding: 18px;
+  background: var(--gold);
+  color: var(--bg-0);
+  font-family: var(--ff-ui);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  border: none;
+  cursor: none;
+  transition: background 0.2s;
+  margin-top: 8px;
+}
+.form-submit:hover { background: var(--gold-lt); }
+
+/* ═══════════════════ FOOTER ═══════════════════ */
 <footer>
   <div class="footer-top">
     <div class="footer-brand">
       <div class="footer-logo-text">Sarthak<span class="dot">.</span>Upadhyay</div>
-      <p class="footer-tagline">Creative coder building intelligent and performant digital experiences.</p>
+      <p class="footer-tagline">Creative Coder & AI explorer crafting intelligent systems and digital products that perform.</p>
     </div>
     <div>
       <div class="footer-col-title">Navigation</div>
@@ -1266,9 +1257,9 @@ nav.scrolled {
       <ul class="footer-links">
         <li><a href="#">Computer Vision</a></li>
         <li><a href="#">AI & Automation</a></li>
-        <li><a href="#">Full-Stack Web</a></li>
-        <li><a href="#">Backend & Tooling</a></li>
-        <li><a href="#">Motion Design</a></li>
+        <li><a href="#">Full-Stack Web Apps</a></li>
+        <li><a href="#">Python Scripting</a></li>
+        <li><a href="#">Next.js/React</a></li>
       </ul>
     </div>
     <div>
@@ -1282,7 +1273,7 @@ nav.scrolled {
   </div>
   <div class="footer-bottom">
     <div class="footer-copy">© 2024 Sarthak Upadhyay. Crafted with <span>♡</span></div>
-    <div class="footer-made">Built with <strong>Python</strong> & <strong>Pixels</strong></div>
+    <div class="footer-made">Built with <strong>Next.js</strong> & <strong>Code</strong></div>
   </div>
 </footer>
 
@@ -1290,28 +1281,6 @@ nav.scrolled {
      JAVASCRIPT ENGINE
 ═══════════════════════════════════════════════════ -->
 <script>
-/* ─────────────────────────────
-   PRELOADER
-───────────────────────────────*/
-const preloader = document.getElementById('preloader');
-const pctText   = document.getElementById('pctText');
-let pct = 0;
-const countUp = setInterval(() => {
-  pct += Math.random() * 12;
-  if (pct >= 100) {
-    pct = 100;
-    clearInterval(countUp);
-    pctText.textContent = '100%';
-    setTimeout(() => {
-      preloader.classList.add('hidden');
-      document.body.classList.remove('loading');
-      triggerHeroAnimation();
-    }, 400);
-  } else {
-    pctText.textContent = Math.floor(pct) + '%';
-  }
-}, 90);
-
 /* ─────────────────────────────
    HERO ENTRY ANIMATION
 ───────────────────────────────*/
@@ -1322,6 +1291,7 @@ function triggerHeroAnimation() {
     setTimeout(() => el.classList.add('vis'), 50);
   });
 }
+window.addEventListener('load', triggerHeroAnimation);
 
 /* ─────────────────────────────
    CURSOR
@@ -1369,7 +1339,7 @@ window.addEventListener('scroll', () => {
 ───────────────────────────────*/
 function updateClock() {
   const t = new Date().toLocaleTimeString('en-US', {
-    timeZone: 'Asia/Kolkata', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false
+    timeZone: 'America/New_York', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false
   });
   const el = document.getElementById('clock');
   if (el) el.textContent = t;
@@ -1585,3 +1555,5 @@ document.querySelectorAll('.service-row').forEach((row, i) => {
 </script>
 </body>
 </html>
+
+    
