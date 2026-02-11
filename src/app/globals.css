@@ -41,6 +41,42 @@
 }
 
 @layer utilities {
+  .display-xl {
+    @apply font-headline text-5xl font-bold leading-[0.95] tracking-tight md:text-7xl lg:text-8xl;
+  }
+
+  .heading-lg {
+    @apply font-headline text-3xl font-bold leading-tight tracking-tight md:text-4xl;
+  }
+
+  .heading-md {
+    @apply font-headline text-2xl font-semibold leading-tight tracking-tight md:text-3xl;
+  }
+
+  .body-md {
+    @apply text-base leading-relaxed text-muted-foreground md:text-lg;
+  }
+
+  .body-sm {
+    @apply text-sm leading-relaxed text-muted-foreground md:text-base;
+  }
+
+  .caption-sm {
+    @apply text-xs font-medium uppercase tracking-[0.12em] text-muted-foreground;
+  }
+
+  .section-pad {
+    @apply py-16 md:py-24 lg:py-[120px];
+  }
+
+  .max-line-headline {
+    max-width: 16ch;
+  }
+
+  .max-line-body {
+    max-width: 65ch;
+  }
+
   @keyframes char-in {
     from {
       opacity: 0;

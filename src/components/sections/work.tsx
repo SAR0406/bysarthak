@@ -1,4 +1,3 @@
-
 import { ProjectCard } from "@/components/project-card";
 import { Repo } from "@/types";
 import { Button } from "../ui/button";
@@ -18,7 +17,7 @@ async function getGithubRepos(): Promise<Repo[]> {
       console.error("Failed to fetch GitHub repos");
       return [];
     }
-    
+
     return res.json();
   } catch (error) {
     console.error("Error fetching GitHub repos:", error);
@@ -30,28 +29,28 @@ export async function Work() {
   const repos = await getGithubRepos();
 
   return (
-    <section id="work" className="container mx-auto py-16">
+    <section id="work" className="container mx-auto section-pad">
       <div className="text-center">
-        <h2 className="font-headline text-3xl md:text-4xl font-bold mb-4">
-          Projects
-        </h2>
-        <p className="text-muted-foreground max-w-2xl mx-auto mb-12">
-          Here are some of the projects I've been working on. You can find more on my GitHub profile.
+        <p className="caption-sm mx-auto mb-4">Selected Projects</p>
+        <h2 className="heading-lg max-line-headline mx-auto text-white">Projects</h2>
+        <p className="body-md max-line-body mx-auto mb-12 mt-4">
+          A curated set of recent builds across web engineering, automation, and practical
+          experimentation.
         </p>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {repos.map((repo) => (
           <ProjectCard key={repo.id} repo={repo} />
         ))}
       </div>
-       <div className="text-center mt-12">
-          <Button asChild size="lg" variant="outline">
-            <Link href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer">
-              <Github className="mr-2 h-4 w-4" />
-              View All on GitHub
-            </Link>
-          </Button>
-        </div>
+      <div className="mt-12 text-center">
+        <Button asChild size="lg" variant="outline">
+          <Link href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer">
+            <Github className="mr-2 h-4 w-4" />
+            View All on GitHub
+          </Link>
+        </Button>
+      </div>
     </section>
   );
 }
