@@ -1,9 +1,8 @@
-import { Button } from "@/components/ui/button";
 import { AnimatedText } from "../animated-text";
-import Link from "next/link";
 import RotatingText from '../RotatingText';
 import LogoLoop from "../LogoLoop";
 import { SiReact, SiNextdotjs, SiTypescript, SiTailwindcss, SiFirebase, SiNodedotjs } from 'react-icons/si';
+import StarButton from "../StarButton";
 
 const techLogos = [
   { node: <SiReact />, title: "React" },
@@ -38,9 +37,7 @@ export function Hero() {
             />
           </div>
           <div className="animate-fade-in-up" style={{ animationDelay: '1s' }}>
-            <Button asChild size="lg" className="bg-white/10 border border-white/20 text-white shadow-lg backdrop-blur-md hover:bg-white/20 hover:shadow-2xl hover:shadow-primary/50 hover:-translate-y-1 transition-all duration-300">
-              <Link href="#work">Explore My World</Link>
-            </Button>
+            <StarButton />
           </div>
         </div>
         <div className="w-full max-w-4xl animate-fade-in-up mt-12" style={{ animationDelay: '1.2s' }}>

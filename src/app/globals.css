@@ -82,3 +82,54 @@
     animation-fill-mode: forwards;
   }
 }
+
+.star-button-wrapper {
+  display: inline-block;
+  text-decoration: none;
+}
+
+.star-button {
+  position: relative;
+  padding: 12px 35px;
+  background: hsl(var(--primary));
+  font-size: 17px;
+  font-weight: 500;
+  color: hsl(var(--background));
+  border: 3px solid hsl(var(--primary));
+  border-radius: 8px;
+  box-shadow: 0 0 0 hsla(var(--primary), 0.55);
+  transition: all 0.3s ease-in-out;
+  cursor: pointer;
+}
+
+.star-1, .star-2, .star-3, .star-4, .star-5, .star-6 {
+  position: absolute;
+  height: auto;
+  filter: drop-shadow(0 0 0 hsl(var(--primary-foreground)));
+  z-index: -5;
+  transition-property: all;
+}
+
+.star-1 { top: 20%; left: 20%; width: 25px; transition-duration: 1s; transition-timing-function: cubic-bezier(0.05, 0.83, 0.43, 0.96); }
+.star-2 { top: 45%; left: 45%; width: 15px; transition-duration: 1s; transition-timing-function: cubic-bezier(0, 0.4, 0, 1.01); }
+.star-3 { top: 40%; left: 40%; width: 5px;  transition-duration: 1s; transition-timing-function: cubic-bezier(0, 0.4, 0, 1.01); }
+.star-4 { top: 20%; left: 40%; width: 8px;  transition-duration: 0.8s; transition-timing-function: cubic-bezier(0, 0.4, 0, 1.01); }
+.star-5 { top: 25%; left: 45%; width: 15px; transition-duration: 0.6s; transition-timing-function: cubic-bezier(0, 0.4, 0, 1.01); }
+.star-6 { top: 5%;  left: 50%; width: 5px;  transition-duration: 0.8s; transition-timing-function: ease; }
+
+.star-button:hover {
+  background: transparent;
+  color: hsl(var(--primary));
+  box-shadow: 0 0 25px hsla(var(--primary), 0.55);
+}
+
+.star-button:hover .star-1 { top: -80%; left: -30%; filter: drop-shadow(0 0 10px hsl(var(--primary-foreground))); z-index: 2; }
+.star-button:hover .star-2 { top: -25%; left: 10%; filter: drop-shadow(0 0 10px hsl(var(--primary-foreground))); z-index: 2; }
+.star-button:hover .star-3 { top: 55%; left: 25%; filter: drop-shadow(0 0 10px hsl(var(--primary-foreground))); z-index: 2; }
+.star-button:hover .star-4 { top: 30%; left: 80%; filter: drop-shadow(0 0 10px hsl(var(--primary-foreground))); z-index: 2; }
+.star-button:hover .star-5 { top: 25%; left: 115%; filter: drop-shadow(0 0 10px hsl(var(--primary-foreground))); z-index: 2; }
+.star-button:hover .star-6 { top: 5%; left: 60%; filter: drop-shadow(0 0 10px hsl(var(--primary-foreground))); z-index: 2; }
+
+.star-button .fil0 {
+  fill: hsl(var(--primary-foreground));
+}
