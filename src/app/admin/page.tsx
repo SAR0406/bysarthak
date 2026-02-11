@@ -83,11 +83,8 @@ type Group = {
     members: string[]; // array of conversationIds
 }
 
-type UserProfile = {
-    isAdmin?: boolean;
-}
-
 const ADMIN_NAME = 'Sarthak';
+const ADMIN_EMAIL = 'sarthak040624@gmail.com';
 
 const EMOJIS = [
     '😀', '😃', '😄', '😁', '😆', '😅', '😂', '🤣', '😊', '😇',
@@ -114,28 +111,22 @@ export default function AdminPage() {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  const userProfileRef = useMemoFirebase(() => {
-    if (!firestore || !user) return null;
-    return doc(firestore, 'users', user.uid);
-  }, [firestore, user]);
-  const { data: userProfile, isLoading: isProfileLoading } = useDoc<UserProfile>(userProfileRef);
-
   // Authorize Admin
   useEffect(() => {
-    if (isUserLoading || isProfileLoading) return;
+    if (isUserLoading) return;
     
     if (!user) {
         router.push('/login');
         return;
     }
 
-    if (userProfile?.isAdmin) {
+    if (user.email === ADMIN_EMAIL) {
         setIsAuthorized(true);
     } else {
         toast({ variant: 'destructive', title: 'Unauthorized', description: 'You do not have permission to access this page.' });
         router.push('/');
     }
-  }, [user, isUserLoading, userProfile, isProfileLoading, router, toast]);
+  }, [user, isUserLoading, router, toast]);
 
   const conversationRef = useMemoFirebase(() => {
     if (!firestore || !selectedConversationId) return null;
@@ -351,7 +342,7 @@ export default function AdminPage() {
     setSelectedConversationId(null);
   };
 
-  if (isUserLoading || isProfileLoading || !isAuthorized) {
+  if (isUserLoading || !isAuthorized) {
     return <div className="container mx-auto flex min-h-screen items-center justify-center"><p>Loading...</p></div>;
   }
 
