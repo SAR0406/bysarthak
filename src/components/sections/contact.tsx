@@ -15,17 +15,18 @@ export function Contact() {
             href="https://github.com/SAR0406"
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="Sarthak's Github Profile"
           >
             <Button variant="outline" size="icon" className="w-16 h-16 rounded-full transition-transform hover:scale-110">
               <Github className="w-8 h-8" />
             </Button>
           </Link>
-          <Link href="https://www.linkedin.com/in/sarthak-sharma-51a892243/">
+          <Link href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" aria-label="Sarthak's LinkedIn Profile">
             <Button variant="outline" size="icon" className="w-16 h-16 rounded-full transition-transform hover:scale-110">
               <Linkedin className="w-8 h-8" />
             </Button>
           </Link>
-          <Link href="https://x.com/Sarthak44201143">
+          <Link href="https://x.com/Sarthak44201143" aria-label="Sarthak's Twitter Profile">
             <Button variant="outline" size="icon" className="w-16 h-16 rounded-full transition-transform hover:scale-110">
               <Twitter className="w-8 h-8" />
             </Button>

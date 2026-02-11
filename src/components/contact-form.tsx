@@ -297,7 +297,7 @@ export function ContactForm() {
                        </div>
                         <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Add reaction">
                                     <Smile className="w-4 h-4" />
                                 </Button>
                             </PopoverTrigger>
@@ -322,7 +322,7 @@ export function ContactForm() {
               <Form {...replyForm}>
                 <form onSubmit={replyForm.handleSubmit(handleReply)} className="flex gap-2">
                    <Popover>
-                      <PopoverTrigger asChild><Button variant="ghost" size="icon"><Smile className="h-5 w-5" /></Button></PopoverTrigger>
+                      <PopoverTrigger asChild><Button variant="ghost" size="icon" aria-label="Open emoji picker"><Smile className="h-5 w-5" /></Button></PopoverTrigger>
                       <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent mb-2">
                           <div className="grid grid-cols-10 gap-0.5">
                               {EMOJIS.map((emoji,i) => (
@@ -331,7 +331,7 @@ export function ContactForm() {
                           </div>
                       </PopoverContent>
                   </Popover>
-                  <Button variant="ghost" size="icon" type="button" onClick={() => fileInputRef.current?.click()}><Paperclip className="h-5 w-5" /></Button>
+                  <Button variant="ghost" size="icon" type="button" onClick={() => fileInputRef.current?.click()} aria-label="Attach a file"><Paperclip className="h-5 w-5" /></Button>
                   <Input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => replyForm.setValue('attachment', e.target.files?.[0])} />
 
                   <FormField
@@ -346,7 +346,7 @@ export function ContactForm() {
                       </FormItem>
                     )}
                   />
-                  <Button type="submit" size="icon" disabled={replyForm.formState.isSubmitting}><Send className="h-4 w-4" /></Button>
+                  <Button type="submit" size="icon" disabled={replyForm.formState.isSubmitting} aria-label="Send message"><Send className="h-4 w-4" /></Button>
                 </form>
               </Form>
             </div>

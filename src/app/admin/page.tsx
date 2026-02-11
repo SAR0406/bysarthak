@@ -379,7 +379,7 @@ export default function AdminPage() {
             <h2 className="font-headline text-xl font-bold">Messages</h2>
             <Dialog open={isGroupModalOpen} onOpenChange={setGroupModalOpen}>
                 <DialogTrigger asChild>
-                    <Button variant="ghost" size="icon"><PlusCircle className="w-5 h-5"/></Button>
+                    <Button variant="ghost" size="icon" aria-label="Create New Group"><PlusCircle className="w-5 h-5"/></Button>
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
@@ -501,7 +501,7 @@ export default function AdminPage() {
           {selectedConversation ? (
             <>
               <div className="p-4 border-b flex items-center gap-4">
-                 <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSelectedConversationId(null)}><ArrowLeft className="w-4 h-4" /></Button>
+                 <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSelectedConversationId(null)} aria-label="Back to message list"><ArrowLeft className="w-4 h-4" /></Button>
                  <Avatar className="relative">
                     <AvatarFallback>{selectedConversation.senderName.charAt(0)}</AvatarFallback>
                     {isVisitorOnline && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-card" />}
@@ -511,8 +511,8 @@ export default function AdminPage() {
                   <p className="text-xs text-muted-foreground">{isVisitorTyping ? 'typing...' : (isVisitorOnline ? 'Online' : 'Offline')}</p>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" onClick={showFeatureComingSoon}><Phone className="w-5 h-5 text-muted-foreground" /></Button>
-                  <Button variant="ghost" size="icon" onClick={showFeatureComingSoon}><Video className="w-5 h-5 text-muted-foreground" /></Button>
+                  <Button variant="ghost" size="icon" onClick={showFeatureComingSoon} aria-label="Start voice call"><Phone className="w-5 h-5 text-muted-foreground" /></Button>
+                  <Button variant="ghost" size="icon" onClick={showFeatureComingSoon} aria-label="Start video call"><Video className="w-5 h-5 text-muted-foreground" /></Button>
                 </div>
               </div>
 
@@ -538,7 +538,7 @@ export default function AdminPage() {
                        </div>
                        <Popover>
                             <PopoverTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity">
+                                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity" aria-label="Add reaction">
                                     <Smile className="w-4 h-4" />
                                 </Button>
                             </PopoverTrigger>
@@ -561,7 +561,7 @@ export default function AdminPage() {
                 <Form {...replyForm}>
                   <form onSubmit={replyForm.handleSubmit(handleReply)} className="flex gap-2">
                      <Popover>
-                        <PopoverTrigger asChild><Button variant="ghost" size="icon"><Smile className="h-5 w-5" /></Button></PopoverTrigger>
+                        <PopoverTrigger asChild><Button variant="ghost" size="icon" aria-label="Open emoji picker"><Smile className="h-5 w-5" /></Button></PopoverTrigger>
                         <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent mb-2">
                             <div className="grid grid-cols-10 gap-0.5">
                                 {EMOJIS.map((emoji, i) => (
@@ -570,7 +570,7 @@ export default function AdminPage() {
                             </div>
                         </PopoverContent>
                     </Popover>
-                    <Button variant="ghost" size="icon" type="button" onClick={() => fileInputRef.current?.click()}><Paperclip className="h-5 w-5" /></Button>
+                    <Button variant="ghost" size="icon" type="button" onClick={() => fileInputRef.current?.click()} aria-label="Attach a file"><Paperclip className="h-5 w-5" /></Button>
                     <Input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => replyForm.setValue('attachment', e.target.files?.[0])} />
 
                     <FormField
@@ -585,7 +585,7 @@ export default function AdminPage() {
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" size="icon" disabled={replyForm.formState.isSubmitting}><Send className="h-4 w-4" /></Button>
+                    <Button type="submit" size="icon" disabled={replyForm.formState.isSubmitting} aria-label="Send message"><Send className="h-4 w-4" /></Button>
                   </form>
                 </Form>
               </div>
