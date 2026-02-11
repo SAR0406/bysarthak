@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Sarthak Upadhyay — Creative Coder & AI Developer</title>
+<title>Portfolio — Creative Coder & AI Developer</title>
 <style>
 /* ══════════════════════════════════════════
    DESIGN TOKENS — LUXURY EDITORIAL PALETTE
@@ -18,8 +18,8 @@
   --cream:     #F0EAE0;       /* Warm white for headings */
   --dust:      #B0A898;       /* Muted body text */
   --line:      rgba(212,168,84,0.12); /* Dividers */
-  --font-display: Georgia, serif;
-  --font-body:    sans-serif;
+  --font-display: 'Georgia', serif;
+  --font-body:    'Arial', sans-serif;
 }
 
 /* ══════════════════════ RESET & BASE ══════════════════════ */
@@ -61,6 +61,7 @@ body {
 }
 body.hovering .cursor-dot { width: 12px; height: 12px; background: var(--cream); }
 body.hovering .cursor-ring { width: 52px; height: 52px; border-color: var(--gold); }
+
 
 /* ══════════════════════ CURSOR GLOW ══════════════════════ */
 #cursor-glow {
@@ -156,6 +157,11 @@ nav.scrolled {
   width: 6px; height: 6px;
   background: #4ADE80;
   border-radius: 50%;
+  animation: pulse-dot 2s ease infinite;
+}
+@keyframes pulse-dot {
+  0%,100% { box-shadow: 0 0 0 0 rgba(74,222,128,0.4); }
+  50% { box-shadow: 0 0 0 5px transparent; }
 }
 
 /* ══════════════════════ HERO ══════════════════════ */
@@ -168,36 +174,7 @@ nav.scrolled {
   padding: 0 60px;
   overflow: hidden;
 }
-.hero-bg {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-/* Atmospheric gradient blobs */
-.hero-blob-1 {
-  position: absolute;
-  width: 700px; height: 700px;
-  background: radial-gradient(circle, rgba(212,168,84,0.08) 0%, transparent 65%);
-  top: -200px; right: -100px;
-  border-radius: 50%;
-}
-.hero-blob-2 {
-  position: absolute;
-  width: 500px; height: 500px;
-  background: radial-gradient(circle, rgba(138,150,168,0.05) 0%, transparent 65%);
-  bottom: -100px; left: 10%;
-  border-radius: 50%;
-}
 
-/* Subtle grid lines */
-.hero-grid {
-  position: absolute;
-  inset: 0;
-  background-image:
-    linear-gradient(rgba(212,168,84,0.03) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(212,168,84,0.03) 1px, transparent 1px);
-  background-size: 80px 80px;
-}
 .hero-content {
   position: relative;
   z-index: 2;
@@ -303,12 +280,6 @@ nav.scrolled {
   color: var(--silver);
   z-index: 2;
 }
-.scroll-line {
-  width: 60px; height: 1px;
-  background: var(--silver);
-  position: relative;
-  overflow: hidden;
-}
 
 /* Hero stats */
 .hero-stats {
@@ -335,53 +306,20 @@ nav.scrolled {
   color: var(--silver);
 }
 
-/* ══════════════════════ MARQUEE ══════════════════════ */
-.marquee-section {
-  padding: 20px 0;
-  border-top: 1px solid var(--line);
-  border-bottom: 1px solid var(--line);
-  overflow: hidden;
-  position: relative;
-  z-index: 2;
-}
-.marquee-track {
-  display: flex;
-  gap: 0;
-  justify-content: center;
-  flex-wrap: wrap;
-  white-space: nowrap;
-}
-.marquee-item {
-  display: inline-flex;
-  align-items: center;
-  gap: 30px;
-  padding: 14px 40px;
-  font-size: 0.7rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--silver);
-  font-weight: 400;
-  flex-shrink: 0;
-}
-.marquee-item .sep {
-  color: var(--gold);
-  font-style: italic;
-  font-family: var(--font-display);
-  font-size: 1.2rem;
-}
-
 /* ══════════════════════ ABOUT ══════════════════════ */
 .about {
-  display: flex;
-  justify-content: center;
-  min-height: 90vh;
-  padding: 120px 60px;
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: auto;
+  padding: 120px 0;
 }
+
 .about-content {
+  padding: 0 80px;
   display: flex;
   flex-direction: column;
   justify-content: center;
-  max-width: 800px;
+  text-align: center;
 }
 .section-label {
   font-size: 0.7rem;
@@ -393,6 +331,7 @@ nav.scrolled {
   display: flex;
   align-items: center;
   gap: 12px;
+  justify-content: center;
 }
 .section-label::before {
   content: '';
@@ -416,13 +355,15 @@ nav.scrolled {
   font-size: 1rem;
   line-height: 1.9;
   color: var(--dust);
-  margin-bottom: 40px;
+  margin: 0 auto 40px auto;
+  max-width: 700px;
 }
 .about-bio strong { color: var(--cream); font-weight: 400; }
 .about-links {
   display: flex;
   gap: 12px;
   flex-wrap: wrap;
+  justify-content: center;
 }
 .social-link {
   width: 44px; height: 44px;
@@ -447,10 +388,11 @@ nav.scrolled {
   display: flex;
   align-items: center;
   gap: 8px;
+  justify-content: center;
 }
 #live-clock { color: var(--cream); font-weight: 400; }
 
-/* ══════════════════════ SERVICES ══════════════════════ */
+/* ══════════════════════ EXPERTISE ══════════════════════ */
 .services {
   padding: 120px 60px;
   position: relative;
@@ -702,6 +644,7 @@ nav.scrolled {
 }
 .step-desc { font-size: 0.9rem; line-height: 1.8; color: var(--dust); }
 
+
 /* ══════════════════════ CONTACT ══════════════════════ */
 .contact {
   padding: 140px 60px;
@@ -836,6 +779,34 @@ footer {
 }
 .corner-dec.tl { top: 20px; left: 20px; }
 .corner-dec.br { bottom: 20px; right: 20px; transform: rotate(180deg); }
+
+/* Static list for skills */
+.skills-list {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px 32px;
+    padding: 20px 0;
+    border-top: 1px solid var(--line);
+    border-bottom: 1px solid var(--line);
+    position: relative;
+    z-index: 2;
+}
+.skill-item {
+    font-size: 0.7rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--silver);
+    font-weight: 400;
+}
+.skill-item .sep {
+    color: var(--gold);
+    font-style: italic;
+    font-family: var(--font-display);
+    font-size: 1.2rem;
+    padding: 0 10px;
+}
+
 </style>
 </head>
 <body>
@@ -843,14 +814,14 @@ footer {
 <!-- Custom Cursor -->
 <div class="cursor-dot" id="cursorDot"></div>
 <div class="cursor-ring" id="cursorRing"></div>
-<div id="cursor-glow"></div>
+
 
 <!-- ══════════════════════ NAVIGATION ══════════════════════ -->
 <nav id="navbar">
   <a href="#" class="nav-logo">S<span>.</span>U</a>
   <ul class="nav-links">
     <li><a href="#about">About</a></li>
-    <li><a href="#services">Expertise</a></li>
+    <li><a href="#expertise">Expertise</a></li>
     <li><a href="#work">Work</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -859,11 +830,6 @@ footer {
 
 <!-- ══════════════════════ HERO ══════════════════════ -->
 <section class="hero">
-  <div class="hero-bg">
-    <div class="hero-blob-1"></div>
-    <div class="hero-blob-2"></div>
-    <div class="hero-grid"></div>
-  </div>
 
   <div class="hero-content">
     <div class="status-badge">
@@ -873,11 +839,11 @@ footer {
     <p class="hero-eyebrow">Creative Coder & <span>AI Explorer</span></p>
     <h1 class="hero-headline">
       Code that<br>
-      <em>thinks</em> & systems<br>
-      <span class="outline">that learn.</span>
+      <em>builds</em> intelligent<br>
+      <span class="outline">futures.</span>
     </h1>
     <p class="hero-subtext">
-      I build intelligent applications and systems, from computer vision to full-stack web apps.
+      I build AI-driven solutions and web experiences that are not just functional, but smart, intuitive, and efficient.
     </p>
     <div class="hero-actions">
       <a href="#work" class="btn-primary">View Selected Work ↗</a>
@@ -886,38 +852,36 @@ footer {
   </div>
 
   <div class="hero-scroll">
-    <div class="scroll-line"></div>
     Scroll to Explore
   </div>
 
   <div class="hero-stats">
     <div class="hero-stat">
-      <div class="stat-value">3<span>+</span></div>
+      <div class="stat-value">4<span>+</span></div>
       <div class="stat-label">Years of Coding</div>
     </div>
     <div class="hero-stat">
-      <div class="stat-value">15<span>+</span></div>
+      <div class="stat-value">30<span>+</span></div>
       <div class="stat-label">Projects Built</div>
     </div>
     <div class="hero-stat">
-      <div class="stat-value">10<span>th</span></div>
-      <div class="stat-label">Grade Student</div>
+      <div class="stat-value">10<span>k</span></div>
+      <div class="stat-label">Hours Coded</div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════ MARQUEE ══════════════════════ -->
-<div class="marquee-section">
-  <div class="marquee-track">
-    <span class="marquee-item">Python <span class="sep">✦</span></span>
-    <span class="marquee-item">OpenCV <span class="sep">✦</span></span>
-    <span class="marquee-item">Computer Vision <span class="sep">✦</span></span>
-    <span class="marquee-item">Next.js <span class="sep">✦</span></span>
-    <span class="marquee-item">AI / ML <span class="sep">✦</span></span>
-    <span class="marquee-item">Automation <span class="sep">✦</span></span>
-    <span class="marquee-item">Node.js <span class="sep">✦</span></span>
-  </div>
+<!-- ══════════════════════ SKILLS ══════════════════════ -->
+<div class="skills-list">
+    <span class="skill-item">Python <span class="sep">✦</span></span>
+    <span class="skill-item">Computer Vision <span class="sep">✦</span></span>
+    <span class="skill-item">AI / ML <span class="sep">✦</span></span>
+    <span class="skill-item">Next.js <span class="sep">✦</span></span>
+    <span class="skill-item">OpenCV <span class="sep">✦</span></span>
+    <span class="skill-item">Automation <span class="sep">✦</span></span>
+    <span class="skill-item">Node.js</span>
 </div>
+
 
 <!-- ══════════════════════ ABOUT ══════════════════════ -->
 <section class="about" id="about">
@@ -928,24 +892,24 @@ footer {
       I'm <em>Sarthak Upadhyay</em>
     </h2>
     <p class="about-bio">
-      I'm a Class 10 student and a passionate developer with a strong focus on <strong>Python, Computer Vision, and AI</strong>. I build intelligent systems that can see, understand, and automate tasks.
+       I’m building Iron Man–level ideas with student-level resources — limitations don’t stop innovation. Currently a <strong>Class 10 student</strong>, I'm deeply passionate about Python and Computer Vision, creating real-time camera intelligence projects and AI assistants.
       <br><br>
-      From creating real-time detection systems with OpenCV to building beginner-friendly AI assistants, my goal is to turn complex ideas into tangible, working technology. I thrive on challenges and believe that limitations are just opportunities for innovation.
+      My journey is about balancing rigorous academics with a love for building practical automation tools, scripts, and experiments that explore the boundaries of what's possible with code.
     </p>
     <div class="about-links">
-      <a href="https://github.com/SAR0406" class="social-link" title="GitHub" target="_blank">GH</a>
-      <a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" class="social-link" title="LinkedIn" target="_blank">in</a>
-      <a href="https://x.com/Sarthak44201143" class="social-link" title="X/Twitter" target="_blank">𝕏</a>
+      <a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" target="_blank" rel="noopener noreferrer" class="social-link" title="LinkedIn">in</a>
+      <a href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer" class="social-link" title="GitHub">GH</a>
+      <a href="https://x.com/Sarthak44201143" target="_blank" rel="noopener noreferrer" class="social-link" title="X/Twitter">𝕏</a>
     </div>
     <div class="about-time">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-      Local time in India: <span id="live-clock">--:--:--</span>
+      My Local Time: <span id="live-clock">--:--:--</span>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════ SERVICES ══════════════════════ -->
-<section class="services" id="services">
+<!-- ══════════════════════ EXPERTISE ══════════════════════ -->
+<section class="services" id="expertise">
   <div class="services-header reveal">
     <div>
       <span class="section-label">What I Build</span>
@@ -954,51 +918,51 @@ footer {
       </h2>
     </div>
     <p class="services-intro">
-      I focus on creating practical, intelligent applications. From core algorithms to user-facing products, I enjoy building across the full technology stack.
+      I focus on practical applications of modern technology, turning complex problems into elegant, efficient solutions.
     </p>
   </div>
   <div class="services-grid reveal reveal-delay-1">
     <div class="service-card">
       <span class="service-num">01.</span>
       <h3 class="service-title">Computer Vision</h3>
-      <p class="service-desc">Real-time object detection, tracking, and analysis using Python and libraries like OpenCV and MediaPipe.</p>
+      <p class="service-desc">Using Python with OpenCV and MediaPipe for real-time camera intelligence, including person detection, interaction, and automation.</p>
       <div class="service-tags">
         <span class="tag">OpenCV</span>
-        <span class="tag">Person Detection</span>
-        <span class="tag">Automation</span>
+        <span class="tag">MediaPipe</span>
+        <span class="tag">YOLO</span>
       </div>
     </div>
     <div class="service-card">
       <span class="service-num">02.</span>
       <h3 class="service-title">AI & Automation</h3>
-      <p class="service-desc">Developing AI assistant systems, logic engines, and automation scripts to solve real-world problems.</p>
+      <p class="service-desc">Building beginner-to-intermediate AI/JARVIS-style assistants that integrate vision, voice, and logic to perform complex tasks.</p>
       <div class="service-tags">
+        <span class="tag">Python</span>
         <span class="tag">AI Logic</span>
-        <span class="tag">Robotics</span>
-        <span class="tag">Scripting</span>
+        <span class="tag">Automation Scripts</span>
       </div>
     </div>
     <div class="service-card">
       <span class="service-num">03.</span>
       <h3 class="service-title">Full-Stack Web</h3>
-      <p class="service-desc">Building modern, responsive web applications with a focus on clean code and great user experience.</p>
+      <p class="service-desc">Developing responsive and modern web applications using frameworks like Next.js, with a focus on clean code and user experience.</p>
       <div class="service-tags">
         <span class="tag">Next.js</span>
         <span class="tag">React</span>
-        <span class="tag">Firebase</span>
+        <span class="tag">Node.js</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ══════════════════════ WORK ══════════════════════ -->
+<!-- ══════════════════════ WORK / PROJECTS ══════════════════════ -->
 <section class="work" id="work">
   <div class="work-header reveal">
     <div>
       <span class="section-label">Selected Work</span>
       <h2 class="section-heading">Recent <em>Projects</em></h2>
     </div>
-    <a href="https://github.com/SAR0406" class="view-all" target="_blank">View All Projects →</a>
+    <a href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer" class="view-all">View All on GitHub →</a>
   </div>
   <div class="projects-grid reveal reveal-delay-1">
 
@@ -1017,8 +981,8 @@ footer {
       <div class="project-arrow">↗</div>
       <div class="project-info">
         <div class="project-category">Computer Vision · 2024</div>
-        <h3 class="project-name">Real-Time Vision<br>AI</h3>
-        <p class="project-detail">An OpenCV-based system for real-time person detection and interaction analysis from camera feeds.</p>
+        <h3 class="project-name">Real-Time<br>Vision AI</h3>
+        <p class="project-detail">An OpenCV-based system for real-time person detection and interaction automation.</p>
       </div>
     </div>
 
@@ -1037,8 +1001,8 @@ footer {
       <div class="project-arrow">↗</div>
       <div class="project-info">
         <div class="project-category">AI Assistant · 2024</div>
-        <h3 class="project-name">AI Assistant<br>Core</h3>
-        <p class="project-detail">A foundational JARVIS-style assistant integrating vision, voice, and logic for smart home control.</p>
+        <h3 class="project-name">JARVIS-Style<br>Assistant Core</h3>
+        <p class="project-detail">The foundational logic for an AI assistant integrating vision, voice, and task execution.</p>
       </div>
     </div>
 
@@ -1055,9 +1019,9 @@ footer {
       <div class="project-overlay"></div>
       <div class="project-arrow">↗</div>
       <div class="project-info">
-        <div class="project-category">Web App · 2024</div>
-        <h3 class="project-name">Portfolio<br>Platform</h3>
-        <p class="project-detail">A modern, animated portfolio site built with Next.js, Framer Motion, and Tailwind CSS.</p>
+        <div class="project-category">Automation · 2023</div>
+        <h3 class="project-name">Automated<br>Scripting Tools</h3>
+        <p class="project-detail">A collection of small but powerful Python scripts for automating daily digital tasks.</p>
       </div>
     </div>
 
@@ -1076,9 +1040,9 @@ footer {
       <div class="project-overlay"></div>
       <div class="project-arrow">↗</div>
       <div class="project-info">
-        <div class="project-category">Automation · 2023</div>
-        <h3 class="project-name">Automation<br>Scripts</h3>
-        <p class="project-detail">A collection of Python scripts for automating daily tasks, from file management to data entry.</p>
+        <div class="project-category">Web Development · 2023</div>
+        <h3 class="project-name">Portfolio<br>Showcase</h3>
+        <p class="project-detail">A personal portfolio built with Next.js and modern web technologies to showcase my projects.</p>
       </div>
     </div>
 
@@ -1088,51 +1052,52 @@ footer {
 <!-- ══════════════════════ PROCESS ══════════════════════ -->
 <section class="process">
   <div class="reveal">
-    <span class="section-label">How I Think</span>
+    <span class="section-label">How I Build</span>
     <h2 class="section-heading">My <em>Process</em></h2>
   </div>
   <div class="process-steps">
     <div class="process-step reveal">
       <div class="step-num">01</div>
       <div class="step-content">
-        <h3 class="step-title">Deconstruct & Understand</h3>
-        <p class="step-desc">I start by breaking down the problem into its fundamental components. What is the core challenge? What are the constraints and goals?</p>
+        <h3 class="step-title">Problem & Strategy</h3>
+        <p class="step-desc">I start by deeply understanding the problem. What are the core goals? Who is it for? This strategic foundation guides all technical decisions.</p>
       </div>
     </div>
     <div class="process-step reveal reveal-delay-1">
       <div class="step-num">02</div>
       <div class="step-content">
-        <h3 class="step-title">Prototype & Iterate</h3>
-        <p class="step-desc">I build rapid prototypes to test ideas. This hands-on approach allows me to fail fast, learn quickly, and find the most effective solution.</p>
+        <h3 class="step-title">Prototype & Architecture</h3>
+        <p class="step-desc">I design the system architecture and create prototypes. This phase is about exploring solutions and finding the most efficient path forward.</p>
       </div>
     </div>
     <div class="process-step reveal reveal-delay-2">
       <div class="step-num">03</div>
       <div class="step-content">
-        <h3 class="step-title">Refine & Engineer</h3>
-        <p class="step-desc">Once a concept is proven, I engineer a robust and scalable solution, focusing on clean code, performance, and maintainability.</p>
+        <h3 class="step-title">Code & Build</h3>
+        <p class="step-desc">This is where the vision comes to life. I write clean, structured code, focusing on performance, scalability, and maintainability.</p>
       </div>
     </div>
     <div class="process-step reveal reveal-delay-3">
       <div class="step-num">04</div>
       <div class="step-content">
-        <h3 class="step-title">Launch & Learn</h3>
-        <p class="step-desc">A project isn't finished when it's launched. I analyze its performance and impact, using that data to inform future development.</p>
+        <h3 class="step-title">Test & Iterate</h3>
+        <p class="step-desc">A project isn't done when it launches. I believe in rigorous testing and continuous iteration to refine and improve the final product.</p>
       </div>
     </div>
   </div>
 </section>
 
+
 <!-- ══════════════════════ CONTACT ══════════════════════ -->
 <section class="contact" id="contact">
   <div>
-    <span class="section-label reveal">Let's Build</span>
+    <span class="section-label reveal">Let's Create</span>
     <h2 class="contact-headline reveal reveal-delay-1">
-      Let's work<br>
+      Let's build<br>
       <em>together</em>
     </h2>
     <p class="contact-subtext reveal reveal-delay-2">
-      Have a project in mind? I'm always open to new ideas and collaborations. Let's start a conversation.
+      Have a project in mind, a question, or just want to connect? I'm always open to new ideas and collaborations.
     </p>
     <div class="contact-info reveal reveal-delay-3">
       <div class="contact-item">
@@ -1141,7 +1106,7 @@ footer {
       </div>
       <div class="contact-item">
         <span class="contact-label">Based In</span>
-        <span class="contact-value">India · Open to Global</span>
+        <span class="contact-value">Open to Remote Collaboration</span>
       </div>
       <div class="contact-item">
         <span class="contact-label">Response Time</span>
@@ -1154,11 +1119,11 @@ footer {
     <div class="form-row">
       <div class="form-group">
         <label class="form-label">First Name</label>
-        <input class="form-input" type="text" placeholder="Your first name">
+        <input class="form-input" type="text" placeholder="Sarthak">
       </div>
       <div class="form-group">
         <label class="form-label">Last Name</label>
-        <input class="form-input" type="text" placeholder="Your last name">
+        <input class="form-input" type="text" placeholder="Upadhyay">
       </div>
     </div>
     <div class="form-group">
@@ -1167,7 +1132,7 @@ footer {
     </div>
     <div class="form-group">
       <label class="form-label">Project Type</label>
-      <input class="form-input" type="text" placeholder="AI Project / Web App / Automation ...">
+      <input class="form-input" type="text" placeholder="AI / Computer Vision / Web App ...">
     </div>
     <div class="form-group">
       <label class="form-label">Tell Me About Your Project</label>
@@ -1181,12 +1146,12 @@ footer {
 
 <!-- ══════════════════════ FOOTER ══════════════════════ -->
 <footer>
-  <div class="footer-logo">S<span>.</span>U</div>
-  <div class="footer-copy">© 2024 Sarthak Upadhyay. Crafted with <span>♡</span></div>
+  <div class="footer-logo">S<span>.</span>Upadhyay</div>
+  <div class="footer-copy">© 2025 Sarthak Upadhyay. Crafted with <span>♡</span></div>
   <div class="footer-socials">
-    <a href="https://github.com/SAR0406" class="footer-social" target="_blank">GitHub</a>
-    <a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" class="footer-social" target="_blank">LinkedIn</a>
-    <a href="https://x.com/Sarthak44201143" class="footer-social" target="_blank">Twitter</a>
+    <a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" target="_blank" rel="noopener noreferrer" class="footer-social">LinkedIn</a>
+    <a href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer" class="footer-social">GitHub</a>
+    <a href="https://x.com/Sarthak44201143" target="_blank" rel="noopener noreferrer" class="footer-social">Twitter</a>
   </div>
 </footer>
 
@@ -1194,26 +1159,13 @@ footer {
 /* ══════════════════════ CURSOR ══════════════════════ */
 const dot   = document.getElementById('cursorDot');
 const ring  = document.getElementById('cursorRing');
-const glow  = document.getElementById('cursor-glow');
-let mx = 0, my = 0, rx = 0, ry = 0;
 
 document.addEventListener('mousemove', e => {
-  mx = e.clientX; my = e.clientY;
-  dot.style.left  = mx + 'px';
-  dot.style.top   = my + 'px';
-  glow.style.left = mx + 'px';
-  glow.style.top  = my + 'px';
+  dot.style.left  = e.clientX + 'px';
+  dot.style.top   = e.clientY + 'px';
+  ring.style.left = e.clientX + 'px';
+  ring.style.top  = e.clientY + 'px';
 });
-
-// Ring follows with lag
-function animateCursor() {
-  rx += (mx - rx) * 0.12;
-  ry += (my - ry) * 0.12;
-  ring.style.left = rx + 'px';
-  ring.style.top  = ry + 'px';
-  requestAnimationFrame(animateCursor);
-}
-animateCursor();
 
 // Hovering state
 document.querySelectorAll('a, button, .project-card, .service-card').forEach(el => {
@@ -1229,9 +1181,20 @@ window.addEventListener('scroll', () => {
 
 /* ══════════════════════ LIVE CLOCK ══════════════════════ */
 function updateClock() {
-  const now = new Date();
-  const opts = { timeZone: 'Asia/Kolkata', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false };
-  document.getElementById('live-clock').textContent = now.toLocaleTimeString('en-US', opts);
+    try {
+        const now = new Date();
+        // Set a default timezone, e.g., UTC, or try to guess.
+        // For this example, let's use the user's local time as a fallback.
+        const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone || 'UTC';
+        const opts = { timeZone: timeZone, hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false };
+        const clockEl = document.getElementById('live-clock');
+        if (clockEl) {
+            clockEl.textContent = now.toLocaleTimeString('en-US', opts);
+        }
+    } catch (e) {
+        const clockEl = document.getElementById('live-clock');
+        if(clockEl) clockEl.textContent = '...';
+    }
 }
 setInterval(updateClock, 1000);
 updateClock();
@@ -1252,15 +1215,17 @@ revealEls.forEach(el => observer.observe(el));
 window.addEventListener('load', () => {
   const heroItems = document.querySelectorAll('.status-badge, .hero-eyebrow, .hero-headline, .hero-subtext, .hero-actions, .hero-scroll, .hero-stats');
   heroItems.forEach((el, i) => {
-    el.style.opacity = '0';
-    el.style.transform = 'translateY(24px)';
-    el.style.transition = `opacity 0.7s ease ${i * 0.12}s, transform 0.7s ease ${i * 0.12}s`;
-    requestAnimationFrame(() => {
-      setTimeout(() => {
-        el.style.opacity = '1';
-        el.style.transform = 'translateY(0)';
-      }, 50);
-    });
+    if (el instanceof HTMLElement) {
+        el.style.opacity = '0';
+        el.style.transform = 'translateY(24px)';
+        el.style.transition = `opacity 0.7s ease ${i * 0.12}s, transform 0.7s ease ${i * 0.12}s`;
+        requestAnimationFrame(() => {
+          setTimeout(() => {
+            el.style.opacity = '1';
+            el.style.transform = 'translateY(0)';
+          }, 50);
+        });
+    }
   });
 });
 </script>
