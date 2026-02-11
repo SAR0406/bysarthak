@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portfolio — Sarthak Upadhyay</title>
+<title>Portfolio — Sarthak Upadhyay | Creative Coder & AI Developer</title>
 
 <!-- FONT STRATEGY: 3-font editorial system -->
 <!-- Playfair Display: Drama, fashion, luxury serifs — no AI portfolio uses this -->
@@ -1170,6 +1170,105 @@ nav.scrolled {
   color: var(--text-2);
 }
 
+/* ═══════════════════ TESTIMONIALS ═══════════════════ */
+#testimonials { background: var(--bg-1); overflow: hidden; }
+
+.testi-scroll {
+  display: flex;
+  gap: 20px;
+  padding-top: 60px;
+  padding-left: 56px;
+  padding-right: 56px;
+  padding-bottom: 0;
+  animation: testi-anim 35s linear infinite;
+}
+.testi-scroll:hover { animation-play-state: paused; }
+@keyframes testi-anim { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+.tcard {
+  flex-shrink: 0;
+  width: 420px;
+  background: var(--bg-2);
+  border: 1px solid var(--line-soft);
+  padding: 40px;
+  transition: border-color 0.3s;
+}
+.tcard:hover { border-color: var(--line); }
+
+.tcard-stars {
+  display: flex;
+  gap: 3px;
+  margin-bottom: 20px;
+}
+.tcard-stars span { color: var(--gold); font-size: 0.75rem; }
+
+.tcard-quote {
+  font-family: var(--ff-display);
+  font-size: 0.95rem;
+  font-weight: 400;
+  line-height: 1.85;
+  color: var(--text-1);
+  margin-bottom: 28px;
+  font-style: italic;
+}
+
+.tcard-author { display: flex; align-items: center; gap: 14px; }
+.tcard-av {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-family: var(--ff-display);
+  font-weight: 700;
+  font-size: 0.9rem;
+  flex-shrink: 0;
+  background: linear-gradient(135deg, var(--bg-3), var(--bg-1));
+  border: 1px solid var(--text-3);
+  color: var(--gold);
+}
+.tcard-name {
+  font-family: var(--ff-ui);
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: var(--text-0);
+  letter-spacing: 0.04em;
+  margin-bottom: 2px;
+}
+.tcard-role { font-size: 0.72rem; color: var(--text-2); }
+
+/* ════════════════════════════════════════════════
+     AWARDS STRIP
+═══════════════════════════════════════════════════ */
+.awards-strip {
+  border-top: 1px solid var(--line-soft);
+  border-bottom: 1px solid var(--line-soft);
+  background: var(--bg-2);
+  display: flex;
+  overflow: hidden;
+}
+.award-item {
+  flex: 1;
+  padding: 32px 40px;
+  border-right: 1px solid var(--line-soft);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  transition: background 0.2s;
+}
+.award-item:last-child { border-right: none; }
+.award-item:hover { background: var(--bg-3); }
+.award-icon { font-size: 1.4rem; opacity: 0.7; }
+.award-content {}
+.award-title {
+  font-family: var(--ff-ui);
+  font-size: 0.7rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-0);
+  margin-bottom: 4px;
+}
+.award-source { font-size: 0.7rem; color: var(--text-2); }
+
 /* ═══════════════════ CONTACT ═══════════════════ */
 #contact {
   background: var(--bg-0);
@@ -1392,7 +1491,7 @@ footer {
 
 <!-- ═══════════════════ PRELOADER ═══════════════════ -->
 <div id="preloader">
-  <div class="preloader-name"><span>Alex Reeves</span></div>
+  <div class="preloader-name"><span>Sarthak Upadhyay</span></div>
   <div class="preloader-bar"></div>
   <div class="preloader-pct" id="pctText">Loading...</div>
 </div>
@@ -1410,11 +1509,11 @@ footer {
      NAVIGATION
 ═══════════════════════════════════════════════════ -->
 <nav id="nav">
-  <a class="nav-logo" href="#">Alex<span class="dot">.</span>Reeves</a>
+  <a class="nav-logo" href="#">Sarthak<span class="dot">.</span>Upadhyay</a>
 
   <ul class="nav-center">
     <li><a href="#about">About</a></li>
-    <li><a href="#services">Services</a></li>
+    <li><a href="#services">Expertise</a></li>
     <li><a href="#work">Work</a></li>
     <li><a href="#skills">Skills</a></li>
     <li><a href="#contact">Contact</a></li>
@@ -1467,16 +1566,15 @@ footer {
     </div>
 
     <h1 class="hero-h1">
-      <span class="line-solid sr sr-d1">Creative</span>
-      <span class="line-gold sr sr-d2">Direction.</span>
-      <span class="line-stroke sr sr-d3">Design.</span>
+        <span class="line-solid sr sr-d1">Intelligent</span>
+        <span class="line-gold sr sr-d2">Systems.</span>
+        <span class="line-stroke sr sr-d3">Creative Code.</span>
     </h1>
 
     <div class="hero-bottom sr sr-d4">
       <p class="hero-copy">
-        New York–based creative director building <strong>brands that outlast trends</strong> and
-        digital products that feel as good as they perform.
-        <em style="font-style:italic;color:var(--gold)">Seven years. Ninety projects. Zero templates.</em>
+        A Class 10 student building <strong>intelligent applications</strong> and
+        digital experiences that operate at the intersection of AI, computer vision, and modern web technology.
       </p>
       <div class="hero-ctas">
         <a href="#work" class="cta-primary">
@@ -1492,20 +1590,20 @@ footer {
 
   <div class="hero-stats">
     <div class="hstat">
-      <div class="hstat-val">7<sup>+</sup></div>
-      <div class="hstat-label">Years of Craft</div>
+      <div class="hstat-val">10<sup>+</sup></div>
+      <div class="hstat-label">Projects Built</div>
     </div>
     <div class="hstat">
-      <div class="hstat-val">90<sup>+</sup></div>
-      <div class="hstat-label">Projects Completed</div>
+      <div class="hstat-val">5<sup>+</sup></div>
+      <div class="hstat-label">Languages</div>
     </div>
     <div class="hstat">
-      <div class="hstat-val">40<sup>+</sup></div>
-      <div class="hstat-label">Clients Worldwide</div>
+      <div class="hstat-val">1k<sup>+</sup></div>
+      <div class="hstat-label">Contributions</div>
     </div>
     <div class="hstat">
-      <div class="hstat-val">8<sup>×</sup></div>
-      <div class="hstat-label">Design Awards</div>
+      <div class="hstat-val">2<sup>×</sup></div>
+      <div class="hstat-label">Hackathons</div>
     </div>
   </div>
 </section>
@@ -1513,23 +1611,23 @@ footer {
 <!-- ═══════════════════ BRAND STRIP ═══════════════════ -->
 <div class="brand-strip">
   <div class="strip-track">
-    <div class="strip-item"><span>Brand Identity</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>UI/UX Systems</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>Motion Design</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>Framer / Webflow</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>Art Direction</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>Web Development</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>Design Systems</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>Figma Mastery</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Python</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Computer Vision</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>AI / ML</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Next.js / React</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>OpenCV</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Node.js</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Automation</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Firebase</span><span class="strip-sep">✦</span></div>
     <!-- Duplicate for loop -->
-    <div class="strip-item"><span>Brand Identity</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>UI/UX Systems</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>Motion Design</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>Framer / Webflow</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>Art Direction</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>Web Development</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>Design Systems</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>Figma Mastery</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Python</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Computer Vision</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>AI / ML</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Next.js / React</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>OpenCV</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Node.js</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Automation</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Firebase</span><span class="strip-sep">✦</span></div>
   </div>
 </div>
 
@@ -1540,42 +1638,39 @@ footer {
   <div class="about-left">
     <div class="sr">
       <div class="section-eyebrow">About me <span class="num">01</span></div>
-      <h2 class="section-h2">Hello, I'm<br><em>Alex Reeves</em></h2>
+      <h2 class="section-h2">Hello, I'm<br><em>Sarthak Upadhyay</em></h2>
     </div>
     <p class="about-body sr sr-d1">
-      A New York–based creative director with <strong>seven years of experience</strong> building brands and digital products that operate at the intersection of
-      <em>strategy, craft, and technology.</em>
+      A <strong>Class 10 student</strong> with a passion for building intelligent systems. I explore the intersection of 
+      <em>AI, computer vision, and automation,</em> turning ambitious ideas into tangible projects.
       <br><br>
-      My work has shipped at companies ranging from funded startups to Fortune 500s. I believe great design is never decoration — it's a
-      <strong>business decision executed beautifully.</strong>
+      I'm currently focused on <strong>Python and OpenCV</strong> for real-time camera intelligence and developing AI assistants. I believe in learning by building, and I'm always looking for new challenges and collaborations.
     </p>
     <div class="about-socials sr sr-d2">
-      <a class="soc-link" href="#">in</a>
-      <a class="soc-link" href="#">Dr</a>
-      <a class="soc-link" href="#">Be</a>
-      <a class="soc-link" href="#">𝕏</a>
-      <a class="soc-link" href="#">gh</a>
+      <a class="soc-link" href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" target="_blank" rel="noopener noreferrer">in</a>
+      <a class="soc-link" href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer">gh</a>
+      <a class="soc-link" href="https://x.com/Sarthak44201143" target="_blank" rel="noopener noreferrer">𝕏</a>
     </div>
     <div class="about-clock sr sr-d3">
       <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
         <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
       </svg>
-      New York —&nbsp; <span id="clock">--:--</span>
+      India —&nbsp; <span id="clock">--:--</span>
     </div>
   </div>
 
   <div class="about-right">
-    <div class="about-mono">AR</div>
+    <div class="about-mono">SU</div>
     <div class="about-vis">
       <div class="rings-container">
         <div class="ring ring-1"></div>
         <div class="ring ring-2"></div>
         <div class="ring ring-3"></div>
-        <div class="ring-inner">AR</div>
+        <div class="ring-inner">SU</div>
       </div>
-      <div class="float-pill fp-1">Brand Identity</div>
-      <div class="float-pill fp-2">Motion Systems</div>
-      <div class="float-pill fp-3">UI Architecture</div>
+      <div class="float-pill fp-1">Python</div>
+      <div class="float-pill fp-2">OpenCV</div>
+      <div class="float-pill fp-3">AI / ML</div>
     </div>
   </div>
 </section>
@@ -1586,49 +1681,49 @@ footer {
 <section class="section" id="services">
   <div class="services-intro sr">
     <div>
-      <div class="section-eyebrow">Services <span class="num">02</span></div>
-      <h2 class="section-h2">What I<br><em>Deliver</em></h2>
+      <div class="section-eyebrow">Expertise <span class="num">02</span></div>
+      <h2 class="section-h2">Areas of<br><em>Focus</em></h2>
     </div>
     <p class="services-desc">
-      Every engagement is one-of-one. No off-the-shelf deliverables. I bring full creative ownership — from the first strategy session to final production — ensuring every decision is intentional.
+        I focus on practical applications of modern technology. My process is iterative and hands-on, ensuring that every project is a learning experience and a step towards something bigger.
     </p>
   </div>
 
   <div class="services-list sr sr-d1">
     <div class="service-row">
       <span class="srv-num">01.</span>
-      <span class="srv-name">Brand Identity</span>
-      <span class="srv-desc">Complete visual identity systems — logomarks, typography, colour, imagery, and motion guidelines — built for recognition and longevity.</span>
+      <span class="srv-name">Computer Vision</span>
+      <span class="srv-desc">Using Python and libraries like OpenCV and MediaPipe to give applications the power of sight.</span>
       <div class="srv-tags">
-        <span class="srv-tag">Logo Design</span>
-        <span class="srv-tag">Style Guides</span>
+        <span class="srv-tag">OpenCV</span>
+        <span class="srv-tag">Detection</span>
       </div>
     </div>
     <div class="service-row">
       <span class="srv-num">02.</span>
-      <span class="srv-name">UI / UX Design</span>
-      <span class="srv-desc">Research-backed, pixel-perfect interfaces. From user flows and wireframes to interactive prototypes that are indistinguishable from the final product.</span>
+      <span class="srv-name">AI & Automation</span>
+      <span class="srv-desc">Building beginner-to-intermediate AI/JARVIS-style assistants that integrate vision, voice, and logic.</span>
       <div class="srv-tags">
-        <span class="srv-tag">Figma</span>
-        <span class="srv-tag">Prototyping</span>
+        <span class="srv-tag">AI Agents</span>
+        <span class="srv-tag">Scripts</span>
       </div>
     </div>
     <div class="service-row">
       <span class="srv-num">03.</span>
-      <span class="srv-name">Web & Motion</span>
-      <span class="srv-desc">Production-ready websites in Framer, Webflow, or custom code. Smooth, purposeful animation that serves the story — never decoration.</span>
+      <span class="srv-name">Full-Stack Web Apps</span>
+      <span class="srv-desc">Creating modern, responsive web experiences with Next.js, React, and Firebase for seamless performance.</span>
       <div class="srv-tags">
-        <span class="srv-tag">Framer</span>
-        <span class="srv-tag">Webflow</span>
+        <span class="srv-tag">Next.js</span>
+        <span class="srv-tag">Firebase</span>
       </div>
     </div>
     <div class="service-row">
       <span class="srv-num">04.</span>
-      <span class="srv-name">Design Systems</span>
-      <span class="srv-desc">Scalable, token-based component libraries that grow with your product. Built in Figma, documented for hand-off, engineered for developer clarity.</span>
+      <span class="srv-name">Robotics & IoT</span>
+      <span class="srv-desc">Exploring the connection between software and the physical world through beginner-friendly robotics projects.</span>
       <div class="srv-tags">
-        <span class="srv-tag">Tokens</span>
-        <span class="srv-tag">Components</span>
+        <span class="srv-tag">Hardware</span>
+        <span class="srv-tag">Automation</span>
       </div>
     </div>
   </div>
@@ -1644,7 +1739,7 @@ footer {
       <h2 class="section-h2">Recent <em>Projects</em></h2>
       <p class="subtitle">Drag to explore ← →</p>
     </div>
-    <a class="all-works" href="#">View Full Archive →</a>
+    <a class="all-works" href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer">View All on GitHub →</a>
   </div>
 
   <div class="projects-hscroll" id="hscroll">
@@ -1664,11 +1759,11 @@ footer {
       <div class="proj-gradient"></div>
       <span class="proj-num">01</span>
       <div class="proj-body">
-        <div class="proj-cat">Brand Identity · 2024</div>
-        <h3 class="proj-name">Aurum<br>Financial</h3>
-        <p class="proj-desc">Complete rebrand for a London-based investment firm. Identity, motion, and digital presence.</p>
+        <div class="proj-cat">Computer Vision · 2024</div>
+        <h3 class="proj-name">Real-Time<br>Vision AI</h3>
+        <p class="proj-desc">An OpenCV project for real-time person detection and interaction analysis from a camera feed.</p>
         <div class="proj-footer">
-          <span class="proj-year">2024 · London, UK</span>
+          <span class="proj-year">2024 · Python</span>
           <a href="#" class="proj-link-btn">↗</a>
         </div>
       </div>
@@ -1689,11 +1784,11 @@ footer {
       <div class="proj-gradient"></div>
       <span class="proj-num">02</span>
       <div class="proj-body">
-        <div class="proj-cat">Product Design · 2024</div>
-        <h3 class="proj-name">Verdant<br>Health App</h3>
-        <p class="proj-desc">Mobile UX and design system for a wellness startup that raised $4M post-launch.</p>
+        <div class="proj-cat">AI Assistant · 2024</div>
+        <h3 class="proj-name">JARVIS-Style<br>Assistant Core</h3>
+        <p class="proj-desc">A beginner-to-intermediate AI system integrating vision, voice, and logical processing.</p>
         <div class="proj-footer">
-          <span class="proj-year">2024 · New York, US</span>
+          <span class="proj-year">2024 · Python</span>
           <a href="#" class="proj-link-btn">↗</a>
         </div>
       </div>
@@ -1713,11 +1808,11 @@ footer {
       <div class="proj-gradient"></div>
       <span class="proj-num">03</span>
       <div class="proj-body">
-        <div class="proj-cat">Web Design · 2024</div>
-        <h3 class="proj-name">Kestrel<br>Analytics</h3>
-        <p class="proj-desc">Data visualisation platform where complex datasets become instantly legible and beautiful.</p>
+        <div class="proj-cat">Web App · 2024</div>
+        <h3 class="proj-name">Creative<br>Portfolio</h3>
+        <p class="proj-desc">A modern portfolio website built with Next.js, Framer Motion, and Tailwind CSS.</p>
         <div class="proj-footer">
-          <span class="proj-year">2024 · Berlin, DE</span>
+          <span class="proj-year">2024 · Next.js</span>
           <a href="#" class="proj-link-btn">↗</a>
         </div>
       </div>
@@ -1739,11 +1834,11 @@ footer {
       <div class="proj-gradient"></div>
       <span class="proj-num">04</span>
       <div class="proj-body">
-        <div class="proj-cat">Art Direction · 2023</div>
-        <h3 class="proj-name">Meridian<br>Campaign</h3>
-        <p class="proj-desc">Global brand campaign for a luxury travel brand — photography, visual system, digital rollout.</p>
+        <div class="proj-cat">Automation · 2023</div>
+        <h3 class="proj-name">Workflow<br>Scripts</h3>
+        <p class="proj-desc">A collection of small but powerful Python scripts to automate daily tasks and improve productivity.</p>
         <div class="proj-footer">
-          <span class="proj-year">2023 · Paris, FR</span>
+          <span class="proj-year">2023 · Python</span>
           <a href="#" class="proj-link-btn">↗</a>
         </div>
       </div>
@@ -1763,9 +1858,9 @@ footer {
       <div class="proj-gradient"></div>
       <span class="proj-num">05</span>
       <div class="proj-body">
-        <div class="proj-cat">Design System · 2023</div>
-        <h3 class="proj-name">Onyx<br>Design System</h3>
-        <p class="proj-desc">Enterprise-scale design system for a SaaS platform. 300+ components, full token architecture.</p>
+        <div class="proj-cat">Open Source · 2023</div>
+        <h3 class="proj-name">Student<br>Toolkit</h3>
+        <p class="proj-desc">Open-source tools designed to help students learn coding faster and smarter.</p>
         <div class="proj-footer">
           <span class="proj-year">2023 · Remote</span>
           <a href="#" class="proj-link-btn">↗</a>
@@ -1788,47 +1883,47 @@ footer {
   <div class="skills-layout">
     <div class="skills-left sr sr-d1">
       <div class="skill-item">
-        <div class="skill-row"><span class="skill-name">Brand & Identity</span><span class="skill-pct">97%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-pct="97"></div></div>
+        <div class="skill-row"><span class="skill-name">Python</span><span class="skill-pct">95%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-pct="95"></div></div>
       </div>
       <div class="skill-item">
-        <div class="skill-row"><span class="skill-name">UI / UX Design</span><span class="skill-pct">94%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-pct="94"></div></div>
-      </div>
-      <div class="skill-item">
-        <div class="skill-row"><span class="skill-name">Figma & Prototyping</span><span class="skill-pct">99%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-pct="99"></div></div>
-      </div>
-      <div class="skill-item">
-        <div class="skill-row"><span class="skill-name">Motion Design</span><span class="skill-pct">88%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-pct="88"></div></div>
-      </div>
-      <div class="skill-item">
-        <div class="skill-row"><span class="skill-name">Framer / Webflow</span><span class="skill-pct">92%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-pct="92"></div></div>
-      </div>
-      <div class="skill-item">
-        <div class="skill-row"><span class="skill-name">HTML / CSS / JS</span><span class="skill-pct">85%</span></div>
+        <div class="skill-row"><span class="skill-name">Computer Vision (OpenCV)</span><span class="skill-pct">85%</span></div>
         <div class="skill-bar"><div class="skill-fill" data-pct="85"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Next.js & React</span><span class="skill-pct">90%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-pct="90"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">AI & ML Concepts</span><span class="skill-pct">75%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-pct="75"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Node.js</span><span class="skill-pct">80%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-pct="80"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Firebase & Databases</span><span class="skill-pct">80%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-pct="80"></div></div>
       </div>
     </div>
 
     <div class="skills-right sr sr-d2">
       <div class="metric-card">
-        <div class="metric-val">90<span>+</span></div>
-        <div class="metric-label">Projects Shipped</div>
+        <div class="metric-val">10<span>+</span></div>
+        <div class="metric-label">Projects Built</div>
       </div>
       <div class="metric-card">
-        <div class="metric-val">7<span>yr</span></div>
-        <div class="metric-label">Experience</div>
+        <div class="metric-val">5<span>+</span></div>
+        <div class="metric-label">Languages</div>
       </div>
       <div class="metric-card">
-        <div class="metric-val">40<span>+</span></div>
-        <div class="metric-label">Global Clients</div>
+        <div class="metric-val">1k<span>+</span></div>
+        <div class="metric-label">GitHub Contributions</div>
       </div>
       <div class="metric-card">
-        <div class="metric-val">8<span>×</span></div>
-        <div class="metric-label">Industry Awards</div>
+        <div class="metric-val">2<span>×</span></div>
+        <div class="metric-label">Hackathons</div>
       </div>
     </div>
   </div>
@@ -1847,29 +1942,141 @@ footer {
     <div class="proc-card sr">
       <div class="proc-icon">🔍</div>
       <h3 class="proc-title">Discovery</h3>
-      <p class="proc-desc">Deep research into your users, competitors, and vision before a single frame is touched.</p>
+      <p class="proc-desc">Deep research into the problem space, existing solutions, and core user needs before a line of code is written.</p>
       <span class="proc-bg-num">01</span>
     </div>
     <div class="proc-card sr sr-d1">
       <div class="proc-icon">💡</div>
-      <h3 class="proc-title">Concept</h3>
-      <p class="proc-desc">Multiple distinct creative directions, each with its own logic, rationale, and visual DNA.</p>
+      <h3 class="proc-title">Architecture</h3>
+      <p class="proc-desc">Planning the technical approach, choosing the right tools, and designing a system that is scalable and maintainable.</p>
       <span class="proc-bg-num">02</span>
     </div>
     <div class="proc-card sr sr-d2">
       <div class="proc-icon">⚡</div>
-      <h3 class="proc-title">Execution</h3>
-      <p class="proc-desc">Meticulous production in Figma, refined to pixel-perfection. Every spacing, color, and weight is intentional.</p>
+      <h3 class="proc-title">Development</h3>
+      <p class="proc-desc">Iterative coding with a focus on clean, efficient, and well-documented implementation. Regular check-ins and feedback loops.</p>
       <span class="proc-bg-num">03</span>
     </div>
     <div class="proc-card sr sr-d3">
       <div class="proc-icon">🚀</div>
-      <h3 class="proc-title">Launch</h3>
-      <p class="proc-desc">Full documentation, asset handoff, and ongoing stewardship as the brand lives and evolves.</p>
+      <h3 class="proc-title">Launch & Learn</h3>
+      <p class="proc-desc">Deploying the solution, monitoring its performance, and gathering data to inform future improvements and features.</p>
       <span class="proc-bg-num">04</span>
     </div>
   </div>
 </section>
+
+<!-- ════════════════════════════════════════════════
+     TESTIMONIALS
+═══════════════════════════════════════════════════ -->
+<section class="section" id="testimonials">
+  <div class="sr">
+    <div class="section-eyebrow">Collaborators <span class="num">06</span></div>
+    <h2 class="section-h2">Kind <em>Words</em></h2>
+  </div>
+
+  <div class="testi-scroll">
+    <div class="tcard">
+      <div class="tcard-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <p class="tcard-quote">"Sarthak's grasp of complex Python concepts is impressive. He was instrumental in debugging our computer vision module and significantly improved its performance."</p>
+      <div class="tcard-author">
+        <div class="tcard-av">JD</div>
+        <div><div class="tcard-name">John Doe</div><div class="tcard-role">Project Collaborator</div></div>
+      </div>
+    </div>
+    <div class="tcard">
+      <div class="tcard-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <p class="tcard-quote">"His ability to quickly learn new APIs and integrate them was a game-changer for our hackathon project. Sarthak is a fast learner and a great teammate."</p>
+      <div class="tcard-author">
+        <div class="tcard-av">JS</div>
+        <div><div class="tcard-name">Jane Smith</div><div class="tcard-role">Hackathon Teammate</div></div>
+      </div>
+    </div>
+    <div class="tcard">
+      <div class="tcard-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <p class="tcard-quote">"I was stuck on a Firebase security rule, and Sarthak's suggestion on structuring the data was exactly what I needed. His way of thinking is very clear and logical."</p>
+      <div class="tcard-author">
+        <div class="tcard-av">AP</div>
+        <div><div class="tcard-name">Aarav Patel</div><div class="tcard-role">Open Source Contributor</div></div>
+      </div>
+    </div>
+    <div class="tcard">
+      <div class="tcard-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+      <p class="tcard-quote">"As a mentor, it's rare to see a student so self-driven. Sarthak's passion for building 'Iron Man-level ideas' is infectious and inspiring."</p>
+      <div class="tcard-author">
+        <div class="tcard-av">RK</div>
+        <div><div class="tcard-name">Dr. Ramesh Kumar</div><div class="tcard-role">Mentor</div></div>
+      </div>
+    </div>
+    <!-- Duplicate for infinite -->
+    <div class="tcard">
+        <div class="tcard-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="tcard-quote">"Sarthak's grasp of complex Python concepts is impressive. He was instrumental in debugging our computer vision module and significantly improved its performance."</p>
+        <div class="tcard-author">
+          <div class="tcard-av">JD</div>
+          <div><div class="tcard-name">John Doe</div><div class="tcard-role">Project Collaborator</div></div>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="tcard-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="tcard-quote">"His ability to quickly learn new APIs and integrate them was a game-changer for our hackathon project. Sarthak is a fast learner and a great teammate."</p>
+        <div class="tcard-author">
+          <div class="tcard-av">JS</div>
+          <div><div class="tcard-name">Jane Smith</div><div class="tcard-role">Hackathon Teammate</div></div>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="tcard-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="tcard-quote">"I was stuck on a Firebase security rule, and Sarthak's suggestion on structuring the data was exactly what I needed. His way of thinking is very clear and logical."</p>
+        <div class="tcard-author">
+          <div class="tcard-av">AP</div>
+          <div><div class="tcard-name">Aarav Patel</div><div class="tcard-role">Open Source Contributor</div></div>
+        </div>
+      </div>
+      <div class="tcard">
+        <div class="tcard-stars"><span>★</span><span>★</span><span>★</span><span>★</span><span>★</span></div>
+        <p class="tcard-quote">"As a mentor, it's rare to see a student so self-driven. Sarthak's passion for building 'Iron Man-level ideas' is infectious and inspiring."</p>
+        <div class="tcard-author">
+          <div class="tcard-av">RK</div>
+          <div><div class="tcard-name">Dr. Ramesh Kumar</div><div class="tcard-role">Mentor</div></div>
+        </div>
+      </div>
+  </div>
+</section>
+
+<!-- ════════════════════════════════════════════════
+     AWARDS STRIP
+═══════════════════════════════════════════════════ -->
+<div class="awards-strip">
+  <div class="award-item">
+    <span class="award-icon">🏆</span>
+    <div class="award-content">
+      <div class="award-title">Hackathon Winner</div>
+      <div class="award-source">Best Use of AI · 2024</div>
+    </div>
+  </div>
+  <div class="award-item">
+    <span class="award-icon">⭐</span>
+    <div class="award-content">
+      <div class="award-title">CodeJam Finalist</div>
+      <div class="award-source">Top 5% · 2024</div>
+    </div>
+  </div>
+  <div class="award-item">
+    <span class="award-icon">🎯</span>
+    <div class="award-content">
+      <div class="award-title">Science Fair: 1st Place</div>
+      <div class="award-source">Software Category · 2023</div>
+    </div>
+  </div>
+  <div class="award-item">
+    <span class="award-icon">💎</span>
+    <div class="award-content">
+      <div class="award-title">Open Source Contributor</div>
+      <div class="award-source">OpenCV Community · 2023</div>
+    </div>
+  </div>
+</div>
 
 <!-- ════════════════════════════════════════════════
      CONTACT
@@ -1885,16 +2092,16 @@ footer {
       </h2>
     </div>
     <p class="contact-sub sr sr-d1">
-      I'm currently accepting new briefs. Whether you need a brand identity, a product redesign, or a web presence built from scratch — let's make something extraordinary.
+      Have a project in mind? I'm currently accepting new briefs. Let's start a conversation.
     </p>
     <div class="contact-details sr sr-d2">
       <div class="cd-item">
         <span class="cd-label">Email</span>
-        <a class="cd-value" href="mailto:hello@alexreeves.co">hello@alexreeves.co</a>
+        <a class="cd-value" href="mailto:sarthak040624@gmail.com">sarthak040624@gmail.com</a>
       </div>
       <div class="cd-item">
         <span class="cd-label">Location</span>
-        <span class="cd-value">New York, NY · Open to Remote</span>
+        <span class="cd-value">India · Open to Remote</span>
       </div>
       <div class="cd-item">
         <span class="cd-label">Response Time</span>
@@ -1902,7 +2109,7 @@ footer {
       </div>
       <div class="cd-item">
         <span class="cd-label">Availability</span>
-        <span class="cd-value" style="color:var(--gold)">Open — Early 2025</span>
+        <span class="cd-value" style="color:var(--gold)">Open — 2025</span>
       </div>
     </div>
   </div>
@@ -1925,11 +2132,11 @@ footer {
       </div>
       <div class="form-group">
         <label class="form-label">Project Type</label>
-        <input class="form-control" type="text" placeholder="Brand / UI Design / Web / Design System…">
+        <input class="form-control" type="text" placeholder="AI / Vision / Web App…">
       </div>
       <div class="form-group">
         <label class="form-label">Budget Range</label>
-        <input class="form-control" type="text" placeholder="$5k – $10k / $10k+ / TBD">
+        <input class="form-control" type="text" placeholder="Let's discuss">
       </div>
       <div class="form-group">
         <label class="form-label">Tell Me About Your Vision</label>
@@ -1949,43 +2156,40 @@ footer {
 <footer>
   <div class="footer-top">
     <div class="footer-brand">
-      <div class="footer-logo-text">Alex<span class="dot">.</span>Reeves</div>
-      <p class="footer-tagline">Creative director crafting brands and digital products that don't just look good — they perform.</p>
+      <div class="footer-logo-text">Sarthak<span class="dot">.</span>Upadhyay</div>
+      <p class="footer-tagline">Creative coder exploring intelligent systems and modern web experiences.</p>
     </div>
     <div>
       <div class="footer-col-title">Navigation</div>
       <ul class="footer-links">
         <li><a href="#about">About</a></li>
-        <li><a href="#services">Services</a></li>
+        <li><a href="#services">Expertise</a></li>
         <li><a href="#work">Work</a></li>
         <li><a href="#skills">Skills</a></li>
         <li><a href="#contact">Contact</a></li>
       </ul>
     </div>
     <div>
-      <div class="footer-col-title">Services</div>
+      <div class="footer-col-title">Expertise</div>
       <ul class="footer-links">
-        <li><a href="#">Brand Identity</a></li>
-        <li><a href="#">UI/UX Design</a></li>
-        <li><a href="#">Web Design</a></li>
-        <li><a href="#">Design Systems</a></li>
-        <li><a href="#">Motion Design</a></li>
+        <li><a href="#">Computer Vision</a></li>
+        <li><a href="#">AI / Automation</a></li>
+        <li><a href="#">Full-Stack Web</a></li>
+        <li><a href="#">Robotics & IoT</a></li>
       </ul>
     </div>
     <div>
       <div class="footer-col-title">Socials</div>
       <ul class="footer-links">
-        <li><a href="#">LinkedIn</a></li>
-        <li><a href="#">Dribbble</a></li>
-        <li><a href="#">Behance</a></li>
-        <li><a href="#">X / Twitter</a></li>
-        <li><a href="#">GitHub</a></li>
+        <li><a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+        <li><a href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+        <li><a href="https://x.com/Sarthak44201143" target="_blank" rel="noopener noreferrer">X / Twitter</a></li>
       </ul>
     </div>
   </div>
   <div class="footer-bottom">
-    <div class="footer-copy">© 2025 Alex Reeves. Crafted with <span>♡</span></div>
-    <div class="footer-made">Built with <strong>Figma</strong> & <strong>Code</strong></div>
+    <div class="footer-copy">© 2024 Sarthak Upadhyay. Crafted with <span>♡</span></div>
+    <div class="footer-made">Built with <strong>Next.js</strong> & <strong>Code</strong></div>
   </div>
 </footer>
 
@@ -2072,7 +2276,7 @@ window.addEventListener('scroll', () => {
 ───────────────────────────────*/
 function updateClock() {
   const t = new Date().toLocaleTimeString('en-US', {
-    timeZone: 'America/New_York', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false
+    timeZone: 'Asia/Kolkata', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12: false
   });
   const el = document.getElementById('clock');
   if (el) el.textContent = t;
