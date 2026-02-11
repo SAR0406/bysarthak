@@ -3,12 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Portfolio — Sarthak Upadhyay</title>
+<title>Sarthak Upadhyay — Creative Coder & AI Explorer</title>
 
 <!-- FONT STRATEGY: 3-font editorial system -->
-<!-- Playfair Display: Drama, fashion, luxury serifs — no AI portfolio uses this -->
-<!-- Syne: Awwwards-favorite ultra-geometric editorial sans -->
-<!-- DM Sans: Neutral, clean body text that doesn't compete -->
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,500;0,700;0,900;1,400;1,700&family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,200;0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
@@ -16,7 +13,6 @@
 <style>
 /* ═══════════════════════════════════════════════════════════════
    OBSIDIAN EMBER — PREMIUM COLOR SYSTEM
-   Research-backed 2025/2026 luxury palette
    ═══════════════════════════════════════════════════════════════ */
 :root {
   /* BACKGROUNDS — Warm obsidian, NOT cold blue-black */
@@ -25,7 +21,7 @@
   --bg-2:      #1A1815;   /* Card surfaces */
   --bg-3:      #221F1B;   /* Elevated elements */
 
-  /* PRIMARY — Antique gold. More mature than v1's #D4A854 */
+  /* PRIMARY — Antique gold. */
   --gold:      #C9A96E;   /* Muted antique gold */
   --gold-lt:   #E5C98A;   /* Lighter gold for emphasis */
   --gold-dk:   #8A6E42;   /* Dark gold for subtle borders */
@@ -90,7 +86,7 @@ body.loading { overflow: hidden; }
   color: var(--text-0);
   letter-spacing: -0.02em;
   overflow: hidden;
-  height: 1.3em;
+  height: 1.4em; /* Increased height */
 }
 .preloader-name span {
   display: inline-block;
@@ -296,6 +292,8 @@ nav.scrolled {
   text-decoration: none;
   border-radius: 1px;
   transition: background 0.2s, transform 0.2s;
+  cursor: pointer;
+  border: none;
 }
 .nav-btn:hover { background: var(--gold-lt); }
 
@@ -366,7 +364,7 @@ nav.scrolled {
 /* THE HEADLINE — The centrepiece. Everything else serves this. */
 .hero-h1 {
   font-family: var(--ff-display);
-  font-size: clamp(80px, 11.5vw, 160px);
+  font-size: clamp(80px, 10vw, 140px);
   font-weight: 900;
   line-height: 0.9;
   letter-spacing: -0.03em;
@@ -390,28 +388,6 @@ nav.scrolled {
   display: block;
 }
 
-/* Superscript role tag inline with headline */
-.hero-role-tag {
-  position: absolute;
-  right: -20px;
-  bottom: 20px;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 4px;
-  opacity: 0.7;
-}
-.role-text {
-  font-family: var(--ff-ui);
-  font-size: 0.65rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-  color: var(--text-2);
-  writing-mode: vertical-rl;
-  text-orientation: mixed;
-  transform: rotate(180deg);
-}
-
 .hero-bottom {
   display: flex;
   align-items: flex-end;
@@ -420,13 +396,14 @@ nav.scrolled {
   gap: 40px;
 }
 .hero-copy {
-  max-width: 440px;
+  max-width: 500px;
   font-size: 0.98rem;
   line-height: 1.9;
   color: var(--text-1);
   font-weight: 300;
 }
 .hero-copy strong { color: var(--text-0); font-weight: 400; }
+.hero-copy em { color: var(--gold); font-style: italic; }
 
 .hero-ctas {
   display: flex;
@@ -1170,103 +1147,6 @@ nav.scrolled {
   color: var(--text-2);
 }
 
-/* ═══════════════════ TESTIMONIALS ═══════════════════ */
-#testimonials { background: var(--bg-1); overflow: hidden; }
-
-.testi-scroll {
-  display: flex;
-  gap: 20px;
-  padding-top: 60px;
-  padding-left: 56px;
-  padding-right: 56px;
-  padding-bottom: 0;
-  animation: testi-anim 35s linear infinite;
-}
-.testi-scroll:hover { animation-play-state: paused; }
-@keyframes testi-anim { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
-
-.tcard {
-  flex-shrink: 0;
-  width: 420px;
-  background: var(--bg-2);
-  border: 1px solid var(--line-soft);
-  padding: 40px;
-  transition: border-color 0.3s;
-}
-.tcard:hover { border-color: var(--line); }
-
-.tcard-stars {
-  display: flex;
-  gap: 3px;
-  margin-bottom: 20px;
-}
-.tcard-stars span { color: var(--gold); font-size: 0.75rem; }
-
-.tcard-quote {
-  font-family: var(--ff-display);
-  font-size: 0.95rem;
-  font-weight: 400;
-  line-height: 1.85;
-  color: var(--text-1);
-  margin-bottom: 28px;
-  font-style: italic;
-}
-
-.tcard-author { display: flex; align-items: center; gap: 14px; }
-.tcard-av {
-  width: 40px; height: 40px;
-  border-radius: 50%;
-  display: flex; align-items: center; justify-content: center;
-  font-family: var(--ff-display);
-  font-weight: 700;
-  font-size: 0.9rem;
-  flex-shrink: 0;
-  background: linear-gradient(135deg, var(--bg-3), var(--bg-1));
-  border: 1px solid var(--text-3);
-  color: var(--gold);
-}
-.tcard-name {
-  font-family: var(--ff-ui);
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: var(--text-0);
-  letter-spacing: 0.04em;
-  margin-bottom: 2px;
-}
-.tcard-role { font-size: 0.72rem; color: var(--text-2); }
-
-/* ═══════════════════ AWARDS STRIP ═══════════════════ */
-.awards-strip {
-  border-top: 1px solid var(--line-soft);
-  border-bottom: 1px solid var(--line-soft);
-  background: var(--bg-2);
-  display: flex;
-  overflow: hidden;
-}
-.award-item {
-  flex: 1;
-  padding: 32px 40px;
-  border-right: 1px solid var(--line-soft);
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  transition: background 0.2s;
-}
-.award-item:last-child { border-right: none; }
-.award-item:hover { background: var(--bg-3); }
-.award-icon { font-size: 1.4rem; opacity: 0.7; }
-.award-content {}
-.award-title {
-  font-family: var(--ff-ui);
-  font-size: 0.7rem;
-  font-weight: 700;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-0);
-  margin-bottom: 4px;
-}
-.award-source { font-size: 0.7rem; color: var(--text-2); }
-
 /* ═══════════════════ CONTACT ═══════════════════ */
 #contact {
   background: var(--bg-0);
@@ -1482,7 +1362,125 @@ footer {
   background: var(--line-soft);
   margin: 0;
 }
+</style>
+<style id="chat-styles">
+/* Custom Chat styles */
+#chat-widget-container {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+#auth-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  text-align: center;
+  gap: 24px;
+}
+#auth-container p {
+    color: var(--text-1);
+    line-height: 1.9;
+    max-width: 400px;
+}
+#google-login-btn { width: auto; cursor: pointer; border: none;}
 
+#chat-container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 500px;
+  max-height: 500px;
+  background: var(--bg-2);
+  border: 1px solid var(--text-3);
+}
+#chat-messages {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+.chat-bubble {
+  padding: 10px 16px;
+  border-radius: 18px;
+  max-width: 80%;
+  font-size: 0.9rem;
+  line-height: 1.6;
+  word-wrap: break-word;
+}
+.chat-bubble.visitor {
+  background: var(--gold);
+  color: var(--bg-0);
+  border-bottom-right-radius: 4px;
+  align-self: flex-end;
+}
+.chat-bubble.admin {
+  background: var(--bg-3);
+  color: var(--text-0);
+  border-bottom-left-radius: 4px;
+  align-self: flex-start;
+}
+.chat-bubble .sender {
+  font-size: 0.7rem;
+  font-weight: 600;
+  margin-bottom: 4px;
+  opacity: 0.8;
+  display: block;
+}
+.chat-info {
+  text-align: center;
+  color: var(--text-2);
+  font-size: 0.8rem;
+  padding: 20px;
+}
+
+#chat-form {
+  display: flex;
+  gap: 12px;
+  padding: 16px;
+  border-top: 1px solid var(--text-3);
+}
+#chat-input {
+  flex-grow: 1;
+}
+#chat-form button {
+  width: auto;
+  padding: 0 24px;
+  cursor: pointer;
+}
+
+/* Nav auth styles */
+#nav-auth-container {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+.nav-username {
+  font-family: var(--ff-ui);
+  font-size: 0.7rem;
+  color: var(--text-1);
+  letter-spacing: 0.05em;
+  white-space: nowrap;
+}
+.nav-btn-outline {
+  padding: 8px 18px;
+  background: transparent;
+  color: var(--gold);
+  font-family: var(--ff-ui);
+  font-size: 0.7rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+  border-radius: 1px;
+  border: 1px solid var(--gold);
+  transition: background 0.2s, color 0.2s;
+  cursor: pointer;
+}
+.nav-btn-outline:hover { background: var(--gold); color: var(--bg-0); }
 </style>
 </head>
 <body class="loading">
@@ -1507,7 +1505,7 @@ footer {
      NAVIGATION
 ═══════════════════════════════════════════════════ -->
 <nav id="nav">
-  <a class="nav-logo" href="#">Sarthak<span class="dot">.</span>
+  <a class="nav-logo" href="#">Sarthak<span class="dot">.</span>Upadhyay</a>
 
   <ul class="nav-center">
     <li><a href="#about">About</a></li>
@@ -1520,9 +1518,11 @@ footer {
   <div class="nav-right">
     <span class="nav-available">
       <span class="pulse-dot"></span>
-      Open to Collaborate
+      Open to Work
     </span>
-    <a class="nav-btn" href="#contact">Let's Talk</a>
+    <div id="nav-auth-container">
+        <a class="nav-btn" href="#contact">Login to Chat</a>
+    </div>
   </div>
 </nav>
 
@@ -1539,15 +1539,12 @@ footer {
     <circle cx="250" cy="250" r="140" stroke="rgba(201,169,110,0.1)" stroke-width="0.5"/>
     <circle cx="250" cy="250" r="90"  stroke="rgba(201,169,110,0.12)" stroke-width="0.5"/>
     <circle cx="250" cy="250" r="40"  fill="rgba(201,169,110,0.04)" stroke="rgba(201,169,110,0.2)" stroke-width="0.5"/>
-    <!-- Octagon -->
     <path d="M250 10 L410 90 L490 250 L410 410 L250 490 L90 410 L10 250 L90 90 Z"
           stroke="rgba(201,169,110,0.04)" stroke-width="0.5"/>
-    <!-- Cross lines -->
     <line x1="10" y1="250" x2="490" y2="250" stroke="rgba(201,169,110,0.04)" stroke-width="0.5"/>
     <line x1="250" y1="10" x2="250" y2="490" stroke="rgba(201,169,110,0.04)" stroke-width="0.5"/>
     <line x1="90" y1="90" x2="410" y2="410" stroke="rgba(201,169,110,0.03)" stroke-width="0.5"/>
     <line x1="410" y1="90" x2="90" y2="410" stroke="rgba(201,169,110,0.03)" stroke-width="0.5"/>
-    <!-- Floating tick marks around outer circle -->
     <circle cx="250" cy="10" r="3" fill="rgba(201,169,110,0.4)"/>
     <circle cx="490" cy="250" r="3" fill="rgba(232,67,26,0.5)"/>
     <circle cx="250" cy="490" r="3" fill="rgba(201,169,110,0.4)"/>
@@ -1558,29 +1555,30 @@ footer {
     <div class="hero-top sr">
       <span class="hero-badge">
         <span class="pulse-dot"></span>
-        Open to Collaboration
+        Available for projects
       </span>
       <span class="hero-date" id="heroDate">—</span>
     </div>
 
     <h1 class="hero-h1">
-      <span class="line-solid sr sr-d1">Intelligent.</span>
+      <span class="line-solid sr sr-d1">Intelligent</span>
       <span class="line-gold sr sr-d2">Systems.</span>
       <span class="line-stroke sr sr-d3">Creative Code.</span>
     </h1>
 
     <div class="hero-bottom sr sr-d4">
       <p class="hero-copy">
-        I'm a creative coder and <strong>AI explorer</strong>, building intelligent systems and modern web experiences. Currently in Class 10, I'm passionate about 
-        <em style="font-style:italic;color:var(--gold)">AI, Web app , Ai agents , Designing , and bringing innovative ideas to life.</em>
+        Class 10 student with a passion for <strong>Python and Computer Vision.</strong> 
+        I'm building AI-powered tools and exploring the future of intelligent systems.
+        <em style="font-style:italic;color:var(--gold)">Limitations don't stop innovation.</em>
       </p>
       <div class="hero-ctas">
         <a href="#work" class="cta-primary">
-          View My Work
-          <span class="cta-arrow">↗</span>
+          Explore My World
+          <span class="cta-arrow">→</span>
         </a>
         <a href="#contact" class="cta-secondary">
-          <span>—</span> Start a Project
+          <span>—</span> Get In Touch
         </a>
       </div>
     </div>
@@ -1588,20 +1586,20 @@ footer {
 
   <div class="hero-stats">
     <div class="hstat">
-      <div class="hstat-val">1y<sup>+</sup></div>
+      <div class="hstat-val">3<sup>+</sup></div>
       <div class="hstat-label">Years of Coding</div>
     </div>
     <div class="hstat">
-      <div class="hstat-val">25<sup>+</sup></div>
-      <div class="hstat-label">Projects Built</div>
+      <div class="hstat-val">20<sup>+</sup></div>
+      <div class="hstat-label">Personal Projects</div>
     </div>
     <div class="hstat">
-      <div class="hstat-val">1k<sup>+</sup></div>
-      <div class="hstat-label">Total commits</div>
+      <div class="hstat-val">5<sup>+</sup></div>
+      <div class="hstat-label">Core Technologies</div>
     </div>
     <div class="hstat">
-      <div class="hstat-val">2<sup>y</sup></div>
-      <div class="hstat-label">Hackathon Wins</div>
+      <div class="hstat-val">10th</div>
+      <div class="hstat-label">Grade Student</div>
     </div>
   </div>
 </section>
@@ -1609,23 +1607,23 @@ footer {
 <!-- ═══════════════════ BRAND STRIP ═══════════════════ -->
 <div class="brand-strip">
   <div class="strip-track">
-    <div class="strip-item"><span>Python / ML</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Python</span><span class="strip-sep">✦</span></div>
     <div class="strip-item"><span>Computer Vision</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>AI / AI Agents</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>AI / ML</span><span class="strip-sep">✦</span></div>
     <div class="strip-item"><span>Next.js / React</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>Firebase</span><span class="strip-sep">✦</span></div>
     <div class="strip-item"><span>Node.js</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>OpenCV</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Firebase</span><span class="strip-sep">✦</span></div>
     <div class="strip-item"><span>Automation</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>OpenCV</span><span class="strip-sep">✦</span></div>
     <!-- Duplicate for loop -->
-    <div class="strip-item"><span>Python / ML</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Python</span><span class="strip-sep">✦</span></div>
     <div class="strip-item"><span>Computer Vision</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>AI / AI Agents</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>AI / ML</span><span class="strip-sep">✦</span></div>
     <div class="strip-item"><span>Next.js / React</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>Firebase</span><span class="strip-sep">✦</span></div>
     <div class="strip-item"><span>Node.js</span><span class="strip-sep">✦</span></div>
-    <div class="strip-item"><span>OpenCV</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>Firebase</span><span class="strip-sep">✦</span></div>
     <div class="strip-item"><span>Automation</span><span class="strip-sep">✦</span></div>
+    <div class="strip-item"><span>OpenCV</span><span class="strip-sep">✦</span></div>
   </div>
 </div>
 
@@ -1639,15 +1637,16 @@ footer {
       <h2 class="section-h2">Hello, I'm<br><em>Sarthak Upadhyay</em></h2>
     </div>
     <p class="about-body sr sr-d1">
-      I'm a <strong>Class 10 student and self-taught developer</strong> with a passion for turning ambitious ideas into reality. I specialize in
-      <em>AI, Web app , Ai agents , Designing , and bringing innovative ideas to life.</em>, and I'm always exploring new ways to build intelligent and useful applications.
+      A Class 10 student and <strong>Python enthusiast</strong> diving deep into the world of Artificial Intelligence. I'm passionate about exploring
+      <em>Computer Vision with OpenCV</em> and building my own JARVIS-style assistants from the ground up.
       <br><br>
-      I believe that limitations fuel innovation. My goal is to <strong>build Iron Man–level ideas with student-level resources</strong> — demonstrating that curiosity and code can overcome any obstacle.
+      I love the challenge of turning complex problems into clean, functional code. My goal is to innovate at the intersection of
+      <strong>vision, voice, and logic,</strong> one project at a time.
     </p>
     <div class="about-socials sr sr-d2">
-      <a class="soc-link" href="https://www.instagram.com/sarthak_upadhyay01/" target="_blank">in</a>
-      <a class="soc-link" href="https://github.com/SAR0406" target="_blank">gh</a>
-      <a class="soc-link" href="https://x.com/Sarthak44201143" target="_blank">𝕏</a>
+      <a class="soc-link" href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" target="_blank" rel="noopener noreferrer">in</a>
+      <a class="soc-link" href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer">gh</a>
+      <a class="soc-link" href="https://x.com/Sarthak44201143" target="_blank" rel="noopener noreferrer">𝕏</a>
     </div>
     <div class="about-clock sr sr-d3">
       <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
@@ -1664,11 +1663,11 @@ footer {
         <div class="ring ring-1"></div>
         <div class="ring ring-2"></div>
         <div class="ring ring-3"></div>
-        <div class="ring-inner">SU.</div>
+        <div class="ring-inner">SU</div>
       </div>
-      <div class="float-pill fp-1">Python</div>
-      <div class="float-pill fp-2">Ai / Ai Agents</div>
-      <div class="float-pill fp-3">React/Next.js</div>
+      <div class="float-pill fp-1">Computer Vision</div>
+      <div class="float-pill fp-2">AI Assistants</div>
+      <div class="float-pill fp-3">Python Automation</div>
     </div>
   </div>
 </section>
@@ -1679,11 +1678,11 @@ footer {
 <section class="section" id="services">
   <div class="services-intro sr">
     <div>
-      <div class="section-eyebrow">Expertise <span class="num">02</span></div>
-      <h2 class="section-h2">Areas of<br><em>Focus</em></h2>
+      <div class="section-eyebrow">Areas of Expertise <span class="num">02</span></div>
+      <h2 class="section-h2">What I<br><em>Build</em></h2>
     </div>
     <p class="services-desc">
-      My work is driven by a deep curiosity for intelligent systems. I focus on practical applications of AI and vision, building tools and full-stack experiences that are both smart and useful.
+      I focus on practical applications and hands-on projects. My goal is to build intelligent systems that can see, think, and act, turning futuristic ideas into tangible reality.
     </p>
   </div>
 
@@ -1691,16 +1690,16 @@ footer {
     <div class="service-row">
       <span class="srv-num">01.</span>
       <span class="srv-name">Computer Vision</span>
-      <span class="srv-desc">Real-time object detection, tracking, and analysis using Python with OpenCV and MediaPipe for interactive and automated systems.</span>
+      <span class="srv-desc">Using Python and OpenCV to give machines the power of sight. Real-time object detection, tracking, and interaction.</span>
       <div class="srv-tags">
         <span class="srv-tag">OpenCV</span>
-        <span class="srv-tag">Detection</span>
+        <span class="srv-tag">Python</span>
       </div>
     </div>
     <div class="service-row">
       <span class="srv-num">02.</span>
       <span class="srv-name">AI & Automation</span>
-      <span class="srv-desc">Building beginner-to-intermediate "JARVIS-style" assistants and automation scripts that integrate vision, voice, and logic.</span>
+      <span class="srv-desc">Developing beginner-to-intermediate AI assistants that integrate vision, voice, and logic to perform automated tasks.</span>
       <div class="srv-tags">
         <span class="srv-tag">AI/ML</span>
         <span class="srv-tag">Automation</span>
@@ -1708,20 +1707,20 @@ footer {
     </div>
     <div class="service-row">
       <span class="srv-num">03.</span>
-      <span class="srv-name">Full-Stack Web</span>
-      <span class="srv-desc">Developing modern, fast, and interactive web applications using Next.js, React, and Firebase for a seamless user experience.</span>
+      <span class="srv-name">Web Development</span>
+      <span class="srv-desc">Building modern, responsive web frontends with Next.js and React to create dashboards and interfaces for my AI projects.</span>
       <div class="srv-tags">
         <span class="srv-tag">Next.js</span>
-        <span class="srv-tag">Firebase</span>
+        <span class="srv-tag">React</span>
       </div>
     </div>
     <div class="service-row">
       <span class="srv-num">04.</span>
-      <span class="srv-name">Creative Coding</span>
-      <span class="srv-desc">Exploring the intersection of code and creativity to build unique digital experiences and tools for learning and experimentation.</span>
+      <span class="srv-name">System Integration</span>
+      <span class="srv-desc">Connecting different technologies—from web interfaces to backend logic and vision scripts—to create cohesive, functional systems.</span>
       <div class="srv-tags">
-        <span class="srv-tag">p5.js</span>
-        <span class="srv-tag">Experiments</span>
+        <span class="srv-tag">APIs</span>
+        <span class="srv-tag">Node.js</span>
       </div>
     </div>
   </div>
@@ -1733,114 +1732,75 @@ footer {
 <section id="work">
   <div class="work-header sr">
     <div class="work-header-left">
-      <div class="section-eyebrow">Selected Work <span class="num">03</span></div>
+      <div class="section-eyebrow">Featured Work <span class="num">03</span></div>
       <h2 class="section-h2">Recent <em>Projects</em></h2>
       <p class="subtitle">Drag to explore ← →</p>
     </div>
-    <a class="all-works" href="https://github.com/SAR0406" target="_blank">View All on GitHub →</a>
+    <a class="all-works" href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer">View All on GitHub →</a>
   </div>
 
   <div class="projects-hscroll" id="hscroll">
 
-    <!-- Card 1 -->
     <div class="proj-card">
       <div class="proj-bg"></div>
-      <div class="proj-art">
-        <svg width="100%" height="100%" viewBox="0 0 480 640" fill="none">
-          <circle cx="360" cy="120" r="200" stroke="rgba(201,169,110,0.1)" stroke-width="1"/>
-          <circle cx="360" cy="120" r="140" stroke="rgba(201,169,110,0.08)" stroke-width="0.5"/>
-          <circle cx="360" cy="120" r="80" stroke="rgba(201,169,110,0.12)" stroke-width="0.5"/>
-          <path d="M0 400 Q240 360 480 400" stroke="rgba(201,169,110,0.06)" fill="none" stroke-width="1"/>
-          <path d="M0 420 Q240 380 480 420" stroke="rgba(201,169,110,0.04)" fill="none" stroke-width="0.5"/>
-        </svg>
-      </div>
       <div class="proj-gradient"></div>
       <span class="proj-num">01</span>
       <div class="proj-body">
-        <div class="proj-cat">Computer Vision & ai· 2024</div>
-        <h3 class="proj-name">Ai Agents & Real-Time<br>Vision AI</h3>
-        <p class="proj-desc">An n8n & OpenCV-based system for Agentic ai and person detection, interaction, and automation from a live camera feed.</p>
+        <div class="proj-cat">Computer Vision · 2024</div>
+        <h3 class="proj-name">Real-Time<br>Vision AI</h3>
+        <p class="proj-desc">An OpenCV project for real-time person detection, interaction, and automation via camera.</p>
         <div class="proj-footer">
           <span class="proj-year">2024 · Python</span>
-          <a href="https://github.com/SAR0406" target="_blank" class="proj-link-btn">↗</a>
+          <a href="https://github.com/SAR0406" class="proj-link-btn">↗</a>
         </div>
       </div>
     </div>
 
-    <!-- Card 2 -->
     <div class="proj-card">
       <div class="proj-bg"></div>
-      <div class="proj-art">
-        <svg width="100%" height="100%" viewBox="0 0 480 640" fill="none">
-          <rect x="140" y="80" width="200" height="340" rx="20" stroke="rgba(232,67,26,0.12)" stroke-width="1"/>
-          <rect x="160" y="100" width="160" height="300" rx="14" fill="rgba(232,67,26,0.03)" stroke="rgba(232,67,26,0.08)" stroke-width="0.5"/>
-          <circle cx="240" cy="220" r="50" stroke="rgba(232,67,26,0.1)" stroke-width="1"/>
-          <line x1="160" y1="310" x2="320" y2="310" stroke="rgba(232,67,26,0.08)" stroke-width="0.5"/>
-          <line x1="160" y1="330" x2="280" y2="330" stroke="rgba(232,67,26,0.05)" stroke-width="0.5"/>
-        </svg>
-      </div>
       <div class="proj-gradient"></div>
       <span class="proj-num">02</span>
       <div class="proj-body">
         <div class="proj-cat">AI Assistant · 2024</div>
         <h3 class="proj-name">JARVIS-Style<br>Assistant Core</h3>
-        <p class="proj-desc">The logic and integration backbone for a personal AI assistant, combining voice, vision, and automation.</p>
+        <p class="proj-desc">The foundational logic for an AI assistant integrating vision, voice, and system automation.</p>
         <div class="proj-footer">
-          <span class="proj-year">2024 · Python</span>
-          <a href="https://github.com/SAR0406" target="_blank" class="proj-link-btn">↗</a>
+          <span class="proj-year">2024 · Python / AI</span>
+          <a href="https://github.com/SAR0406" class="proj-link-btn">↗</a>
         </div>
       </div>
     </div>
 
-    <!-- Card 3 -->
     <div class="proj-card">
       <div class="proj-bg"></div>
-      <div class="proj-art">
-        <svg width="100%" height="100%" viewBox="0 0 480 640" fill="none">
-          <path d="M0 300 L120 200 L240 260 L360 140 L480 220" stroke="rgba(94,230,160,0.12)" stroke-width="1.5" fill="none"/>
-          <path d="M0 340 L120 240 L240 300 L360 180 L480 260" stroke="rgba(94,230,160,0.07)" stroke-width="0.5" fill="none"/>
-          <circle cx="360" cy="140" r="10" fill="rgba(94,230,160,0.3)"/>
-          <rect x="60" y="360" width="360" height="160" rx="4" fill="rgba(94,230,160,0.03)" stroke="rgba(94,230,160,0.06)" stroke-width="0.5"/>
-        </svg>
-      </div>
       <div class="proj-gradient"></div>
       <span class="proj-num">03</span>
       <div class="proj-body">
-        <div class="proj-cat">Web App · 2024</div>
-        <h3 class="proj-name">Portfolio<br>Platform</h3>
-        <p class="proj-desc">This very website. A full-stack portfolio built with Next.js, Firebase, and creative coding flair.</p>
+        <div class="proj-cat">Web Development · 2024</div>
+        <h3 class="proj-name">Portfolio<br>Website v2</h3>
+        <p class="proj-desc">This portfolio. A fully responsive site built with Next.js, showcasing my skills and projects.</p>
         <div class="proj-footer">
           <span class="proj-year">2024 · Next.js</span>
-          <a href="https://github.com/SAR0406" target="_blank" class="proj-link-btn">↗</a>
+          <a href="https://github.com/SAR0406" class="proj-link-btn">↗</a>
         </div>
       </div>
     </div>
 
-    <!-- Card 4 -->
     <div class="proj-card">
       <div class="proj-bg"></div>
-      <div class="proj-art">
-        <svg width="100%" height="100%" viewBox="0 0 480 640" fill="none">
-          <circle cx="240" cy="320" r="200" stroke="rgba(138,150,168,0.08)" stroke-width="1"/>
-          <circle cx="240" cy="320" r="140" stroke="rgba(138,150,168,0.06)" stroke-width="1"/>
-          <circle cx="240" cy="320" r="80" stroke="rgba(138,150,168,0.1)" stroke-width="1"/>
-          <circle cx="240" cy="320" r="10" fill="rgba(201,169,110,0.6)"/>
-          <line x1="40" y1="320" x2="440" y2="320" stroke="rgba(138,150,168,0.04)" stroke-width="0.5"/>
-          <line x1="240" y1="120" x2="240" y2="520" stroke="rgba(138,150,168,0.04)" stroke-width="0.5"/>
-        </svg>
-      </div>
       <div class="proj-gradient"></div>
       <span class="proj-num">04</span>
       <div class="proj-body">
         <div class="proj-cat">Automation · 2023</div>
-        <h3 class="proj-name">Learning<br>Automation Tools</h3>
-        <p class="proj-desc">A collection of scripts and tools designed to help students learn coding faster and smarter.</p>
+        <h3 class="proj-name">Automation<br>Scripts</h3>
+        <p class="proj-desc">A collection of small but powerful Python scripts for automating daily tasks and experiments.</p>
         <div class="proj-footer">
           <span class="proj-year">2023 · Python</span>
-          <a href="https://github.com/SAR0406" target="_blank" class="proj-link-btn">↗</a>
+          <a href="https://github.com/SAR0406" class="proj-link-btn">↗</a>
         </div>
       </div>
     </div>
+
   </div>
 </section>
 
@@ -1850,54 +1810,54 @@ footer {
 <section class="section" id="skills">
   <div class="sr">
     <div class="section-eyebrow">Expertise <span class="num">04</span></div>
-    <h2 class="section-h2">Skills &amp; <em>Toolbox</em></h2>
+    <h2 class="section-h2">Skills &amp; <em>Technologies</em></h2>
   </div>
 
   <div class="skills-layout">
     <div class="skills-left sr sr-d1">
       <div class="skill-item">
-        <div class="skill-row"><span class="skill-name">Python / Ai </span><span class="skill-pct">95%</span></div>
+        <div class="skill-row"><span class="skill-name">Python</span><span class="skill-pct">95%</span></div>
         <div class="skill-bar"><div class="skill-fill" data-pct="95"></div></div>
       </div>
       <div class="skill-item">
-        <div class="skill-row"><span class="skill-name">Next.js / React</span><span class="skill-pct">95%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-pct="90"></div></div>
-      </div>
-      <div class="skill-item">
-        <div class="skill-row"><span class="skill-name">TypeScript</span><span class="skill-pct">90%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-pct="90"></div></div>
-      </div>
-      <div class="skill-item">
-        <div class="skill-row"><span class="skill-name">Computer Vision (OpenCV)</span><span class="skill-pct">88%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-pct="88"></div></div>
-      </div>
-      <div class="skill-item">
-        <div class="skill-row"><span class="skill-name">Node.js</span><span class="skill-pct">85%</span></div>
+        <div class="skill-row"><span class="skill-name">Computer Vision (OpenCV)</span><span class="skill-pct">85%</span></div>
         <div class="skill-bar"><div class="skill-fill" data-pct="85"></div></div>
       </div>
       <div class="skill-item">
-        <div class="skill-row"><span class="skill-name">Firebase</span><span class="skill-pct">75%</span></div>
-        <div class="skill-bar"><div class="skill-fill" data-pct="75"></div></div>
+        <div class="skill-row"><span class="skill-name">Next.js / React</span><span class="skill-pct">90%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-pct="90"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">JavaScript / TypeScript</span><span class="skill-pct">88%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-pct="88"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Node.js</span><span class="skill-pct">80%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-pct="80"></div></div>
+      </div>
+      <div class="skill-item">
+        <div class="skill-row"><span class="skill-name">Firebase</span><span class="skill-pct">85%</span></div>
+        <div class="skill-bar"><div class="skill-fill" data-pct="85"></div></div>
       </div>
     </div>
 
     <div class="skills-right sr sr-d2">
-      <div class="metric-card">
-        <div class="metric-val">20<span>+</span></div>
-        <div class="metric-label">Projects Built</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-val">1<span>yr</span></div>
-        <div class="metric-label">Experience</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-val">1k<span>+</span></div>
-        <div class="metric-label">OSS Contributions</div>
-      </div>
-      <div class="metric-card">
-        <div class="metric-val">2<span>×</span></div>
-        <div class="metric-label">Hackathon Wins</div>
-      </div>
+        <div class="metric-card">
+            <div class="metric-val">3<span>+</span></div>
+            <div class="metric-label">Years of Coding</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val">20<span>+</span></div>
+            <div class="metric-label">Personal Projects</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val">5<span>+</span></div>
+            <div class="metric-label">Core Technologies</div>
+          </div>
+          <div class="metric-card">
+            <div class="metric-val">10th</div>
+            <div class="metric-label">Grade Student</div>
+          </div>
     </div>
   </div>
 </section>
@@ -1907,33 +1867,33 @@ footer {
 ═══════════════════════════════════════════════════ -->
 <section class="section" id="process">
   <div class="sr">
-    <div class="section-eyebrow">How I Work?<span class="num">05</span></div>
-    <h2 class="section-h2">My <em>Approach</em></h2>
+    <div class="section-eyebrow">How I Work <span class="num">05</span></div>
+    <h2 class="section-h2">My <em>Process</em></h2>
   </div>
 
   <div class="process-grid">
     <div class="proc-card sr">
       <div class="proc-icon">🔍</div>
-      <h3 class="proc-title">Explore</h3>
-      <p class="proc-desc">Deep-dive into the problem space, researching existing solutions and identifying opportunities for innovation.</p>
+      <h3 class="proc-title">Research</h3>
+      <p class="proc-desc">Deep-dive into the problem, exploring existing solutions and identifying key challenges before writing a line of code.</p>
       <span class="proc-bg-num">01</span>
     </div>
     <div class="proc-card sr sr-d1">
       <div class="proc-icon">💡</div>
       <h3 class="proc-title">Prototype</h3>
-      <p class="proc-desc">Rapidly build and test core concepts. Fail fast, learn faster, and iterate towards a robust solution.</p>
+      <p class="proc-desc">Rapidly build a proof-of-concept to test the core logic and validate the technical approach.</p>
       <span class="proc-bg-num">02</span>
     </div>
     <div class="proc-card sr sr-d2">
       <div class="proc-icon">⚡</div>
-      <h3 class="proc-title">Build</h3>
-      <p class="proc-desc">Meticulous, clean, and well-documented code. Engineer for performance, scalability, and maintainability.</p>
+      <h3 class="proc-title">Develop</h3>
+      <p class="proc-desc">Write clean, efficient, and well-structured code, turning the prototype into a robust and scalable solution.</p>
       <span class="proc-bg-num">03</span>
     </div>
     <div class="proc-card sr sr-d3">
       <div class="proc-icon">🚀</div>
-      <h3 class="proc-title">Deploy</h3>
-      <p class="proc-desc">Ship the project, gather feedback, and continue to improve. The work is never truly done.</p>
+      <h3 class="proc-title">Iterate</h3>
+      <p class="proc-desc">Test, debug, and refine. I believe in continuous improvement to make the final product as polished as possible.</p>
       <span class="proc-bg-num">04</span>
     </div>
   </div>
@@ -1945,15 +1905,15 @@ footer {
 <section id="contact">
   <div class="contact-left">
     <div class="sr">
-      <div class="section-eyebrow">Let's Work Together<span class="num">06</span></div>
+      <div class="section-eyebrow">Let's Connect <span class="num">06</span></div>
       <h2 class="contact-h2">
-        Start a<br>
-        <em>Project</em><br>
+        Get In<br>
+        <em>Touch</em><br>
         <span class="stroke">Today.</span>
       </h2>
     </div>
     <p class="contact-sub sr sr-d1">
-      I'm always looking for new challenges and collaborations. Whether you have an idea for a project or just want to connect, feel free to reach out.
+      Have a project idea or a question? I'm always open to discussing new opportunities for collaboration. Let's build something amazing together.
     </p>
     <div class="contact-details sr sr-d2">
       <div class="cd-item">
@@ -1966,47 +1926,35 @@ footer {
       </div>
       <div class="cd-item">
         <span class="cd-label">Response Time</span>
-        <span class="cd-value">Within 48 hours</span>
+        <span class="cd-value">Within 24 hours</span>
       </div>
       <div class="cd-item">
         <span class="cd-label">Availability</span>
-        <span class="cd-value" style="color:var(--gold)">Open to Collaborate</span>
+        <span class="cd-value" style="color:var(--gold)">Open for collaboration</span>
       </div>
     </div>
   </div>
 
   <div class="contact-right">
-    <div class="sr sr-d1">
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label">First Name</label>
-          <input class="form-control" type="text" placeholder="Your name">
-        </div>
-        <div class="form-group">
-          <label class="form-label">Last Name</label>
-          <input class="form-control" type="text" placeholder="Your surname">
-        </div>
+    <div id="chat-widget-container" class="sr sr-d1">
+      <div id="auth-container">
+          <p class="services-desc">Login with Google to start a live chat with me. Ask me anything about my projects, skills, or collaboration opportunities!</p>
+          <button id="google-login-btn" class="form-submit">
+              <svg style="width:20px; height:20px; margin-right: 10px;" viewBox="0 0 24 24"><path fill="currentColor" d="M21.35,11.1H12.18V13.83H18.69C18.36,17.64 15.19,19.27 12.19,19.27C8.36,19.27 5,16.25 5,12C5,7.75 8.36,4.73 12.19,4.73C15.28,4.73 17.27,6.48 17.27,6.48L19.43,4.18C19.43,4.18 16.56,2 12.19,2C6.42,2 2.03,6.8 2.03,12C2.03,17.2 6.42,22 12.19,22C17.6,22 21.54,18.33 21.54,12.25C21.54,11.66 21.48,11.38 21.35,11.1Z"></path></svg>
+              Sign in with Google
+          </button>
       </div>
-      <div class="form-group">
-        <label class="form-label">Email Address</label>
-        <input class="form-control" type="email" placeholder="you@company.com">
+      <div id="chat-container" style="display: none;">
+          <div id="chat-messages">
+              <!-- Messages rendered here -->
+          </div>
+          <form id="chat-form">
+              <input type="text" id="chat-input" class="form-control" placeholder="Type your message..." required autocomplete="off">
+              <button type="submit" class="form-submit">
+                  Send
+              </button>
+          </form>
       </div>
-      <div class="form-group">
-        <label class="form-label">Project Type</label>
-        <input class="form-control" type="text" placeholder="AI / Web App / Automation…">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Budget Range</label>
-        <input class="form-control" type="text" placeholder="Let's Discuss">
-      </div>
-      <div class="form-group">
-        <label class="form-label">Tell Me About Your Vision</label>
-        <textarea class="form-control" placeholder="What are you building? What does success look like? What's the timeline?"></textarea>
-      </div>
-      <button class="form-submit">
-        Send Message
-        <span style="font-size:1.1rem">→</span>
-      </button>
     </div>
   </div>
 </section>
@@ -2017,8 +1965,8 @@ footer {
 <footer>
   <div class="footer-top">
     <div class="footer-brand">
-      <div class="footer-logo-text">Sarthak<span class="dot">.</span></div>
-      <p class="footer-tagline">Creative coder building intelligent systems and modern web experiences.</p>
+      <div class="footer-logo-text">Sarthak<span class="dot">.</span>Upadhyay</div>
+      <p class="footer-tagline">Creative coder exploring AI, Computer Vision, and building the future of intelligent systems.</p>
     </div>
     <div>
       <div class="footer-col-title">Navigation</div>
@@ -2033,24 +1981,24 @@ footer {
     <div>
       <div class="footer-col-title">Expertise</div>
       <ul class="footer-links">
-        <li><a href="#">Computer Vision</a></li>
-        <li><a href="#">AI & Automation</a></li>
-        <li><a href="#">Full-Stack Web</a></li>
-        <li><a href="#">Creative Coding</a></li>
+        <li><a href="#services">Computer Vision</a></li>
+        <li><a href="#services">AI & Automation</a></li>
+        <li><a href="#services">Web Development</a></li>
+        <li><a href="#services">System Integration</a></li>
       </ul>
     </div>
     <div>
       <div class="footer-col-title">Socials</div>
       <ul class="footer-links">
-        <li><a href="https://www.instagram.com/sarthak_upadhyay01/" target="_blank">LinkedIn</a></li>
-        <li><a href="https://github.com/SAR0406" target="_blank">GitHub</a></li>
-        <li><a href="https://x.com/Sarthak44201143" target="_blank">X / Twitter</a></li>
+        <li><a href="https://www.linkedin.com/in/sarthak-sharma-51a892243/" target="_blank" rel="noopener noreferrer">LinkedIn</a></li>
+        <li><a href="https://github.com/SAR0406" target="_blank" rel="noopener noreferrer">GitHub</a></li>
+        <li><a href="https://x.com/Sarthak44201143" target="_blank" rel="noopener noreferrer">X / Twitter</a></li>
       </ul>
     </div>
   </div>
   <div class="footer-bottom">
-    <div class="footer-copy">© 2024 Sarthak Upadhyay. Crafted with <span>♡</span></div>
-    <div class="footer-made">Built with <strong>Next.js</strong> & <strong>Code</strong></div>
+    <div class="footer-copy">© 2024 Sarthak Upadhyay. All Rights Reserved.</div>
+    <div class="footer-made">Built with <strong>Next.js</strong> & <strong>Firebase</strong></div>
   </div>
 </footer>
 
@@ -2061,15 +2009,30 @@ footer {
 /* ─────────────────────────────
    PRELOADER
 ───────────────────────────────*/
-const preloader = document.getElementById('preloader');
-document.body.classList.add('loading');
-setTimeout(() => {
-  if (preloader) {
-    preloader.classList.add('hidden');
-    document.body.classList.remove('loading');
-    triggerHeroAnimation();
-  }
-}, 2500);
+document.addEventListener('DOMContentLoaded', () => {
+    const preloader = document.getElementById('preloader');
+    const pctText = document.getElementById('pctText');
+    const loadDuration = 2500; // 2.5 seconds
+    const intervalTime = 25;
+    let elapsedTime = 0;
+
+    const countUp = setInterval(() => {
+        elapsedTime += intervalTime;
+        let pct = Math.min(100, Math.floor((elapsedTime / loadDuration) * 100));
+        pctText.textContent = pct + '%';
+
+        if (elapsedTime >= loadDuration) {
+            clearInterval(countUp);
+            // Ensure the final animation bits run
+            setTimeout(() => {
+                preloader.classList.add('hidden');
+                document.body.classList.remove('loading');
+                triggerHeroAnimation();
+            }, 400); // Wait for bar animation
+        }
+    }, intervalTime);
+});
+
 
 /* ─────────────────────────────
    HERO ENTRY ANIMATION
@@ -2167,7 +2130,6 @@ class Particle {
     this.gold = Math.random() > 0.7;
   }
   update() {
-    // Gentle mouse repulsion
     const dx = this.x - mouseX;
     const dy = this.y - mouseY;
     const dist = Math.sqrt(dx*dx + dy*dy);
@@ -2175,12 +2137,10 @@ class Particle {
       this.vx += (dx / dist) * 0.04;
       this.vy += (dy / dist) * 0.04;
     }
-    // Damping
     this.vx *= 0.98;
     this.vy *= 0.98;
     this.x += this.vx;
     this.y += this.vy;
-    // Wrap
     if (this.x < 0) this.x = W;
     if (this.x > W) this.x = 0;
     if (this.y < 0) this.y = H;
@@ -2198,7 +2158,6 @@ class Particle {
 
 for (let i = 0; i < 120; i++) particles.push(new Particle());
 
-// Connection lines
 function drawLines() {
   for (let i = 0; i < particles.length; i++) {
     for (let j = i + 1; j < particles.length; j++) {
@@ -2231,7 +2190,7 @@ canvas.addEventListener('mousemove', e => {
 })();
 
 /* ─────────────────────────────
-   SCROLL REVEAL (all non-hero .sr)
+   SCROLL REVEAL
 ───────────────────────────────*/
 const srEls = document.querySelectorAll('.sr:not(.hero .sr)');
 const srObs = new IntersectionObserver((entries) => {
@@ -2259,29 +2218,30 @@ if (skillSection) skillObs.observe(skillSection);
    HORIZONTAL SCROLL DRAG
 ───────────────────────────────*/
 const hscroll = document.getElementById('hscroll');
-let isDragging = false, startX, scrollLeft;
+if (hscroll) {
+    let isDragging = false, startX, scrollLeft;
 
-hscroll.addEventListener('mousedown', e => {
-  isDragging = true;
-  startX = e.pageX - hscroll.offsetLeft;
-  scrollLeft = hscroll.scrollLeft;
-  hscroll.style.cursor = 'grabbing';
-});
-window.addEventListener('mousemove', e => {
-  if (!isDragging) return;
-  const x = e.pageX - hscroll.offsetLeft;
-  hscroll.scrollLeft = scrollLeft - (x - startX) * 1.2;
-});
-window.addEventListener('mouseup', () => {
-  isDragging = false;
-  hscroll.style.cursor = 'grab';
-});
+    hscroll.addEventListener('mousedown', e => {
+      isDragging = true;
+      startX = e.pageX - hscroll.offsetLeft;
+      scrollLeft = hscroll.scrollLeft;
+      hscroll.style.cursor = 'grabbing';
+    });
+    window.addEventListener('mousemove', e => {
+      if (!isDragging) return;
+      const x = e.pageX - hscroll.offsetLeft;
+      hscroll.scrollLeft = scrollLeft - (x - startX) * 1.2;
+    });
+    window.addEventListener('mouseup', () => {
+      isDragging = false;
+      hscroll.style.cursor = 'grab';
+    });
+    hscroll.addEventListener('wheel', e => {
+      e.preventDefault();
+      hscroll.scrollLeft += e.deltaY * 1.5;
+    }, { passive: false });
+}
 
-/* Wheel-to-scroll for horizontal section */
-hscroll.addEventListener('wheel', e => {
-  e.preventDefault();
-  hscroll.scrollLeft += e.deltaY * 1.5;
-}, { passive: false });
 
 /* ─────────────────────────────
    MAGNETIC BUTTONS
@@ -2301,7 +2261,7 @@ document.querySelectorAll('.cta-primary, .nav-btn, .form-submit').forEach(btn =>
 });
 
 /* ─────────────────────────────
-   TEXT SCRAMBLE on section headings hover
+   TEXT SCRAMBLE
 ───────────────────────────────*/
 const CHARS = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&';
 function scramble(el) {
@@ -2323,7 +2283,7 @@ document.querySelectorAll('.section-eyebrow').forEach(el => {
 });
 
 /* ─────────────────────────────
-   SERVICE ROW — animate on scroll into view
+   SERVICE ROW ANIMATION
 ───────────────────────────────*/
 const rowObs = new IntersectionObserver(entries => {
   entries.forEach((e, i) => {
@@ -2340,6 +2300,158 @@ document.querySelectorAll('.service-row').forEach((row, i) => {
   row.style.transition = `opacity 0.6s ${i * 0.1}s ease, transform 0.6s ${i * 0.1}s ease`;
   rowObs.observe(row);
 });
+
+</script>
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+  import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { getFirestore, doc, onSnapshot, setDoc, updateDoc, arrayUnion, serverTimestamp, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyAZO9NiBNI1XwqHvSfoNqX-gkkme17N7nA",
+    authDomain: "studio-1975049489-d5b59.firebaseapp.com",
+    projectId: "studio-1975049489-d5b59",
+    storageBucket: "studio-1975049489-d5b59.appspot.com",
+    messagingSenderId: "887170437188",
+    appId: "1:887170437188:web:b28be5e6b85c28741cec11"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const provider = new GoogleAuthProvider();
+
+  // --- DOM ELEMENTS ---
+  const navAuthContainer = document.getElementById('nav-auth-container');
+  const authContainer = document.getElementById('auth-container');
+  const chatContainer = document.getElementById('chat-container');
+  const chatMessages = document.getElementById('chat-messages');
+  const chatForm = document.getElementById('chat-form');
+  const chatInput = document.getElementById('chat-input');
+  const googleLoginBtn = document.getElementById('google-login-btn');
+
+  let currentUser = null;
+  let unsubscribeFromMessages = null;
+  const ADMIN_EMAIL = 'sarthak040624@gmail.com';
+
+  // --- AUTH LOGIC ---
+  onAuthStateChanged(auth, (user) => {
+    if (user) {
+      currentUser = user;
+      updateNav(user);
+      authContainer.style.display = 'none';
+      chatContainer.style.display = 'flex';
+      setupChatListener(user);
+    } else {
+      currentUser = null;
+      updateNav(null);
+      authContainer.style.display = 'flex';
+      chatContainer.style.display = 'none';
+      if (unsubscribeFromMessages) {
+        unsubscribeFromMessages();
+      }
+      chatMessages.innerHTML = '';
+    }
+  });
+
+  function updateNav(user) {
+    if (user) {
+      const displayName = user.displayName ? user.displayName.split(' ')[0] : 'User';
+      navAuthContainer.innerHTML = `
+        <span class="nav-username">Hi, ${displayName}</span>
+        <button id="logout-btn" class="nav-btn-outline">Logout</button>
+      `;
+      document.getElementById('logout-btn').addEventListener('click', () => signOut(auth));
+    } else {
+      navAuthContainer.innerHTML = `<button id="login-btn" class="nav-btn">Login to Chat</button>`;
+      document.getElementById('login-btn').addEventListener('click', handleLogin);
+    }
+  }
+
+  const handleLogin = () => signInWithPopup(auth, provider).catch(err => console.error("Login failed:", err));
+  if (googleLoginBtn) {
+    googleLoginBtn.addEventListener('click', handleLogin);
+  }
+
+  // --- CHAT LOGIC ---
+  function setupChatListener(user) {
+    if (!user || !user.email) return;
+    if (unsubscribeFromMessages) unsubscribeFromMessages();
+    
+    const conversationRef = doc(db, 'conversations', user.email);
+
+    unsubscribeFromMessages = onSnapshot(conversationRef, (docSnap) => {
+      chatMessages.innerHTML = ''; // Clear existing messages
+      if (docSnap.exists() && docSnap.data().messages) {
+        const sortedMessages = docSnap.data().messages.sort((a, b) => a.sentAt.toMillis() - b.sentAt.toMillis());
+        sortedMessages.forEach(renderMessage);
+      } else {
+        chatMessages.innerHTML = '<p class="chat-info">No messages yet. Send one to start the conversation!</p>';
+      }
+      chatMessages.scrollTop = chatMessages.scrollHeight;
+    }, (error) => {
+        console.error("Error listening to chat:", error);
+        chatMessages.innerHTML = '<p class="chat-info">Could not load chat. Please check your connection.</p>';
+    });
+  }
+
+  function renderMessage(msg) {
+    const bubble = document.createElement('div');
+    bubble.classList.add('chat-bubble');
+    
+    const isVisitor = msg.senderEmail === currentUser.email;
+    bubble.classList.add(isVisitor ? 'visitor' : 'admin');
+    
+    const senderName = isVisitor ? 'You' : msg.senderName.split(' ')[0] || 'Admin';
+
+    bubble.innerHTML = `
+      <span class="sender">${senderName}</span>
+      <p>${msg.text || ''}</p>
+    `;
+    chatMessages.appendChild(bubble);
+  }
+
+  chatForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const text = chatInput.value.trim();
+    if (!text || !currentUser || !currentUser.email) return;
+
+    const conversationRef = doc(db, 'conversations', currentUser.email);
+
+    const newMessage = {
+      id: '' + Date.now() + Math.random(),
+      text: text,
+      sentAt: new Date(),
+      sentBy: 'visitor',
+      senderName: currentUser.displayName || "Anonymous",
+      senderEmail: currentUser.email,
+      readBy: {},
+    };
+
+    chatInput.value = '';
+
+    try {
+        const docSnap = await getDoc(conversationRef);
+        if (docSnap.exists()) {
+            await updateDoc(conversationRef, {
+                messages: arrayUnion(newMessage),
+                lastMessageAt: serverTimestamp(),
+            });
+        } else {
+            await setDoc(conversationRef, {
+                id: currentUser.email,
+                senderName: currentUser.displayName || "Anonymous",
+                senderEmail: currentUser.email,
+                lastMessageAt: serverTimestamp(),
+                messages: [newMessage],
+                typing: {},
+                presence: {},
+            });
+        }
+    } catch(err) {
+        console.error("Failed to send message:", err);
+    }
+  });
 
 </script>
 </body>
