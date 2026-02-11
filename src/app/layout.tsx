@@ -49,13 +49,13 @@ export default function RootLayout({
               <LightPillar
                 topColor="#0b66f9"
                 bottomColor="#fb0909"
-                intensity={1}
-                rotationSpeed={0.3}
+                intensity={0.8}
+                rotationSpeed={0.2}
                 interactive={false}
                 glowAmount={0.003}
-                pillarWidth={3}
-                pillarHeight={0.4}
-                noiseIntensity={0.5}
+                pillarWidth={2}
+                pillarHeight={0.3}
+                noiseIntensity={0.3}
                 pillarRotation={25}
               />
             </div>

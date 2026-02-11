@@ -545,7 +545,7 @@ export default function AdminPage() {
                             <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent mb-2">
                                 <div className="flex gap-0.5 bg-card border rounded-full p-1 shadow-md">
                                     {['👍', '❤️', '😂', '😮', '😢', '🙏'].map(emoji => (
-                                        <button key={emoji} type="button" onClick={() => handleReaction(msg.id, emoji)} className="text-lg p-1 rounded-full hover:bg-muted transition-colors">
+                                        <button key={emoji} type="button" aria-label={`React with ${emoji}`} onClick={() => handleReaction(msg.id, emoji)} className="text-lg p-1 rounded-full hover:bg-muted transition-colors">
                                             {emoji}
                                         </button>
                                     ))}
