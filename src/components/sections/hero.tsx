@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -52,7 +53,7 @@ export function Hero() {
   }, []);
 
   const handleOpenInNewTab = () => {
-    window.open('/another-version.html', '_blank');
+    window.open('/another-version', '_blank');
   };
 
   const anotherVersionButton = isMobile ? (
@@ -78,7 +79,7 @@ export function Hero() {
       </AlertDialogContent>
     </AlertDialog>
   ) : (
-    <Link href="/another-version.html" passHref>
+    <Link href="/another-version" passHref>
       <StarButton ariaLabel="Check another version of me">
         Check another version
       </StarButton>
