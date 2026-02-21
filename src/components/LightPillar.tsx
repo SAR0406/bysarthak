@@ -69,7 +69,7 @@ const LightPillar: React.FC<LightPillarProps> = ({
       renderer = new THREE.WebGLRenderer({
         antialias: false,
         alpha: true,
-        powerPreference: 'default',
+        powerPreference: 'high-performance',
         precision: 'lowp',
         stencil: false,
         depth: false
@@ -176,7 +176,7 @@ const LightPillar: React.FC<LightPillarProps> = ({
 
         vec3 color = vec3(0.0);
         
-        for(float i = 0.0; i < 64.0; i++) {
+        for(float i = 0.0; i < 48.0; i++) {
           vec3 pos = origin + direction * depth;
           pos.xz *= rotX;
 
