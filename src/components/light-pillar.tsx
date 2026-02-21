@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useRef, useEffect, useState } from 'react';
@@ -71,7 +72,7 @@ const LightPillar: React.FC<LightPillarProps> = ({
       renderer = new THREE.WebGLRenderer({
         antialias: false,
         alpha: true,
-        powerPreference: 'high-performance',
+        powerPreference: 'low-power',
         precision: 'lowp',
         stencil: false,
         depth: false
@@ -184,7 +185,7 @@ const LightPillar: React.FC<LightPillarProps> = ({
 
         vec3 color = vec3(0.0);
         
-        for(float i = 0.0; i < 100.0; i++) {
+        for(float i = 0.0; i < 48.0; i++) {
           vec3 pos = origin + direction * depth;
           pos.xz *= rotX;
 

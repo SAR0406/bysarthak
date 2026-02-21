@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useRef, useEffect, useState, useLayoutEffect } from 'react';
@@ -69,7 +70,7 @@ const LightPillar: React.FC<LightPillarProps> = ({
       renderer = new THREE.WebGLRenderer({
         antialias: false,
         alpha: true,
-        powerPreference: 'high-performance',
+        powerPreference: 'low-power',
         precision: 'lowp',
         stencil: false,
         depth: false
