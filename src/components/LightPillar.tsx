@@ -177,7 +177,7 @@ const LightPillar: React.FC<LightPillarProps> = ({
 
         vec3 color = vec3(0.0);
         
-        for(float i = 0.0; i < 48.0; i++) {
+        for(float i = 0.0; i < 24.0; i++) {
           vec3 pos = origin + direction * depth;
           pos.xz *= rotX;
 
@@ -343,3 +343,5 @@ const LightPillar: React.FC<LightPillarProps> = ({
 };
 
 export default LightPillar;
+
+    

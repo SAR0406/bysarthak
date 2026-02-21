@@ -86,6 +86,16 @@ export function Hero() {
     </Link>
   );
 
+  const staticLogos = (
+    <div className="flex items-center justify-center gap-10 flex-wrap">
+      {techLogos.map((logo, index) => (
+        <div key={index} title={logo.title} className="text-5xl text-white/80">
+          {logo.node}
+        </div>
+      ))}
+    </div>
+  );
+
   return (
     <section id="home" className="relative h-screen w-full flex items-center justify-center text-center">
      
@@ -118,19 +128,23 @@ export function Hero() {
           </div>
         </div>
         <div className="w-full max-w-4xl animate-fade-in-up mt-12" style={{ animationDelay: '1.2s' }}>
-            <LogoLoop
-                logos={techLogos}
-                speed={60}
-                direction="left"
-                logoHeight={60}
-                gap={40}
-                hoverSpeed={0}
-                scaleOnHover={false}
-                fadeOut
-                className="text-white/80"
-             />
+            {isMobile ? staticLogos : (
+              <LogoLoop
+                  logos={techLogos}
+                  speed={60}
+                  direction="left"
+                  logoHeight={60}
+                  gap={40}
+                  hoverSpeed={0}
+                  scaleOnHover={false}
+                  fadeOut
+                  className="text-white/80"
+              />
+            )}
         </div>
       </div>
     </section>
   );
 }
+
+    
