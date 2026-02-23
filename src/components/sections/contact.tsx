@@ -1,13 +1,24 @@
 
-import { Github, Linkedin, Twitter } from 'lucide-react';
+import { Github, Linkedin, Twitter, MessageSquare } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
-import { ContactForm } from '@/components/contact-form';
 
 export function Contact() {
   return (
     <section id="contact" className="container mx-auto py-24">
       <div className="text-center mb-12">
+        <h2 className="font-headline text-3xl md:text-4xl font-bold">Get In Touch</h2>
+        <p className="text-muted-foreground mt-2 max-w-lg mx-auto">
+            Have a question or want to work together? Send me a message. I'd love to hear from you.
+        </p>
+        <Button asChild size="lg" className="mt-6">
+            <Link href="/admin">
+                <MessageSquare className="mr-2 h-5 w-5" /> Start a Conversation
+            </Link>
+        </Button>
+      </div>
+
+      <div className="text-center">
         <h3 className="text-xl font-semibold">Connect with me</h3>
         <p className="text-muted-foreground mt-2">Find me on social media</p>
         <div className="flex justify-center gap-6 mt-6">
@@ -33,12 +44,6 @@ export function Contact() {
           </Link>
         </div>
       </div>
-
-      <div className="text-center">
-        <h2 className="font-headline text-3xl md:text-4xl font-bold">Get In Touch</h2>
-      </div>
-
-      <ContactForm />
     </section>
   );
 }

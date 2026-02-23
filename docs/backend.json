@@ -1,104 +1,15 @@
 
 {
   "entities": {
-    "Conversation": {
-      "title": "Conversation",
-      "type": "object",
-      "description": "Represents a single conversation thread with a visitor.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the conversation (visitor's email)."
-        },
-        "senderName": {
-          "type": "string",
-          "description": "Name of the visitor who initiated the conversation."
-        },
-        "senderEmail": {
-          "type": "string",
-          "description": "Email address of the visitor.",
-          "format": "email"
-        },
-        "lastMessageAt": {
-          "type": "string",
-          "description": "Timestamp of the last message in the conversation.",
-          "format": "date-time"
-        },
-        "typing": {
-            "type": "object",
-            "description": "Indicates which users are currently typing. Keys are user emails, values are boolean. A true value means the user is typing.",
-            "properties": {}
-        },
-        "presence": {
-            "type": "object",
-            "description": "Indicates user presence status. Keys are user emails. Values are either 'online' or a Firestore Timestamp for last seen.",
-            "properties": {}
-        },
-        "groupId": {
-            "type": "string",
-            "description": "The ID of the group this conversation belongs to."
-        },
-        "messages": {
-          "type": "array",
-          "description": "An array of messages within the conversation.",
-          "items": {
-            "type": "object",
-            "properties": {
-              "id": {
-                "type": "string"
-              },
-              "text": {
-                "type": "string",
-                "description": "The content of the message."
-              },
-              "imageUrl": {
-                "type": "string"
-              },
-              "sentAt": {
-                "type": "string",
-                "description": "Timestamp indicating when the message was sent.",
-                "format": "date-time"
-              },
-              "sentBy": {
-                "type": "string",
-                "description": "Indicates if the message was from the 'visitor' or 'admin'.",
-                "enum": ["visitor", "admin"]
-              },
-              "senderName": {
-                "type": "string",
-                "description": "Name of the person sending the message."
-              },
-              "senderEmail": {
-                "type": "string",
-                "description": "Email of the person sending the message."
-              },
-              "readBy": {
-                "type": "object",
-                "description": "Indicates which users have read the message. Keys are user emails, values are Firestore Timestamps of when it was read.",
-                "properties": {}
-              },
-              "reactions": {
-                "type": "object",
-                "description": "Emoji reactions to the message. Keys are emojis, values are the email of the user who reacted, ensuring one reaction per user.",
-                "properties": {}
-              }
-            },
-            "required": ["sentAt", "sentBy", "senderName", "senderEmail", "text", "id"]
-          }
-        }
-      },
-      "required": [
-        "id",
-        "senderName",
-        "senderEmail",
-        "lastMessageAt"
-      ]
-    },
     "UserProfile": {
       "title": "User Profile",
       "description": "Represents a user's profile information.",
       "type": "object",
       "properties": {
+        "username": {
+          "type": "string",
+          "description": "The user's unique username."
+        },
         "email": {
           "type": "string",
           "format": "email",
@@ -109,62 +20,126 @@
           "format": "date-time",
           "description": "The timestamp when the user profile was created."
         },
-        "name": {
+        "displayName": {
           "type": "string",
-          "description": "The user's full name."
+          "description": "The user's display name."
         },
-        "age": {
-          "type": "number",
-          "description": "The user's age."
-        },
-        "username": {
+        "profilePictureUrl": {
           "type": "string",
-          "description": "The user's unique username."
+          "format": "uri",
+          "description": "URL for the user's profile picture."
+        },
+        "lastOnlineAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The last time the user was seen online."
         }
       },
-      "required": [
-        "email",
-        "createdAt",
-        "name",
-        "username",
-        "age"
-      ]
+      "required": ["username", "email", "createdAt", "displayName"]
     },
-    "Group": {
-      "title": "Conversation Group",
-      "type": "object",
-      "description": "Represents a group of conversations.",
-      "properties": {
-        "id": {
-          "type": "string",
-          "description": "Unique identifier for the group."
-        },
-        "name": {
-          "type": "string",
-          "description": "Name of the group."
-        },
-        "members": {
-          "type": "array",
-          "description": "An array of conversation IDs that are members of this group.",
-          "items": {
-            "type": "string"
-          }
-        }
-      },
-      "required": ["id", "name", "members"]
-    },
-    "AdminRole": {
-      "title": "Admin Role",
-      "description": "A document indicating a user has admin privileges.",
+    "Chat": {
+      "title": "Chat",
+      "description": "A conversation thread, which can be a private one-on-one or a group chat.",
       "type": "object",
       "properties": {
-        "isAdmin": {
-          "type": "boolean",
-          "description": "Set to true if the user is an admin."
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of when the chat was created."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["private", "group"],
+          "description": "The type of chat."
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the chat, typically for group chats."
+        },
+        "description": {
+          "type": "string",
+          "description": "A short description for the chat."
+        },
+        "lastMessageId": {
+            "type": "string",
+            "description": "The ID of the most recent message in the chat for sorting."
         }
       },
-      "required": ["isAdmin"]
-    }
+      "required": ["createdAt", "type"]
+    },
+    "Message": {
+      "title": "Message",
+      "description": "A single message within a chat.",
+      "type": "object",
+      "properties": {
+        "chatId": {
+          "type": "string",
+          "description": "The ID of the chat this message belongs to."
+        },
+        "senderId": {
+          "type": "string",
+          "description": "The UID of the user who sent the message."
+        },
+        "content": {
+          "type": "string",
+          "description": "The text content of the message."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "Timestamp of when the message was sent."
+        },
+        "type": {
+          "type": "string",
+          "enum": ["text", "image", "video"],
+          "description": "The type of message content."
+        },
+        "imageUrl": {
+          "type": "string",
+          "format": "uri",
+          "description": "URL of an image attachment."
+        },
+        "replyToMessageId": {
+          "type": "string",
+          "description": "The ID of the message this one is replying to."
+        }
+      },
+      "required": ["chatId", "senderId", "content", "createdAt", "type"]
+    },
+    "ChatMembership": {
+      "title": "Chat Membership",
+      "description": "Links a user to a chat and defines their role within it.",
+      "type": "object",
+      "properties": {
+        "chatId": { "type": "string" },
+        "userId": { "type": "string" },
+        "joinedAt": {
+          "type": "string",
+          "format": "date-time"
+        },
+        "role": {
+          "type": "string",
+          "enum": ["member", "admin"]
+        },
+        "lastReadMessageId": {
+          "type": "string"
+        }
+      },
+      "required": ["chatId", "userId", "joinedAt", "role"]
+    },
+    "Reaction": {
+        "title": "Reaction",
+        "description": "An emoji reaction to a message.",
+        "type": "object",
+        "properties": {
+          "messageId": { "type": "string" },
+          "chatId": { "type": "string" },
+          "userId": { "type": "string" },
+          "emoji": { "type": "string" },
+          "createdAt": { "type": "string", "format": "date-time" }
+        },
+        "required": ["messageId", "chatId", "userId", "emoji", "createdAt"]
+      }
   },
   "auth": {
     "providers": [
@@ -177,70 +152,50 @@
   "firestore": {
     "structure": [
       {
-        "path": "/conversations/{conversationId}",
-        "definition": {
-          "entityName": "Conversation",
-          "schema": {
-            "$ref": "#/backend/entities/Conversation"
-          },
-          "description": "Stores conversation threads. Anyone can create a thread. Only authenticated users (admins) can read and update (reply).",
-          "params": [
-            {
-              "name": "conversationId",
-              "description": "Unique identifier for the conversation document."
-            }
-          ]
-        }
-      },
-      {
         "path": "/users/{userId}",
         "definition": {
-          "entityName": "UserProfile",
           "schema": {
             "$ref": "#/backend/entities/UserProfile"
           },
-          "description": "Stores public-facing user profile information. The document ID is the same as the Firebase Auth UID.",
-          "params": [
-            {
-              "name": "userId",
-              "description": "The user's unique ID from Firebase Authentication."
-            }
-          ]
+          "description": "Stores public-facing user profile information."
         }
       },
       {
-        "path": "/groups/{groupId}",
+        "path": "/chats/{chatId}",
         "definition": {
-          "entityName": "Group",
           "schema": {
-            "$ref": "#/backend/entities/Group"
+            "$ref": "#/backend/entities/Chat"
           },
-          "description": "Stores conversation groups. Only admins can manage groups.",
-          "params": [
-            {
-              "name": "groupId",
-              "description": "Unique identifier for the group document."
-            }
-          ]
+          "description": "Stores chat threads (both private and group)."
         }
       },
       {
-        "path": "/adminRoles/{email}",
+        "path": "/chats/{chatId}/messages/{messageId}",
         "definition": {
-          "entityName": "AdminRole",
           "schema": {
-            "$ref": "#/backend/entities/AdminRole"
+            "$ref": "#/backend/entities/Message"
           },
-          "description": "Stores admin role status for users. The document ID is the user's email.",
-          "params": [
-            {
-              "name": "email",
-              "description": "The user's email address."
-            }
-          ]
+          "description": "Stores all messages for a specific chat."
+        }
+      },
+      {
+        "path": "/chatMemberships",
+        "definition": {
+          "schema": {
+            "$ref": "#/backend/entities/ChatMembership"
+          },
+          "description": "Manages user roles and membership in chats. Can be queried to find all chats for a user."
+        }
+      },
+      {
+        "path": "/reactions",
+        "definition": {
+          "schema": {
+            "$ref": "#/backend/entities/Reaction"
+          },
+          "description": "Stores all reactions to messages. Can be queried to find all reactions for a message."
         }
       }
-    ],
-    "reasoning": "This design prioritizes security and scalability. A top-level `/conversations` collection stores message threads, identified by the sender's email to group messages. A separate `/users` collection stores user profiles, linking them by UID to Firebase Authentication. A new `/groups` collection allows admins to organize conversations. An `/adminRoles` collection provides a robust way to check for admin privileges in security rules."
+    ]
   }
 }

@@ -1,100 +1,68 @@
 
-/**
- * This ruleset implements a secure "dropbox" model for a public contact form,
- * secures user profile data, and manages conversation groups for an admin panel.
- *
- * Core Philosophy:
- * - Admin Access: An `isAdmin` flag on a user's profile document grants
- *   full read/write privileges for administrative tasks.
- * - Conversations: Implements a "write-only" dropbox for guests. Anyone can
- *   create or add messages to a conversation document. Reading is restricted.
- *   - The Admin can list and read all conversations.
- *   - A signed-in user can only read their own conversation, identified by their email.
- * - User Profiles: Users can create and update their own profiles. Reading is public.
- *   A user cannot grant themselves admin status.
- * - Groups: All group management is restricted to the admin.
- */
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
     // --- Helper Functions ---
-
-    /**
-     * Checks if the user is authenticated.
-     */
     function isSignedIn() {
       return request.auth != null;
     }
 
-    /**
-     * Checks if the authenticated user is the owner of a specific resource.
-     * @param userId The UID of the user to check against.
-     */
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    /**
-     * Checks if the authenticated user has the 'isAdmin' flag on their profile.
-     * This is a secure and query-efficient way to check for admin privileges.
-     */
-    function isAdmin() {
-      // The user must be signed in and their user document must have `isAdmin: true`.
-      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    // Check if the user is a member of a specific chat by checking the chatMemberships collection
+    // This assumes chatMemberships documents have an ID of `{chatId}_{userId}`
+    function isChatMember(chatId) {
+      return isSignedIn() && exists(/databases/$(database)/documents/chatMemberships/$(chatId + '_' + request.auth.uid));
     }
 
-
-    // --- Collection: conversations ---
-
-    /**
-     * @description
-     *   Manages live chat conversations.
-     *   - `list`: Only admins can list all conversations.
-     *   - `get`: The admin or the user who owns the conversation (matched by email) can read it.
-     *   - `create`, `update`: Anyone can write to a conversation.
-     *   - `delete`: No one is allowed to delete conversations.
-     */
-    match /conversations/{conversationId} {
-      allow list: if isAdmin();
-      allow get: if isAdmin() || (isSignedIn() && request.auth.token.email == conversationId);
-      allow create, update: if true;
-      allow delete: if false;
+    function getChatRole(chatId) {
+      let membershipDoc = get(/databases/$(database)/documents/chatMemberships/$(chatId + '_' + request.auth.uid));
+      return membershipDoc.data.role;
     }
+    
+    function isChatAdmin(chatId) {
+      return isChatMember(chatId) && getChatRole(chatId) == 'admin';
+    }
+    
+    // --- Collections ---
 
-
-    // --- Collection: users ---
-
-    /**
-     * @description
-     *   Stores user profile information.
-     *   - `get`, `list`: User profiles are public.
-     *   - `create`: A user can create their own profile. They can only set `isAdmin: true`
-     *     if their email matches the hardcoded admin email.
-     *   - `update`: A user can update their own profile. They cannot grant themselves
-     *     admin privileges unless their email matches the hardcoded admin email.
-     *   - `delete`: Users cannot delete their profiles.
-     */
+    // User Profiles
     match /users/{userId} {
-      allow get, list: if true;
-      allow create: if isOwner(userId) &&
-                       (request.resource.data.isAdmin == true ?
-                         request.auth.token.email == 'sarthak040624@gmail.com'
-                         : true);
-      allow update: if isOwner(userId) && (request.resource.data.isAdmin == resource.data.isAdmin || request.auth.token.email == 'sarthak040624@gmail.com');
-      allow delete: if false;
+      allow read: if true;
+      allow create, update: if isOwner(userId);
     }
 
+    // Chats and Messages
+    match /chats/{chatId} {
+      allow read, update: if isChatMember(chatId);
+      allow create: if isSignedIn(); // Any signed-in user can create a chat
 
-    // --- Collection: groups ---
+      match /messages/{messageId} {
+        allow read, create: if isChatMember(chatId);
+        allow update, delete: if isChatMember(chatId) && resource.data.senderId == request.auth.uid;
+      }
+    }
 
-    /**
-     * @description
-     *   Stores conversation groups for admin organization.
-     *   - Only the admin has full read/write access.
-     */
-    match /groups/{groupId} {
-      allow read, write: if isAdmin();
+    // Chat Memberships (Document ID: {chatId}_{userId})
+    match /chatMemberships/{membershipId} {
+        // A user can read their own membership doc. An admin of the chat can read any membership.
+        allow read: if (isSignedIn() && request.auth.uid == split(membershipId,'_')[1]) || isChatAdmin(split(membershipId,'_')[0]);
+        // A chat admin can add/remove users. A user can add/remove themselves.
+        allow write: if isChatAdmin(split(membershipId,'_')[0]) || (isSignedIn() && request.auth.uid == split(membershipId,'_')[1]);
+    }
+    
+    // Reactions
+    match /reactions/{reactionId} {
+        // Only members of the chat can read reactions in that chat
+        allow list, get: if isChatMember(resource.data.chatId);
+        // User must be a member to create a reaction and can only create reactions for themselves
+        allow create: if isChatMember(request.resource.data.chatId) && request.auth.uid == request.resource.data.userId;
+        // Only the user who created the reaction can delete it
+        allow delete: if isOwner(resource.data.userId);
     }
   }
 }

@@ -31,8 +31,9 @@ import {
   GithubAuthProvider,
   signInWithPopup,
   User,
+  updateProfile,
 } from 'firebase/auth';
-import { doc, setDoc, getDoc, serverTimestamp } from 'firebase/firestore';
+import { doc, setDoc, getDoc, serverTimestamp, updateDoc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
 import Stepper, { Step } from '@/components/ui/stepper';
 import { Github, ToyBrick, LogIn, UserPlus } from 'lucide-react';
@@ -40,8 +41,7 @@ import { Github, ToyBrick, LogIn, UserPlus } from 'lucide-react';
 const signUpSchema = z.object({
   email: z.string().email('Invalid email address.'),
   password: z.string().min(6, 'Password must be at least 6 characters.'),
-  name: z.string().min(2, "Name must be at least 2 characters."),
-  age: z.coerce.number().min(1, "Age is required."),
+  displayName: z.string().min(2, "Name must be at least 2 characters."),
   username: z.string().min(3, "Username must be at least 3 characters."),
 });
 
@@ -49,8 +49,6 @@ const loginSchema = z.object({
   email: z.string().email('Invalid email address.'),
   password: z.string().min(6, 'Password must be at least 6 characters.'),
 });
-
-const ADMIN_EMAIL = 'sarthak040624@gmail.com';
 
 export default function LoginPage() {
   const [flow, setFlow] = useState<'welcome' | 'login' | 'signup'>('welcome');
@@ -61,7 +59,7 @@ export default function LoginPage() {
 
   const signUpForm = useForm<z.infer<typeof signUpSchema>>({
     resolver: zodResolver(signUpSchema),
-    defaultValues: { email: '', password: '', name: '', username: '', age: undefined },
+    defaultValues: { email: '', password: '', displayName: '', username: '' },
   });
 
   const loginForm = useForm<z.infer<typeof loginSchema>>({
@@ -74,23 +72,20 @@ export default function LoginPage() {
   
     const userRef = doc(firestore, 'users', user.uid);
     const userSnap = await getDoc(userRef);
-    const userData: any = {};
   
-    // Check if the user document doesn't exist
     if (!userSnap.exists()) {
-      userData.email = user.email;
-      userData.name = user.displayName || 'Anonymous';
-      userData.createdAt = serverTimestamp();
-    }
-  
-    // Explicitly set isAdmin flag for the admin user
-    if (user.email === ADMIN_EMAIL) {
-      userData.isAdmin = true;
-    }
-  
-    // Write to Firestore only if there's something to write
-    if (Object.keys(userData).length > 0) {
-      await setDoc(userRef, userData, { merge: true });
+       await setDoc(userRef, {
+        username: user.email?.split('@')[0] || `user_${Date.now()}`,
+        email: user.email,
+        displayName: user.displayName || user.email,
+        profilePictureUrl: user.photoURL || null,
+        createdAt: serverTimestamp(),
+        lastOnlineAt: serverTimestamp(),
+      });
+    } else {
+        await updateDoc(userRef, {
+            lastOnlineAt: serverTimestamp()
+        });
     }
   
     toast({
@@ -98,12 +93,7 @@ export default function LoginPage() {
       description: "You're now logged in.",
     });
     
-    // Redirect to admin page if user is admin
-    if (user.email === ADMIN_EMAIL) {
-      router.push('/admin');
-    } else {
-      router.push('/');
-    }
+    router.push('/admin');
   }
 
   const handleOAuth = async (provider: GoogleAuthProvider | GithubAuthProvider) => {
@@ -130,19 +120,18 @@ export default function LoginPage() {
       );
       const user = userCredential.user;
 
-      const userData: any = {
-        email: user.email,
-        name: values.name,
-        age: values.age,
+      // Update Firebase Auth profile
+      await updateProfile(user, { displayName: values.displayName });
+
+      // Create user document in Firestore
+      await setDoc(doc(firestore, 'users', user.uid), {
         username: values.username,
+        email: user.email,
+        displayName: values.displayName,
+        profilePictureUrl: user.photoURL || null,
         createdAt: serverTimestamp(),
-      };
-
-      if (user.email === ADMIN_EMAIL) {
-          userData.isAdmin = true;
-      }
-
-      await setDoc(doc(firestore, 'users', user.uid), userData);
+        lastOnlineAt: serverTimestamp(),
+      });
       
       await handleSuccessfulLogin(user);
 
@@ -306,10 +295,10 @@ export default function LoginPage() {
               <form className="space-y-4">
                  <FormField
                   control={signUpForm.control}
-                  name="name"
+                  name="displayName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Name</FormLabel>
+                      <FormLabel>Display Name</FormLabel>
                       <FormControl><Input placeholder="Your Name" {...field} /></FormControl>
                       <FormMessage />
                     </FormItem>
@@ -322,19 +311,6 @@ export default function LoginPage() {
                     <FormItem>
                       <FormLabel>Username</FormLabel>
                       <FormControl><Input placeholder="your_username" {...field} /></FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={signUpForm.control}
-                  name="age"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Age</FormLabel>
-                      <FormControl>
-                        <Input type="number" placeholder="Your Age" {...field} />
-                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
