@@ -35,7 +35,7 @@ import {
 } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
-import { format, isToday } from 'date-fns';
+import { format, isToday, formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -43,6 +43,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Checkbox } from '@/components/ui/checkbox';
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const replySchema = z.object({
   replyMessage: z.string().min(1, 'Reply cannot be empty.').optional(),
@@ -73,7 +74,7 @@ type Conversation = {
   lastMessageAt: Timestamp;
   messages: Message[];
   typing?: { [key: string]: boolean };
-  presence?: { [key: string]: 'online' | 'offline' };
+  presence?: { [key: string]: 'online' | Timestamp };
   groupId?: string;
 };
 
@@ -309,7 +310,7 @@ export default function AdminPage() {
     if (!firestore || !user?.email || !selectedConversationId) return;
     const conversationRef = doc(firestore, 'conversations', selectedConversationId);
     updateDoc(conversationRef, { [`presence.${user.email}`]: 'online' });
-    const onUnload = () => updateDoc(conversationRef, { [`presence.${user.email}`]: 'offline' });
+    const onUnload = () => updateDoc(conversationRef, { [`presence.${user.email}`]: Timestamp.now() });
     window.addEventListener('beforeunload', onUnload);
     return () => window.removeEventListener('beforeunload', onUnload);
   }, [firestore, user, selectedConversationId]);
@@ -359,8 +360,17 @@ export default function AdminPage() {
     return hasBeenRead ? <CheckCheck className="h-4 w-4 text-blue-500 inline" /> : <Check className="h-4 w-4 text-muted-foreground inline" />;
   };
 
+  const visitorPresence = selectedConversation?.presence?.[selectedConversation.senderEmail];
   const isVisitorTyping = selectedConversation?.typing?.[selectedConversation.senderEmail];
-  const isVisitorOnline = selectedConversation?.presence?.[selectedConversation.senderEmail] === 'online';
+  
+  const VisitorStatus = () => {
+    if (isVisitorTyping) return 'typing...';
+    if (visitorPresence === 'online') return 'Online';
+    if (visitorPresence instanceof Timestamp) {
+        return `last seen ${formatDistanceToNow(visitorPresence.toDate(), { addSuffix: true })}`;
+    }
+    return 'Offline';
+  };
 
   return (
     <section id="admin" className="h-screen w-full p-4 md:p-8">
@@ -462,7 +472,12 @@ export default function AdminPage() {
               {!isLoadingConversations && (!conversations || conversations.length === 0) && <p className="p-4 text-muted-foreground">No messages yet.</p>}
               {conversations?.map(convo => {
                 const latestMsg = lastMessage(convo);
-                const isOnline = convo.presence?.[convo.senderEmail] === 'online';
+                const visitorPresence = convo.presence?.[convo.senderEmail];
+                const isOnline = visitorPresence === 'online';
+                const unreadCount = user ? convo.messages.filter(
+                    msg => msg.sentBy === 'visitor' && (!msg.readBy || !msg.readBy[user.email!])
+                ).length : 0;
+                
                 return (
                   <button key={convo.id} onClick={() => setSelectedConversationId(convo.id)} className={cn('w-full text-left p-4 border-b hover:bg-muted/50 transition-colors duration-200', selectedConversationId === convo.id && 'bg-muted')}>
                     <div className="flex justify-between items-start">
@@ -476,11 +491,16 @@ export default function AdminPage() {
                                 <span className="text-xs text-muted-foreground block truncate">{convo.senderEmail}</span>
                             </div>
                         </div>
-                      <span className="text-xs text-muted-foreground ml-2 shrink-0">
-                        {latestMsg.sentAt ? formatListTimestamp(getSentAtDate(latestMsg.sentAt)) : ''}
-                      </span>
+                        <div className="flex flex-col items-end shrink-0 ml-2">
+                            <span className="text-xs text-muted-foreground">
+                                {latestMsg.sentAt ? formatListTimestamp(getSentAtDate(latestMsg.sentAt)) : ''}
+                            </span>
+                            {unreadCount > 0 && (
+                                <span className="mt-1 text-xs bg-primary text-primary-foreground rounded-full w-5 h-5 flex items-center justify-center font-bold">{unreadCount}</span>
+                            )}
+                        </div>
                     </div>
-                    <p className="text-sm text-muted-foreground truncate mt-1 pl-14">{latestMsg.text || 'Image'}</p>
+                    <p className="text-sm text-muted-foreground truncate mt-1 pl-14">{latestMsg.text || (latestMsg.imageUrl ? 'Image' : 'No messages yet')}</p>
                   </button>
                 )
               })}
@@ -495,11 +515,11 @@ export default function AdminPage() {
                  <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSelectedConversationId(null)} aria-label="Back to message list"><ArrowLeft className="w-4 h-4" /></Button>
                  <Avatar className="relative">
                     <AvatarFallback>{selectedConversation.senderName.charAt(0)}</AvatarFallback>
-                    {isVisitorOnline && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-card" />}
+                    {visitorPresence === 'online' && <div className="absolute bottom-0 right-0 w-3 h-3 bg-green-500 rounded-full border-2 border-card" />}
                  </Avatar>
                 <div className="flex-1">
                   <h3 className="font-semibold">{selectedConversation.senderName}</h3>
-                  <p className="text-xs text-muted-foreground">{isVisitorTyping ? 'typing...' : (isVisitorOnline ? 'Online' : 'Offline')}</p>
+                  <p className="text-xs text-muted-foreground"><VisitorStatus /></p>
                 </div>
                 <div className="flex items-center gap-2">
                   <Button variant="ghost" size="icon" onClick={showFeatureComingSoon} aria-label="Start voice call"><Phone className="w-5 h-5 text-muted-foreground" /></Button>
@@ -519,10 +539,24 @@ export default function AdminPage() {
                                 {msg.sentBy === 'admin' && <MessageStatus message={msg} />}
                                 <span>{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
                             </div>
-                            {msg.reactions && Object.keys(msg.reactions).length > 0 && (
-                                <div className="absolute -bottom-3 left-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
-                                    {Object.keys(msg.reactions).map((emoji, i) => <span key={i}>{emoji}</span>)}
-                                    <span className='ml-1 text-muted-foreground'>{Object.keys(msg.reactions).length}</span>
+                           {msg.reactions && Object.keys(msg.reactions).length > 0 && (
+                                <div className="absolute -bottom-4 left-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
+                                    <TooltipProvider>
+                                        {Object.entries(msg.reactions).map(([emoji, email]) => {
+                                            const reactorName = email === selectedConversation.senderEmail ? selectedConversation.senderName : ADMIN_NAME;
+                                            return (
+                                                <Tooltip key={emoji}>
+                                                    <TooltipTrigger asChild>
+                                                        <span className="cursor-default">{emoji}</span>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>{reactorName} reacted with {emoji}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            );
+                                        })}
+                                    </TooltipProvider>
+                                    <span className='ml-1 text-muted-foreground font-semibold'>{Object.keys(msg.reactions).length}</span>
                                 </div>
                             )}
                          </div>
@@ -533,14 +567,22 @@ export default function AdminPage() {
                                     <Smile className="w-4 h-4" />
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent mb-2">
-                                <div className="flex gap-0.5 bg-card border rounded-full p-1 shadow-md">
-                                    {['👍', '❤️', '😂', '😮', '😢', '🙏'].map(emoji => (
-                                        <button key={emoji} type="button" aria-label={`React with ${emoji}`} onClick={() => handleReaction(msg.id, emoji)} className="text-lg p-1 rounded-full hover:bg-muted transition-colors">
-                                            {emoji}
-                                        </button>
-                                    ))}
-                                </div>
+                            <PopoverContent className="w-80 p-2" align="end">
+                                <ScrollArea className="h-48">
+                                    <div className="grid grid-cols-8 gap-1">
+                                        {EMOJIS.map((emoji, i) => (
+                                            <button
+                                                key={`${emoji}-${i}`}
+                                                type="button"
+                                                aria-label={`React with ${emoji}`}
+                                                onClick={() => handleReaction(msg.id, emoji)}
+                                                className="text-2xl p-1 rounded-md hover:bg-muted transition-colors"
+                                            >
+                                                {emoji}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
                             </PopoverContent>
                         </Popover>
                     </div>

@@ -28,13 +28,14 @@ import {
   setDoc,
 } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
-import { format } from 'date-fns';
+import { format, formatDistanceToNow } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import Image from 'next/image';
 import { v4 as uuidv4 } from 'uuid';
 import React from 'react';
+import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 const replySchema = z.object({
   replyMessage: z.string().min(1, 'Reply cannot be empty.').optional(),
@@ -60,7 +61,7 @@ type Conversation = {
   lastMessageAt: Timestamp;
   messages: Message[];
   typing?: { [key: string]: boolean };
-  presence?: { [key: string]: 'online' | 'offline' };
+  presence?: { [key: string]: 'online' | Timestamp };
 };
 
 const EMOJIS = [
@@ -75,6 +76,7 @@ const EMOJIS = [
     '🤮', '🤧', '😷', '🤒', '🤕', '🤑', '🤠', '👍', '❤️', '🙏'
 ];
 
+const ADMIN_NAME = 'Sarthak';
 const ADMIN_EMAIL = 'sarthak040624@gmail.com';
 
 export function ContactForm() {
@@ -145,7 +147,7 @@ export function ContactForm() {
     if (!firestore || !user?.email) return;
     const conversationRef = doc(firestore, 'conversations', user.email);
     updateDoc(conversationRef, { [`presence.${user.email}`]: 'online' }).catch(() => {});
-    const onUnload = () => updateDoc(conversationRef, { [`presence.${user.email}`]: 'offline' });
+    const onUnload = () => updateDoc(conversationRef, { [`presence.${user.email}`]: Timestamp.now() });
     window.addEventListener('beforeunload', onUnload);
     return () => window.removeEventListener('beforeunload', onUnload);
   }, [firestore, user]);
@@ -224,7 +226,6 @@ export function ContactForm() {
     const updatedMessages = [...conversationData.messages];
     const message = updatedMessages[messageIndex];
 
-    // Ensure reactions object exists
     if (!message.reactions) {
         message.reactions = {};
     }
@@ -232,12 +233,9 @@ export function ContactForm() {
     const userReaction = Object.keys(message.reactions).find(key => message.reactions![key] === user.email);
 
     if (userReaction === emoji) {
-        // User is removing their reaction
         delete message.reactions[emoji];
     } else {
-        // Remove previous reaction if it exists
         if(userReaction) delete message.reactions[userReaction];
-        // Add new reaction
         message.reactions[emoji] = user.email!;
     }
     
@@ -257,14 +255,25 @@ export function ContactForm() {
     replyForm.setValue('replyMessage', currentMessage + emoji);
   };
   
+  const adminPresence = conversationData?.presence?.[ADMIN_EMAIL];
   const isTyping = conversationData?.typing?.[ADMIN_EMAIL];
+  
+  const AdminStatus = () => {
+    if (isTyping) return 'Admin is typing...';
+    if (adminPresence === 'online') return 'Admin is online';
+    if (adminPresence instanceof Timestamp) {
+        return `Admin was last seen ${formatDistanceToNow(adminPresence.toDate(), { addSuffix: true })}`;
+    }
+    return 'Admin is offline';
+  };
+
 
   return (
     <div className="mt-12 max-w-lg mx-auto">
       <div className="h-[600px] rounded-lg border bg-card text-card-foreground shadow-sm flex flex-col overflow-hidden">
         <div className="p-4 border-b">
           <h3 className="font-semibold text-lg">Live Chat</h3>
-          <p className="text-sm text-muted-foreground">{isTyping ? 'Admin is typing...' : 'Ask me anything!'}</p>
+          <p className="text-sm text-muted-foreground"><AdminStatus /></p>
         </div>
 
         <ScrollArea className="flex-1 p-4 bg-muted/20" ref={scrollAreaRef}>
@@ -287,10 +296,24 @@ export function ContactForm() {
                                 {msg.sentBy === 'visitor' && <MessageStatus message={msg} />}
                                 <span>{msg.sentAt ? formatMessageTimestamp(getSentAtDate(msg.sentAt)) : ''}</span>
                             </div>
-                            {msg.reactions && Object.keys(msg.reactions).length > 0 && (
-                                <div className="absolute -bottom-3 right-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
-                                    {Object.keys(msg.reactions).map((emoji, i) => <span key={i}>{emoji}</span>)}
-                                    <span className='ml-1 text-muted-foreground'>{Object.keys(msg.reactions).length}</span>
+                           {msg.reactions && Object.keys(msg.reactions).length > 0 && (
+                                <div className="absolute -bottom-4 right-2 bg-card border rounded-full px-1.5 py-0.5 text-xs flex items-center gap-1 shadow-sm">
+                                    <TooltipProvider>
+                                        {Object.entries(msg.reactions).map(([emoji, email]) => {
+                                            const reactorName = email === conversationData?.senderEmail ? conversationData?.senderName : ADMIN_NAME;
+                                            return (
+                                                <Tooltip key={emoji}>
+                                                    <TooltipTrigger asChild>
+                                                        <span className="cursor-default">{emoji}</span>
+                                                    </TooltipTrigger>
+                                                    <TooltipContent>
+                                                        <p>{reactorName} reacted with {emoji}</p>
+                                                    </TooltipContent>
+                                                </Tooltip>
+                                            );
+                                        })}
+                                    </TooltipProvider>
+                                    <span className='ml-1 text-muted-foreground font-semibold'>{Object.keys(msg.reactions).length}</span>
                                 </div>
                             )}
                          </div>
@@ -301,14 +324,22 @@ export function ContactForm() {
                                     <Smile className="w-4 h-4" />
                                 </Button>
                             </PopoverTrigger>
-                            <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent mb-2">
-                                <div className="flex gap-0.5 bg-card border rounded-full p-1 shadow-md">
-                                    {['👍', '❤️', '😂', '😮', '😢', '🙏'].map(emoji => (
-                                        <button key={emoji} type="button" aria-label={`React with ${emoji}`} onClick={() => handleReaction(msg.id, emoji)} className="text-lg p-1 rounded-full hover:bg-muted transition-colors">
-                                            {emoji}
-                                        </button>
-                                    ))}
-                                </div>
+                             <PopoverContent className="w-80 p-2" align="end">
+                                <ScrollArea className="h-48">
+                                    <div className="grid grid-cols-8 gap-1">
+                                        {EMOJIS.map((emoji, i) => (
+                                            <button
+                                                key={`${emoji}-${i}`}
+                                                type="button"
+                                                aria-label={`React with ${emoji}`}
+                                                onClick={() => handleReaction(msg.id, emoji)}
+                                                className="text-2xl p-1 rounded-md hover:bg-muted transition-colors"
+                                            >
+                                                {emoji}
+                                            </button>
+                                        ))}
+                                    </div>
+                                </ScrollArea>
                             </PopoverContent>
                         </Popover>
                     </div>
