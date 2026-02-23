@@ -594,13 +594,15 @@ export default function AdminPage() {
                 <Form {...replyForm}>
                   <form onSubmit={replyForm.handleSubmit(handleReply)} className="flex gap-2">
                      <Popover>
-                        <PopoverTrigger asChild><Button variant="ghost" size="icon" aria-label="Open emoji picker"><Smile className="h-5 w-5" /></Button></PopoverTrigger>
-                        <PopoverContent className="w-auto p-1 border-none shadow-none bg-transparent mb-2">
-                            <div className="grid grid-cols-10 gap-0.5">
-                                {EMOJIS.map((emoji, i) => (
-                                    <button key={`${emoji}-${i}`} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-xl p-0.5 rounded-md hover:bg-muted transition-colors">{emoji}</button>
-                                ))}
-                            </div>
+                        <PopoverTrigger asChild><Button variant="ghost" size="icon" type="button" aria-label="Open emoji picker"><Smile className="h-5 w-5" /></Button></PopoverTrigger>
+                        <PopoverContent className="w-80 p-2 mb-2" side="top" align="start">
+                            <ScrollArea className="h-48">
+                                <div className="grid grid-cols-8 gap-1">
+                                    {EMOJIS.map((emoji, i) => (
+                                        <button key={`${emoji}-${i}`} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-2xl p-1 rounded-md hover:bg-muted transition-colors">{emoji}</button>
+                                    ))}
+                                </div>
+                            </ScrollArea>
                         </PopoverContent>
                     </Popover>
                     <Button variant="ghost" size="icon" type="button" onClick={() => fileInputRef.current?.click()} aria-label="Attach a file"><Paperclip className="h-5 w-5" /></Button>

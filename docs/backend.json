@@ -26,12 +26,12 @@
         },
         "typing": {
             "type": "object",
-            "description": "Indicates which users are currently typing. Keys are user emails, values are boolean.",
+            "description": "Indicates which users are currently typing. Keys are user emails, values are boolean. A true value means the user is typing.",
             "properties": {}
         },
         "presence": {
             "type": "object",
-            "description": "Indicates user presence. Keys are user emails. Values are either 'online' or a timestamp for last seen.",
+            "description": "Indicates user presence status. Keys are user emails. Values are either 'online' or a Firestore Timestamp for last seen.",
             "properties": {}
         },
         "groupId": {
@@ -74,12 +74,12 @@
               },
               "readBy": {
                 "type": "object",
-                "description": "Indicates which users have read the message. Keys are user emails, values are timestamps.",
+                "description": "Indicates which users have read the message. Keys are user emails, values are Firestore Timestamps of when it was read.",
                 "properties": {}
               },
               "reactions": {
                 "type": "object",
-                "description": "Emoji reactions to the message. Keys are emojis, values are the email of the user who reacted.",
+                "description": "Emoji reactions to the message. Keys are emojis, values are the email of the user who reacted, ensuring one reaction per user.",
                 "properties": {}
               }
             },
