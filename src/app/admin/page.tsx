@@ -305,7 +305,11 @@ export default function ChatPage() {
   };
   
   // All users for the "create chat" modal
-  const { data: allUsers } = useCollection<UserProfile>(query(collection(firestore, 'users')));
+  const allUsersQuery = useMemoFirebase(() => {
+    if (!firestore) return null;
+    return query(collection(firestore, 'users'));
+  }, [firestore]);
+  const { data: allUsers } = useCollection<UserProfile>(allUsersQuery);
 
   // --- UI & Render ---
   const getSentAtDate = (sentAt: Message['createdAt']) => {
