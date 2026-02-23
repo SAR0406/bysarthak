@@ -1,3 +1,4 @@
+
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -107,8 +108,23 @@ export function useCollection<T = any>(
 
     return () => unsubscribe();
   }, [memoizedTargetRefOrQuery]); // Re-run if the target query/reference changes.
-  if(memoizedTargetRefOrQuery && !memoizedTargetRefOrQuery.__memo) {
-    throw new Error(memoizedTargetRefOrQuery + ' was not properly memoized using useMemoFirebase');
+  
+  if (memoizedTargetRefOrQuery && !memoizedTargetRefOrQuery.__memo) {
+    let path = 'unknown';
+    try {
+      // This logic attempts to extract the path for a more helpful error.
+      // It's guarded by a try-catch as it relies on internal-like properties.
+      path =
+        memoizedTargetRefOrQuery.type === 'collection'
+          ? (memoizedTargetRefOrQuery as CollectionReference).path
+          : (memoizedTargetRefOrQuery as any)._query.path.canonicalString();
+    } catch {
+      // If path extraction fails, we fall back to a generic message.
+    }
+    throw new Error(
+      `A Firestore query for path "${path}" was not properly memoized using useMemoFirebase. This can lead to infinite loops and excessive database reads.`
+    );
   }
+
   return { data, isLoading, error };
 }
