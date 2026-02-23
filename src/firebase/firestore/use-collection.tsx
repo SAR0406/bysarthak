@@ -121,9 +121,10 @@ export function useCollection<T = any>(
     } catch {
       // If path extraction fails, we fall back to a generic message.
     }
-    throw new Error(
-      `A Firestore query for path "${path}" was not properly memoized using useMemoFirebase. This can lead to infinite loops and excessive database reads.`
+    console.warn(
+      `[PERFORMANCE WARNING] A Firestore query for path "${path}" was not properly memoized using useMemoFirebase. This will cause performance issues. The hook will not subscribe to this query to prevent infinite loops.`
     );
+    return { data: null, isLoading: false, error: new Error('Query not memoized.') };
   }
 
   return { data, isLoading, error };

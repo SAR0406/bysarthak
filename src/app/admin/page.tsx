@@ -216,7 +216,7 @@ export default function ChatPage() {
     const messagesColRef = collection(firestore, `chats/${selectedChatId}/messages`);
     const messageDocRef = doc(messagesColRef); // Auto-generate ID
 
-    const messageData: Omit<Message, 'id' | 'createdAt' | 'reactions'> = {
+    const messageData: Omit<Message, 'id' | 'createdAt' | 'reactions' | 'sender'> = {
         chatId: selectedChatId,
         senderId: user.uid,
         content: values.content || '',
