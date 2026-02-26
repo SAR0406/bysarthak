@@ -1,10 +1,10 @@
 
 rules_version = '2';
+
 service cloud.firestore {
   match /databases/{database}/documents {
 
     // --- Helper Functions ---
-
     function isSignedIn() {
       return request.auth != null;
     }
@@ -13,43 +13,69 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    /**
-     * Checks if the authenticated user has the 'isAdmin' flag on their profile.
-     * This is a secure and query-efficient way to check for admin privileges.
-     */
-    function isAdmin() {
-      // The user must be signed in and their user document must have `isAdmin: true`.
-      return isSignedIn() && get(/databases/$(database)/documents/users/$(request.auth.uid)).data.isAdmin == true;
+    // Check if the user is a member of a specific chat by checking the chatMemberships collection
+    // This assumes chatMemberships documents have an ID of `{chatId}_{userId}`
+    function isChatMember(chatId) {
+      return isSignedIn() && exists(/databases/$(database)/documents/chatMemberships/$(chatId + '_' + request.auth.uid));
     }
 
-
-    // --- Collection: conversations ---
-    match /conversations/{conversationId} {
-      allow list: if isAdmin();
-      allow get: if isAdmin() || (isSignedIn() && request.auth.token.email == conversationId);
-      allow create, update: if true;
-      allow delete: if false;
+    function getChatRole(chatId) {
+      let membershipDoc = get(/databases/$(database)/documents/chatMemberships/$(chatId + '_' + request.auth.uid));
+      return membershipDoc.data.role;
     }
+    
+    function isChatAdmin(chatId) {
+      return isChatMember(chatId) && getChatRole(chatId) == 'admin';
+    }
+    
+    // --- Collections ---
 
-
-    // --- Collection: users ---
+    // User Profiles
     match /users/{userId} {
-      allow get, list: if true;
-      allow create: if isOwner(userId) &&
-                       (request.resource.data.isAdmin == true ?
-                         request.auth.token.email == 'sarthak040624@gmail.com'
-                         : true);
-      allow update: if isOwner(userId) &&
-                       ( (request.resource.data.isAdmin == true && resource.data.isAdmin != true) ?
-                           request.auth.token.email == 'sarthak040624@gmail.com'
-                           : true );
-      allow delete: if false;
+      allow read: if true;
+      allow create, update: if isOwner(userId);
     }
 
+    // Chats and Messages
+    match /chats/{chatId} {
+      allow read, update: if isChatMember(chatId);
+      allow create: if isSignedIn(); // Any signed-in user can create a chat
 
-    // --- Collection: groups ---
-    match /groups/{groupId} {
-      allow read, write: if isAdmin();
+      match /messages/{messageId} {
+        allow read, create: if isChatMember(chatId);
+        allow update, delete: if isChatMember(chatId) && resource.data.senderId == request.auth.uid;
+      }
+    }
+
+    // Chat Memberships (Document ID: {chatId}_{userId})
+    match /chatMemberships/{membershipId} {
+        // Use resource.data for existing docs to support collection queries (list)
+        // Use request.resource.data for new docs (create)
+        
+        allow read: if isSignedIn() && (
+          request.auth.uid == resource.data.userId || 
+          isChatAdmin(resource.data.chatId)
+        );
+        
+        allow create: if isSignedIn() && (
+          request.auth.uid == request.resource.data.userId || 
+          isChatAdmin(request.resource.data.chatId)
+        );
+        
+        allow update, delete: if isSignedIn() && (
+          request.auth.uid == resource.data.userId || 
+          isChatAdmin(resource.data.chatId)
+        );
+    }
+    
+    // Reactions
+    match /reactions/{reactionId} {
+        // Only members of the chat can read reactions in that chat
+        allow list, get: if isChatMember(resource.data.chatId);
+        // User must be a member to create a reaction and can only create reactions for themselves
+        allow create: if isChatMember(request.resource.data.chatId) && request.auth.uid == request.resource.data.userId;
+        // Only the user who created the reaction can delete it
+        allow delete: if isOwner(resource.data.userId);
     }
   }
 }
