@@ -1,23 +1,20 @@
 'use client';
 
 /**
- * @fileOverview Production-grade Chat Panel UI.
+ * @fileOverview Production-grade Chat Panel UI (2025 Design Brief).
  * 
  * DESIGN DECISIONS:
- * 1. Directional Bubbles: Messages feature "tails" to clearly distinguish sender vs receiver, 
- *    following WhatsApp/iMessage standards for intuitive scanning.
- * 2. Cluster Logic: Consecutive messages from the same sender are visually grouped (avatars 
- *    only show on the last message) to reduce clutter.
- * 3. Robust Hydration: All time-sensitive formatting is deferred until mount to prevent 
- *    server-client mismatches.
- * 4. Three-Zone Layout: Implements a scalable sidebar/chat/info architecture for power users.
+ * 1. Directional Bubbles: Features "tails" and clustered radii to mirror high-end messaging apps (WhatsApp/iMessage).
+ * 2. Solid Surface UI: Replaced messy transparency with solid white/slate surfaces for maximum legibility.
+ * 3. Pro Componentization: Uses a three-zone layout (Sidebar / Chat / Info) optimized for power users.
+ * 4. Hydration Safety: All time-sensitive formatting is deferred until mount to prevent SSR mismatches.
  */
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   Search, 
   Plus, 
-  EllipsisVertical, 
+  MoreVertical, 
   ChevronLeft, 
   Phone, 
   Video, 
@@ -44,7 +41,7 @@ import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
 
 /**
- * MOCK DATA
+ * MOCK DATA (As requested in brief)
  */
 const mockConversations = [
   { id: '1', name: 'Sarthak Upadhyay', avatar: 'https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg', initials: 'SU', avatarColor: 'bg-indigo-500', lastMessage: 'Check out the new designs!', timestamp: new Date(), unreadCount: 2, isOnline: true, isPinned: true, isTyping: false },
@@ -88,8 +85,8 @@ const DateDivider = ({ date }: { date: Date }) => {
   else if (isYesterday(date)) label = 'Yesterday';
 
   return (
-    <div className="flex justify-center my-6 sticky top-2 z-10">
-      <time className="px-4 py-1 bg-white/80 backdrop-blur-md text-slate-500 rounded-full text-[11px] font-bold uppercase tracking-widest shadow-sm border border-slate-100">
+    <div className="flex justify-center my-6">
+      <time className="px-4 py-1 bg-slate-100 text-slate-500 rounded-full text-[11px] font-bold uppercase tracking-widest shadow-sm">
         {label}
       </time>
     </div>
@@ -97,7 +94,7 @@ const DateDivider = ({ date }: { date: Date }) => {
 };
 
 const TypingIndicator = () => (
-  <div className="flex justify-start mb-4">
+  <div className="flex justify-start mb-4 animate-fade-in-up">
     <div className="bg-white px-4 py-3 rounded-2xl rounded-bl-none shadow-sm border border-slate-100 flex gap-1 items-center">
       {[0, 150, 300].map((delay) => (
         <motion.div
@@ -167,7 +164,7 @@ const MessageBubble = ({
 
         {/* Action Bar on Hover */}
         <div className={cn(
-          "absolute top-0 opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 z-20",
+          "absolute top-0 opacity-0 group-hover:opacity-100 transition-opacity flex gap-1 z-20",
           isMe ? "-left-12" : "-right-12"
         )}>
            <Button variant="ghost" size="icon" className="h-8 w-8 rounded-full bg-white shadow-md border border-slate-100">
@@ -462,4 +459,3 @@ export default function AdminChatPage() {
     </div>
   );
 }
-
