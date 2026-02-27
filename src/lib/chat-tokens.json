@@ -1,0 +1,32 @@
+
+{
+  "colors": {
+    "primaryGradient": "linear-gradient(135deg, #6EE7E6 0%, #7C4DFF 100%)",
+    "accent": "#7C4DFF",
+    "success": "#00C2A8",
+    "error": "#FF6B6B",
+    "background": "#F8FAFC",
+    "surface": "#FFFFFF",
+    "textPrimary": "#0F172A",
+    "textMuted": "#475569",
+    "bubbleIncoming": "#FFFFFF",
+    "bubbleOutgoing": "#E6F7FF"
+  },
+  "spacing": {
+    "base": 16,
+    "scale": [4, 8, 16, 24, 32, 48]
+  },
+  "radii": {
+    "large": "20px",
+    "medium": "12px",
+    "small": "6px"
+  },
+  "typography": {
+    "fontStack": "Inter, system-ui, -apple-system, sans-serif",
+    "sizes": {
+      "base": "16px",
+      "meta": "14px",
+      "caption": "12px"
+    }
+  }
+}

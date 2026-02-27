@@ -14,6 +14,7 @@ import {
   FormItem,
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/components/ui/use-toast';
 import { 
   Send, 
@@ -28,6 +29,8 @@ import {
   User, 
   MessageSquare,
   Image as ImageIcon,
+  Camera,
+  Plus,
   Circle
 } from 'lucide-react';
 import { useFirestore, useUser, useMemoFirebase, useCollection } from '@/firebase';
@@ -78,7 +81,7 @@ const messageSchema = z.object({
   attachment: z.instanceof(File).optional(),
 });
 
-const EMOJIS = ['😀', '👍', '❤️', '😂', '😯', '😢', '🔥', '✨'];
+const EMOJIS = ['🔥', '❤️', '😂', '👍', '😮', '😢', '🙏', '✨'];
 const ADMIN_EMAIL = 'sarthak040624@gmail.com';
 const ADMIN_NAME = 'Sarthak';
 
@@ -256,31 +259,26 @@ export default function AdminPage() {
   }
 
   return (
-    <section id="chat-panel" className="h-screen w-full p-0 md:p-4 lg:p-6 pt-16 md:pt-20 bg-background/50 overflow-hidden">
-      <div className="h-full max-w-7xl mx-auto rounded-none md:rounded-3xl border border-white/10 bg-black/40 backdrop-blur-3xl text-card-foreground shadow-[0_32px_128px_-12px_rgba(0,0,0,0.8)] flex overflow-hidden ring-1 ring-white/5">
+    <section className="h-screen w-full flex items-center justify-center bg-[#F8FAFC] overflow-hidden">
+      <div className="h-full w-full max-w-[1600px] flex shadow-2xl overflow-hidden bg-white">
         
-        {/* Sidebar: Threads List */}
+        {/* Sidebar: Chats List */}
         <div className={cn(
-          'w-full md:w-[320px] lg:w-[400px] border-r border-white/5 flex flex-col bg-white/[0.02]',
+          'w-full md:w-[360px] lg:w-[420px] border-r border-slate-200 flex flex-col bg-white transition-all',
           selectedConvId && 'hidden md:flex'
         )}>
           <div className="p-6 space-y-6">
-            <div className="flex items-center justify-between px-1">
-                <h2 className="font-headline text-3xl font-black tracking-tight text-white drop-shadow-lg">Inbox</h2>
-                <div className="flex gap-1">
-                   <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/10 text-white/40">
-                      <Circle className="w-2 h-2 fill-green-500 text-green-500" />
-                   </Button>
-                   <Button variant="ghost" size="icon" className="rounded-full hover:bg-white/10 text-white/60">
-                      <MoreVertical className="w-5 h-5" />
-                   </Button>
-                </div>
+            <div className="flex items-center justify-between">
+                <h2 className="text-2xl font-black text-slate-900 tracking-tight">Messages</h2>
+                <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-100">
+                   <Plus className="w-5 h-5 text-slate-600" />
+                </Button>
             </div>
             <div className="relative group">
-                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 group-focus-within:text-primary transition-colors" />
                 <Input 
-                    placeholder="Search messages..." 
-                    className="pl-12 h-12 bg-white/5 border-white/5 rounded-2xl focus:ring-primary/20 transition-all placeholder:text-muted-foreground/30 font-medium" 
+                    placeholder="Search chats..." 
+                    className="pl-12 h-12 bg-slate-100 border-none rounded-2xl focus:ring-primary/20 transition-all placeholder:text-slate-400 font-medium" 
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                 />
@@ -288,13 +286,13 @@ export default function AdminPage() {
           </div>
           
           <ScrollArea className="flex-1">
-            <div className="px-3 pb-8 space-y-1.5">
+            <div className="px-3 pb-8 space-y-1">
                 {isConvsLoading ? (
                   <div className="p-12 text-center"><Loader2 className="animate-spin mx-auto h-8 w-8 text-primary/30" /></div>
                 ) : filteredConversations.length === 0 ? (
                   <div className="p-20 text-center flex flex-col items-center gap-4">
-                    <MessageSquare className="w-12 h-12 text-white/5" />
-                    <p className="text-muted-foreground/40 text-sm font-medium italic">Your inbox is quiet</p>
+                    <MessageSquare className="w-12 h-12 text-slate-200" />
+                    <p className="text-slate-400 text-sm font-medium">No conversations found</p>
                   </div>
                 ) : (
                     filteredConversations.map(conv => {
@@ -307,35 +305,33 @@ export default function AdminPage() {
                                 key={conv.id} 
                                 onClick={() => setSelectedConvId(conv.id)} 
                                 className={cn(
-                                    'w-full text-left p-4 rounded-2xl transition-all duration-300 flex items-center gap-4 relative group',
-                                    isActive ? 'bg-primary/20 shadow-xl ring-1 ring-white/10' : 'hover:bg-white/[0.04]'
+                                    'w-full text-left p-4 rounded-2xl transition-all flex items-center gap-4 relative group',
+                                    isActive ? 'bg-[#E6F7FF]' : 'hover:bg-slate-50'
                                 )}
                             >
                                 <div className="relative shrink-0">
-                                    <Avatar className="h-14 w-14 border-2 border-white/5 shadow-2xl group-hover:scale-105 transition-transform duration-500">
-                                        <AvatarFallback className="bg-gradient-to-br from-primary/20 to-secondary/20 text-primary font-black text-xl">{conv.senderName.charAt(0)}</AvatarFallback>
+                                    <Avatar className="h-14 w-14 border-2 border-white shadow-sm">
+                                        <AvatarFallback className="bg-slate-200 text-slate-600 font-bold text-lg">{conv.senderName.charAt(0)}</AvatarFallback>
                                     </Avatar>
                                     {conv.presence?.[conv.id] === 'online' && (
-                                        <span className="absolute bottom-0 right-0 w-4 h-4 rounded-full bg-green-500 border-4 border-[#0a0a0a] shadow-lg animate-pulse" />
+                                        <span className="absolute bottom-0.5 right-0.5 w-3.5 h-3.5 rounded-full bg-[#00C2A8] border-2 border-white shadow-sm" />
                                     )}
                                 </div>
                                 <div className="flex-1 min-w-0">
-                                    <div className="flex justify-between items-baseline mb-1">
-                                        <span className={cn("font-bold truncate text-[16px] tracking-tight", isActive ? "text-white" : "text-white/80")}>
+                                    <div className="flex justify-between items-baseline mb-0.5">
+                                        <span className={cn("font-bold truncate text-[16px]", isActive ? "text-slate-900" : "text-slate-800")}>
                                           {conv.senderName}
                                         </span>
-                                        <span className="text-[11px] text-muted-foreground/50 font-black uppercase tracking-widest shrink-0">
+                                        <span className="text-[12px] text-slate-400 font-medium shrink-0">
                                           {formatDate(getSentAtDate(conv.lastMessageAt))}
                                         </span>
                                     </div>
                                     <div className="flex items-center gap-2">
-                                        <p className={cn("text-[14px] truncate flex-1 font-medium", hasUnread ? "text-primary font-black" : "text-muted-foreground/40")}>
-                                            {lastMsg?.sentBy === 'admin' ? (
-                                              <span className="opacity-50">You: </span>
-                                            ) : ''}
-                                            {lastMsg?.text || (lastMsg?.imageUrl ? '📎 Attachment' : 'New interaction')}
+                                        <p className={cn("text-[14px] truncate flex-1", hasUnread ? "text-slate-900 font-bold" : "text-slate-500")}>
+                                            {lastMsg?.sentBy === 'admin' ? 'You: ' : ''}
+                                            {lastMsg?.text || (lastMsg?.imageUrl ? 'Sent an attachment' : 'No messages yet')}
                                         </p>
-                                        {hasUnread && <div className="h-2.5 w-2.5 rounded-full bg-primary shadow-[0_0_15px_rgba(239,68,68,0.8)] animate-pulse" />}
+                                        {hasUnread && <div className="h-2.5 w-2.5 rounded-full bg-primary shadow-sm" />}
                                     </div>
                                 </div>
                             </button>
@@ -346,50 +342,42 @@ export default function AdminPage() {
           </ScrollArea>
         </div>
 
-        {/* Chat Area */}
-        <div className={cn('flex-1 flex flex-col bg-white/[0.01]', !selectedConvId && 'hidden md:flex')}>
+        {/* Conversation View */}
+        <div className={cn('flex-1 flex flex-col bg-[#F8FAFC]', !selectedConvId && 'hidden md:flex')}>
           {selectedConv ? (
             <>
-              {/* Chat Header */}
-              <div className="p-4 md:p-6 border-b border-white/5 flex items-center gap-5 bg-black/20 backdrop-blur-3xl z-30 shadow-2xl">
-                 <Button variant="ghost" size="icon" className="md:hidden -ml-2 text-white/40 hover:text-white" onClick={() => setSelectedConvId(null)}>
+              {/* Header */}
+              <div className="h-20 px-6 border-b border-slate-200 flex items-center gap-4 bg-white/80 backdrop-blur-md z-30">
+                 <Button variant="ghost" size="icon" className="md:hidden -ml-2 text-slate-500" onClick={() => setSelectedConvId(null)}>
                    <ArrowLeft className="w-6 h-6" />
                  </Button>
                  <div className="relative">
-                    <Avatar className="h-12 w-12 border-2 border-white/10 shadow-2xl">
-                        <AvatarFallback className="bg-primary/10 text-primary font-black text-xl">{selectedConv.senderName.charAt(0)}</AvatarFallback>
+                    <Avatar className="h-10 w-10">
+                        <AvatarFallback className="bg-slate-200 text-slate-600 font-bold">{selectedConv.senderName.charAt(0)}</AvatarFallback>
                     </Avatar>
                     {selectedConv.presence?.[selectedConv.id] === 'online' && (
-                        <span className="absolute -bottom-0.5 -right-0.5 w-4 h-4 rounded-full bg-green-500 border-4 border-[#0a0a0a]" />
+                        <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-[#00C2A8] border-2 border-white" />
                     )}
                  </div>
                 <div className="flex-1 min-w-0">
-                  <h3 className="font-black text-white text-lg tracking-tight truncate">{selectedConv.senderName}</h3>
-                  <div className="text-[12px] text-muted-foreground/60 flex items-center gap-2 mt-0.5 font-bold uppercase tracking-widest">
-                    {selectedConv.presence?.[selectedConv.id] === 'online' ? (
-                      <span className="text-green-500 flex items-center gap-1.5">
-                        <span className="w-1.5 h-1.5 rounded-full bg-current animate-pulse" /> active now
-                      </span>
+                  <h3 className="font-bold text-slate-900 text-base truncate">{selectedConv.senderName}</h3>
+                  <p className="text-[12px] text-slate-400 font-medium">
+                    {selectedConv.typing?.[selectedConv.id] ? (
+                      <span className="text-primary animate-pulse">Typing...</span>
                     ) : (
-                      'away'
+                      selectedConv.presence?.[selectedConv.id] === 'online' ? 'Active now' : 'Away'
                     )}
-                    {selectedConv.typing?.[selectedConv.id] && (
-                       <>
-                        <span className="w-1 h-1 rounded-full bg-muted-foreground/30" />
-                        <span className="text-primary animate-pulse">typing...</span>
-                       </>
-                    )}
-                  </div>
+                  </p>
                 </div>
-                <div className="flex items-center gap-2 opacity-80">
-                    <Button variant="ghost" size="icon" className="text-white hover:text-primary hover:bg-primary/10 rounded-full transition-all"><User className="w-5 h-5" /></Button>
-                    <Button variant="ghost" size="icon" className="text-white hover:text-primary hover:bg-primary/10 rounded-full transition-all"><MoreVertical className="w-5 h-5" /></Button>
+                <div className="flex items-center gap-1">
+                    <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-600 rounded-full"><ImageIcon className="w-5 h-5" /></Button>
+                    <Button variant="ghost" size="icon" className="text-slate-400 hover:text-slate-600 rounded-full"><MoreVertical className="w-5 h-5" /></Button>
                 </div>
               </div>
 
-              {/* Messages Content */}
-              <ScrollArea className="flex-1 px-4 md:px-12 py-8 bg-gradient-to-b from-transparent to-black/30" ref={scrollAreaRef}>
-                 <div className="space-y-10 max-w-5xl mx-auto pb-8">
+              {/* Messages Area */}
+              <ScrollArea className="flex-1 px-4 md:px-8 lg:px-12 py-6" ref={scrollAreaRef}>
+                 <div className="space-y-6 max-w-4xl mx-auto">
                   <AnimatePresence initial={false}>
                     {messages.map((msg, idx) => {
                         const isMe = msg.sentBy === (isAdmin ? 'admin' : 'visitor');
@@ -399,67 +387,72 @@ export default function AdminPage() {
                         const showDateHeader = !prevMsgDate || !isSameDay(msgDate, prevMsgDate);
 
                         return (
-                            <div key={msg.id} className="space-y-10">
+                            <div key={msg.id} className="space-y-6">
                                 {showDateHeader && (
-                                    <div className="flex justify-center my-12">
-                                        <span className="px-5 py-1.5 rounded-full bg-white/5 border border-white/10 text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/50 shadow-sm backdrop-blur-xl">
-                                            {isToday(msgDate) ? 'Today' : isYesterday(msgDate) ? 'Yesterday' : format(msgDate, 'MMMM d, yyyy')}
+                                    <div className="flex justify-center my-8">
+                                        <span className="px-3 py-1 rounded-full bg-slate-200/50 text-[11px] font-bold text-slate-500 uppercase tracking-wider">
+                                            {isToday(msgDate) ? 'Today' : isYesterday(msgDate) ? 'Yesterday' : format(msgDate, 'MMMM d')}
                                         </span>
                                     </div>
                                 )}
                                 <motion.div 
-                                    initial={{ opacity: 0, y: 15, scale: 0.95 }}
+                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    className={cn("flex items-end gap-3.5 group", isMe ? 'flex-row-reverse' : 'flex-row')}
+                                    className={cn("flex items-end gap-2 group", isMe ? 'flex-row-reverse' : 'flex-row')}
                                 >
-                                    <div className={cn("flex flex-col gap-2 w-full max-w-[85%] md:max-w-[70%]", isMe ? 'items-end' : 'items-start')}>
+                                    {!isMe && (
+                                       <Avatar className="h-8 w-8 shrink-0 mb-1">
+                                          <AvatarFallback className="text-[10px] bg-slate-200">{selectedConv.senderName.charAt(0)}</AvatarFallback>
+                                       </Avatar>
+                                    )}
+                                    <div className={cn("flex flex-col gap-1 w-full max-w-[72%]", isMe ? 'items-end' : 'items-start')}>
                                         <div className={cn(
-                                            "relative px-5 py-4 rounded-[2rem] transition-all duration-500 shadow-2xl group-hover:shadow-primary/5", 
+                                            "relative px-4 py-3 rounded-[20px] bubble-shadow transition-all group-hover:shadow-md", 
                                             isMe 
-                                                ? 'bg-primary text-primary-foreground rounded-br-none shadow-primary/20' 
-                                                : 'bg-white/10 backdrop-blur-2xl text-white border border-white/5 rounded-bl-none shadow-black/40'
+                                                ? 'bg-primary-gradient text-white rounded-br-none' 
+                                                : 'bg-white text-slate-900 border border-slate-100 rounded-bl-none'
                                         )}>
                                             {msg.imageUrl && (
-                                                <div className="relative aspect-auto max-w-full mb-4 rounded-3xl overflow-hidden border border-black/20 group-hover:brightness-110 transition-all duration-500 cursor-zoom-in">
-                                                    <Image src={msg.imageUrl} alt="attachment" width={500} height={350} className="object-cover" />
+                                                <div className="mb-3 rounded-2xl overflow-hidden border border-slate-100">
+                                                    <Image src={msg.imageUrl} alt="attachment" width={400} height={300} className="object-cover w-full h-auto" />
                                                 </div>
                                             )}
-                                            {msg.text && <p className="text-[15px] leading-relaxed font-semibold whitespace-pre-wrap tracking-tight">{msg.text}</p>}
+                                            {msg.text && <p className="text-[15px] leading-relaxed whitespace-pre-wrap">{msg.text}</p>}
                                             
                                             <div className={cn(
-                                              "flex items-center gap-2 mt-3 justify-end", 
-                                              isMe ? "text-primary-foreground/40" : "text-white/30"
+                                              "flex items-center gap-1.5 mt-1.5 justify-end", 
+                                              isMe ? "text-white/60" : "text-slate-400"
                                             )}>
-                                                <span className="text-[10px] font-black uppercase tracking-widest">{format(msgDate, 'p')}</span>
+                                                <span className="text-[10px] font-bold">{format(msgDate, 'p')}</span>
                                                 {isMe && (
-                                                    isRead ? <CheckCheck className="h-4 w-4 text-blue-300 drop-shadow-[0_0_8px_rgba(147,197,253,0.5)]" /> : <Check className="h-4 w-4" />
+                                                    isRead ? <CheckCheck className="h-3.5 w-3.5 text-white" /> : <Check className="h-3.5 w-3.5" />
                                                 )}
                                             </div>
 
-                                            {/* Reaction Display */}
+                                            {/* Reactions */}
                                             {msg.reactions && Object.keys(msg.reactions).length > 0 && (
                                                 <div className={cn(
-                                                  "absolute -bottom-5 flex gap-1.5 bg-white/10 backdrop-blur-3xl border border-white/10 rounded-full px-2.5 py-1 shadow-2xl ring-1 ring-white/5", 
+                                                  "absolute -bottom-4 flex gap-1 bg-white border border-slate-100 rounded-full px-2 py-0.5 shadow-sm ring-1 ring-slate-200/50", 
                                                   isMe ? "right-2" : "left-2"
                                                 )}>
                                                     {Object.entries(msg.reactions).map(([email, emoji]) => (
-                                                        <span key={email} className="text-[13px] hover:scale-150 transition-transform cursor-help drop-shadow-md" title={email}>{emoji}</span>
+                                                        <span key={email} className="text-[12px] hover:scale-125 transition-transform cursor-help" title={email}>{emoji}</span>
                                                     ))}
                                                 </div>
                                             )}
                                         </div>
                                     </div>
                                     
-                                    {/* Quick Reaction Popover */}
+                                    {/* Reaction Trigger */}
                                     <Popover>
                                         <PopoverTrigger asChild>
-                                            <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-all duration-300 hover:bg-white/10 rounded-full text-white/20">
-                                                <Smile className="h-5 w-5" />
+                                            <Button variant="ghost" size="icon" className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-slate-200/50 rounded-full text-slate-400">
+                                                <Smile className="h-4 w-4" />
                                             </Button>
                                         </PopoverTrigger>
-                                        <PopoverContent className="w-fit p-1.5 flex gap-1.5 bg-black/90 backdrop-blur-3xl border-white/10 rounded-full shadow-[0_16px_48px_rgba(0,0,0,0.9)] ring-1 ring-white/10" side="top" align={isMe ? 'end' : 'start'}>
+                                        <PopoverContent className="w-fit p-1 flex gap-1 bg-white border-slate-200 rounded-full shadow-xl" side="top" align={isMe ? 'end' : 'start'}>
                                             {EMOJIS.map(e => (
-                                                <Button key={e} variant="ghost" size="sm" className="h-9 w-9 p-0 text-lg hover:bg-white/15 rounded-full hover:scale-125 transition-all" onClick={() => handleReaction(msg.id, e)}>{e}</Button>
+                                                <Button key={e} variant="ghost" size="sm" className="h-8 w-8 p-0 text-base hover:bg-slate-50 rounded-full hover:scale-125 transition-all" onClick={() => handleReaction(msg.id, e)}>{e}</Button>
                                             ))}
                                         </PopoverContent>
                                     </Popover>
@@ -471,16 +464,16 @@ export default function AdminPage() {
                 </div>
               </ScrollArea>
               
-              {/* Chat Input Bar */}
-              <div className="p-6 md:p-10 bg-white/[0.01] backdrop-blur-3xl border-t border-white/5 relative z-40">
+              {/* Composer */}
+              <div className="p-6 bg-white border-t border-slate-200">
                 <Form {...messageForm}>
-                  <form onSubmit={messageForm.handleSubmit(handleSendMessage)} className="flex items-center gap-4 max-w-5xl mx-auto">
-                    <div className="flex items-center gap-2 shrink-0">
-                      <Button variant="ghost" size="icon" type="button" onClick={() => fileInputRef.current?.click()} className="h-12 w-12 rounded-2xl hover:bg-white/10 text-white/30 hover:text-primary transition-all duration-300">
-                          <Paperclip className="h-5 w-5" />
+                  <form onSubmit={messageForm.handleSubmit(handleSendMessage)} className="flex items-end gap-3 max-w-4xl mx-auto">
+                    <div className="flex gap-1 mb-1">
+                      <Button variant="ghost" size="icon" type="button" onClick={() => fileInputRef.current?.click()} className="h-10 w-10 rounded-full text-slate-400 hover:text-primary hover:bg-slate-100">
+                          <Plus className="h-5 w-5" />
                       </Button>
-                      <Button variant="ghost" size="icon" type="button" className="h-12 w-12 rounded-2xl hover:bg-white/10 text-white/30 hover:text-primary transition-all duration-300">
-                          <ImageIcon className="h-5 w-5" />
+                      <Button variant="ghost" size="icon" type="button" className="h-10 w-10 rounded-full text-slate-400 hover:text-primary hover:bg-slate-100">
+                          <Camera className="h-5 w-5" />
                       </Button>
                     </div>
                     
@@ -489,42 +482,34 @@ export default function AdminPage() {
                     <FormField control={messageForm.control} name="content" render={({ field }) => (
                         <FormItem className="flex-grow">
                           <FormControl>
-                              <Input 
-                                placeholder="Write your message..." 
+                              <Textarea 
+                                placeholder="Write a message..." 
                                 {...field} 
-                                autoComplete="off" 
                                 onInput={handleTyping}
-                                className="h-14 bg-white/5 border-white/10 rounded-[1.5rem] px-8 focus:ring-primary/20 focus:border-white/20 placeholder:text-muted-foreground/20 transition-all text-[15px] font-bold shadow-inner" 
+                                className="min-h-[44px] max-h-[120px] bg-slate-100 border-none rounded-[22px] px-6 py-2.5 focus-visible:ring-primary/20 transition-all text-[15px] resize-none overflow-y-auto scrollbar-hide" 
                               />
                           </FormControl>
                         </FormItem>
                     )}/>
                     
-                    <Button type="submit" size="icon" disabled={messageForm.formState.isSubmitting || isUploading} className="h-14 w-14 shrink-0 rounded-[1.5rem] bg-primary hover:bg-primary/80 text-white shadow-2xl shadow-primary/30 transition-all duration-300 active:scale-90 disabled:opacity-50">
-                        {messageForm.formState.isSubmitting || isUploading ? <Loader2 className="animate-spin h-6 w-6" /> : <Send className="h-6 w-6" />}
+                    <Button type="submit" size="icon" disabled={messageForm.formState.isSubmitting || isUploading} className="h-11 w-11 shrink-0 rounded-full bg-primary hover:bg-primary/90 text-white shadow-lg active:scale-95 transition-all">
+                        {messageForm.formState.isSubmitting || isUploading ? <Loader2 className="animate-spin h-5 w-5" /> : <Send className="h-5 w-5" />}
                     </Button>
                   </form>
                 </Form>
               </div>
             </>
           ) : (
-            /* Empty Selection State */
-            <div className="flex-1 flex flex-col items-center justify-center p-20 text-center bg-gradient-to-br from-transparent to-primary/5">
-                <motion.div 
-                    initial={{ scale: 0.8, opacity: 0 }}
-                    animate={{ scale: 1, opacity: 1 }}
-                    transition={{ duration: 0.8, type: "spring" }}
-                    className="relative mb-12"
-                >
-                    <div className="absolute inset-0 bg-primary/20 blur-[120px] rounded-full animate-pulse" />
-                    <div className="relative w-32 h-32 rounded-[3rem] bg-white/5 border border-white/10 flex items-center justify-center shadow-[0_32px_64px_rgba(0,0,0,0.5)] backdrop-blur-3xl overflow-hidden">
-                        <MessageSquare className="w-12 h-12 text-primary/40" />
-                        <div className="absolute inset-0 bg-gradient-to-tr from-primary/10 to-transparent" />
+            <div className="flex-1 flex flex-col items-center justify-center p-20 text-center">
+                <div className="relative mb-8">
+                    <div className="absolute inset-0 bg-primary/10 blur-3xl rounded-full" />
+                    <div className="relative w-24 h-24 rounded-full bg-white border border-slate-100 flex items-center justify-center shadow-xl">
+                        <MessageSquare className="w-10 h-10 text-primary/40" />
                     </div>
-                </motion.div>
-                <h3 className="text-4xl font-black tracking-tight text-white mb-4 font-headline drop-shadow-2xl">Your Inbox</h3>
-                <p className="text-muted-foreground/50 text-base max-w-[320px] leading-relaxed font-bold">
-                  Select a visitor conversation from the left to start providing professional real-time support.
+                </div>
+                <h3 className="text-2xl font-black text-slate-900 mb-3">No Chat Selected</h3>
+                <p className="text-slate-400 text-sm max-w-[320px] font-medium leading-relaxed">
+                  Select a conversation from the left to start messaging. Your inbox is waiting.
                 </p>
             </div>
           )}
@@ -533,3 +518,4 @@ export default function AdminPage() {
     </section>
   );
 }
+
