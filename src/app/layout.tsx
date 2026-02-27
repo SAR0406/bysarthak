@@ -8,6 +8,7 @@ import { Footer } from '@/components/footer';
 import LightPillar from '@/components/LightPillar';
 import { navLinks } from '@/lib/data';
 import { FirebaseClientProvider } from '@/firebase';
+import Script from 'next/script';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -44,6 +45,12 @@ export default function RootLayout({
       <body
         className='font-body antialiased'
       >
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1095101683608785"
+          crossOrigin="anonymous"
+          strategy="afterInteractive"
+        />
         <FirebaseClientProvider>
             <div className="fixed top-0 left-0 w-full h-screen -z-10 opacity-70">
               <LightPillar
