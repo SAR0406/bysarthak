@@ -49,21 +49,29 @@ service cloud.firestore {
 
     // Chat Memberships (Document ID: {chatId}_{userId})
     match /chatMemberships/{membershipId} {
-        // Use resource.data for existing docs to support collection queries (list)
-        // Use request.resource.data for new docs (create)
-        
-        allow read: if isSignedIn() && (
-          request.auth.uid == resource.data.userId || 
+        // Allow reading a single membership doc if it's yours or if you're a chat admin
+        allow get: if isSignedIn() && (
+          resource.data.userId == request.auth.uid || 
           isChatAdmin(resource.data.chatId)
         );
-        
+
+        // Allow listing memberships. 
+        // This supports Query 1: where('userId', '==', auth.uid)
+        // And Query 2: where('chatId', '==', someChatId) (if user is admin of that chat)
+        allow list: if isSignedIn() && (
+          resource.data.userId == request.auth.uid ||
+          isChatAdmin(resource.data.chatId)
+        );
+
+        // Allow creating a membership if you're joining yourself or if you're an admin adding someone
         allow create: if isSignedIn() && (
-          request.auth.uid == request.resource.data.userId || 
+          request.resource.data.userId == request.auth.uid || 
           isChatAdmin(request.resource.data.chatId)
         );
-        
+
+        // Allow updating or deleting a membership if it's yours or if you're a chat admin
         allow update, delete: if isSignedIn() && (
-          request.auth.uid == resource.data.userId || 
+          resource.data.userId == request.auth.uid || 
           isChatAdmin(resource.data.chatId)
         );
     }
