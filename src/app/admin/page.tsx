@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
@@ -518,4 +517,3 @@ export default function AdminPage() {
     </section>
   );
 }
-
