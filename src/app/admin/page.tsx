@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useRef, useMemo, useCallback } from 'react';
@@ -25,7 +24,7 @@ import {
   CheckCheck, 
   Loader2, 
   Search, 
-  MoreVertical, 
+  EllipsisVertical, 
   User, 
   MessageSquare,
   Image as ImageIcon,

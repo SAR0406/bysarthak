@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
@@ -15,7 +14,7 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { Send, Smile, Paperclip, Check, CheckCheck, Loader2, MessageCircle, Plus, Camera, MoreVertical, X } from 'lucide-react';
+import { Send, Smile, Paperclip, Check, CheckCheck, Loader2, MessageCircle, Plus, Camera, EllipsisVertical, X } from 'lucide-react';
 import { useFirestore, useUser, useMemoFirebase, useDoc } from '@/firebase';
 import {
   serverTimestamp,
@@ -215,7 +214,7 @@ export function ContactForm() {
              </div>
           </div>
           <div className="flex gap-1">
-             <Button variant="ghost" size="icon" className="rounded-full text-slate-400 hover:bg-slate-50"><MoreVertical className="w-5 h-5" /></Button>
+             <Button variant="ghost" size="icon" className="rounded-full text-slate-400 hover:bg-slate-50"><EllipsisVertical className="w-5 h-5" /></Button>
           </div>
         </div>
 
