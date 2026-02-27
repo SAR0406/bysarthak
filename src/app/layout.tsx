@@ -41,16 +41,17 @@ export default function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://images.unsplash.com" />
         <link rel="preconnect" href="https://i.ibb.co" />
-      </head>
-      <body
-        className='font-body antialiased'
-      >
+        {/* Google AdSense */}
         <Script
           async
           src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-1095101683608785"
           crossOrigin="anonymous"
           strategy="afterInteractive"
         />
+      </head>
+      <body
+        className='font-body antialiased'
+      >
         <FirebaseClientProvider>
             <div className="fixed top-0 left-0 w-full h-screen -z-10 opacity-70">
               <LightPillar
