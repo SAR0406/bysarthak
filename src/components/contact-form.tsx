@@ -27,14 +27,16 @@ const replySchema = z.object({
   replyMessage: z.string().min(1, 'Message cannot be empty.')
 });
 
-const ADMIN_EMAIL = 'sarthak040624@gmail.com';
 const ADMIN_NAME = 'Sarthak';
 
 export function ContactForm() {
   const [isOpen, setIsOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const firestore = useFirestore();
   const { user } = useUser();
   const scrollAreaRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { setMounted(true); }, []);
 
   const conversationRef = useMemoFirebase(() => {
     if (!firestore || !user?.email) return null;
@@ -94,49 +96,53 @@ export function ContactForm() {
     }
   }
 
+  if (!mounted) return null;
+
   return (
-    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end">
+    <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end font-body">
       <AnimatePresence>
         {isOpen && (
           <motion.div 
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="w-[380px] sm:w-[420px] h-[600px] bg-white rounded-[32px] shadow-2xl border border-slate-100 flex flex-col mb-4 overflow-hidden"
+            className="w-[360px] sm:w-[400px] h-[580px] bg-white rounded-[32px] shadow-2xl border border-slate-100 flex flex-col mb-4 overflow-hidden"
           >
-            {/* Minimalist Header */}
+            {/* Header */}
             <div className="p-6 bg-white border-b border-slate-50 flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <Avatar className="w-10 h-10 border border-slate-100 shadow-sm">
+                <Avatar className="w-10 h-10 border border-slate-100">
                   <AvatarFallback className="bg-primary text-white font-black text-xs italic">S</AvatarFallback>
                 </Avatar>
                 <div>
-                  <h3 className="font-bold text-slate-900 text-[15px]">{ADMIN_NAME}</h3>
+                  <h3 className="font-bold text-slate-900 text-sm">{ADMIN_NAME}</h3>
                   <div className="flex items-center gap-1.5">
                     <span className="w-2 h-2 bg-emerald-500 rounded-full" />
-                    <span className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Online</span>
+                    <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Active</span>
                   </div>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="rounded-full h-10 w-10 text-slate-400 hover:bg-slate-50">
+              <Button variant="ghost" size="icon" onClick={() => setIsOpen(false)} className="rounded-full text-slate-400">
                 <X className="w-5 h-5" />
               </Button>
             </div>
 
-            {/* Chat Thread */}
+            {/* Content */}
             <ScrollArea className="flex-1 p-6 bg-[#FBFDFF]" ref={scrollAreaRef}>
               {isHistoryLoading ? (
                 <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary/10" /></div>
               ) : !user ? (
                 <div className="flex flex-col items-center justify-center h-full text-center px-8 space-y-6">
-                  <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center border border-slate-100 shadow-inner">
+                  <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center">
                     <MessageCircle className="w-10 h-10 text-slate-200" />
                   </div>
-                  <div className="space-y-2">
-                    <h4 className="font-bold text-slate-900 text-lg font-headline uppercase italic tracking-tighter">Private Chat</h4>
-                    <p className="text-slate-400 text-xs font-semibold leading-relaxed">Sign in to start a secure conversation with Sarthak.</p>
+                  <div className="space-y-1">
+                    <h4 className="font-black text-slate-900 text-lg font-headline uppercase italic">Secure Chat</h4>
+                    <p className="text-slate-400 text-xs font-medium">Please login to start a conversation.</p>
                   </div>
-                  <Button asChild className="rounded-full h-11 px-8 bg-primary text-white font-black shadow-xl shadow-primary/20"><Link href="/login">LOGIN TO CHAT</Link></Button>
+                  <Button asChild className="rounded-full h-11 px-8 bg-primary text-white font-bold shadow-lg shadow-primary/20">
+                    <Link href="/login">LOG IN</Link>
+                  </Button>
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -149,18 +155,18 @@ export function ContactForm() {
                       <div key={msg.id || idx} className="flex flex-col">
                         {showDate && (
                           <div className="flex justify-center my-6">
-                            <span className="px-3 py-1 bg-slate-100 text-slate-400 text-[9px] font-black uppercase tracking-widest rounded-full">{format(msg.sentAt?.toDate() || new Date(), 'MMM d, yyyy')}</span>
+                            <span className="px-3 py-1 bg-slate-100 text-slate-400 text-[9px] font-bold uppercase tracking-widest rounded-full">{format(msg.sentAt?.toDate() || new Date(), 'MMM d, yyyy')}</span>
                           </div>
                         )}
                         <div className={cn("flex w-full mb-0.5", isMe ? "justify-end" : "justify-start")}>
                           <div className={cn(
-                            "max-w-[85%] px-4 py-2.5 rounded-[22px] shadow-sm text-[14px] font-medium leading-relaxed tracking-tight transition-all",
+                            "max-w-[85%] px-4 py-2.5 rounded-[22px] shadow-sm text-[14px] font-medium transition-all",
                             isMe 
-                              ? "bg-primary text-primary-foreground rounded-tr-none shadow-primary/5" 
+                              ? "bg-primary text-white rounded-tr-none shadow-primary/5" 
                               : "bg-white text-slate-800 rounded-tl-none border border-slate-100"
                           )}>
                             {msg.text}
-                            <div className={cn("text-[9px] flex items-center justify-end gap-1 mt-1 font-black opacity-50 uppercase tracking-tighter", isMe ? "text-white" : "text-slate-400")}>
+                            <div className={cn("text-[9px] flex items-center justify-end gap-1 mt-1 font-bold uppercase opacity-50", isMe ? "text-white" : "text-slate-400")}>
                                 {msg.sentAt ? format(msg.sentAt.toDate(), 'p') : ''}
                                 {isMe && <CheckCheck className="h-3 w-3" />}
                             </div>
@@ -173,7 +179,7 @@ export function ContactForm() {
               )}
             </ScrollArea>
 
-            {/* Input Footer */}
+            {/* Footer */}
             {user && (
               <div className="p-6 bg-white border-t border-slate-50">
                 <Form {...replyForm}>
@@ -185,16 +191,16 @@ export function ContactForm() {
                         <FormItem className="flex-grow">
                           <FormControl>
                             <Input 
-                              placeholder="Type message..." 
+                              placeholder="Message..." 
                               {...field} 
                               autoComplete="off"
-                              className="bg-slate-50 border-none rounded-full h-11 px-6 focus-visible:ring-primary/5 transition-all text-sm font-semibold placeholder:text-slate-400"
+                              className="bg-slate-50 border-none rounded-full h-11 px-6 text-sm font-medium placeholder:text-slate-400"
                             />
                           </FormControl>
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" size="icon" disabled={replyForm.formState.isSubmitting || !replyForm.watch('replyMessage')} className="rounded-full h-11 w-11 shrink-0 bg-primary shadow-xl shadow-primary/20 transition-transform active:scale-95 disabled:opacity-20">
+                    <Button type="submit" size="icon" disabled={replyForm.formState.isSubmitting || !replyForm.watch('replyMessage')} className="rounded-full h-11 w-11 shrink-0 bg-primary shadow-lg shadow-primary/20 active:scale-95 disabled:opacity-20">
                       <Send className="h-4 w-4 text-white" />
                     </Button>
                   </form>
