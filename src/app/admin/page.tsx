@@ -1,4 +1,3 @@
-
 'use client';
 
 import React, { useState, useEffect, useRef } from 'react';
@@ -17,14 +16,13 @@ import {
   Check, 
   CheckCheck,
   MessageSquare,
-  Pin
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, isToday, isYesterday, isSameDay } from 'date-fns';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 /**
  * MOCK DATA
@@ -66,6 +64,11 @@ const mockMessages: Record<string, any[]> = {
  */
 
 const DateDivider = ({ date }: { date: Date }) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
+  if (!mounted) return <div className="h-10" />;
+
   let label = format(date, 'MMMM d, yyyy');
   if (isToday(date)) label = 'Today';
   else if (isYesterday(date)) label = 'Yesterday';
@@ -99,14 +102,13 @@ const TypingIndicator = () => (
 const MessageBubble = ({ 
   msg, 
   isMe, 
-  isLastInGroup, 
-  showAvatar 
 }: { 
   msg: any; 
   isMe: boolean; 
-  isLastInGroup: boolean; 
-  showAvatar: boolean 
 }) => {
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   return (
     <div className={cn("flex flex-col mb-1 group", isMe ? "items-end" : "items-start")}>
       <motion.div 
@@ -136,7 +138,7 @@ const MessageBubble = ({
           "flex items-center justify-end gap-1 mt-1 opacity-60",
           isMe ? "text-primary-foreground" : "text-muted-foreground"
         )}>
-          <span className="text-[10px] font-bold">{format(msg.timestamp, 'p')}</span>
+          {mounted && <span className="text-[10px] font-bold">{format(msg.timestamp, 'p')}</span>}
           {isMe && (
             msg.status === 'seen' ? <CheckCheck className="w-3 h-3 text-sky-400" /> :
             msg.status === 'delivered' ? <CheckCheck className="w-3 h-3" /> :
@@ -144,7 +146,6 @@ const MessageBubble = ({
           )}
         </div>
 
-        {/* Action Bar on Hover */}
         <div className={cn(
           "absolute -top-8 bg-background border border-border rounded-full px-2 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 z-10",
           isMe ? "right-0" : "left-0"
@@ -158,23 +159,26 @@ const MessageBubble = ({
 };
 
 export default function AdminChatPage() {
+  const [mounted, setMounted] = useState(false);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [inputText, setInputText] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
 
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
   const selectedConv = mockConversations.find(c => c.id === selectedId);
   const messages = selectedId ? (mockMessages[selectedId] || []) : [];
 
-  // Auto-scroll to bottom
   useEffect(() => {
     if (scrollRef.current) {
       scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
     }
   }, [messages, selectedId]);
 
-  // Textarea auto-height
   useEffect(() => {
     if (textareaRef.current) {
       textareaRef.current.style.height = 'auto';
@@ -244,7 +248,9 @@ export default function AdminChatPage() {
                   <div className="flex-1 min-w-0">
                     <div className="flex justify-between items-baseline mb-1">
                       <span className="font-black text-sm tracking-tight truncate font-headline">{conv.name}</span>
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase">{format(conv.timestamp, 'p')}</span>
+                      <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                        {mounted ? format(conv.timestamp, 'p') : '--:--'}
+                      </span>
                     </div>
                     <div className="flex items-center gap-2">
                       <p className={cn("text-[13px] truncate flex-1 font-medium", conv.unreadCount > 0 ? "text-foreground font-bold" : "text-muted-foreground")}>
@@ -286,7 +292,7 @@ export default function AdminChatPage() {
                   <div>
                     <h2 className="font-black text-sm tracking-tight font-headline">{selectedConv.name}</h2>
                     <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                      {selectedConv.isOnline ? "Active now" : "Last seen 2 min ago"}
+                      {selectedConv.isOnline ? "Active now" : "Last seen recently"}
                     </p>
                   </div>
                 </div>
@@ -304,7 +310,6 @@ export default function AdminChatPage() {
                       const isMe = msg.senderId === 'admin';
                       const prevMsg = messages[idx-1];
                       const showDate = !prevMsg || !isSameDay(msg.timestamp, prevMsg.timestamp);
-                      const isLastInGroup = !messages[idx+1] || messages[idx+1].senderId !== msg.senderId;
 
                       return (
                         <div key={msg.id}>
@@ -312,8 +317,6 @@ export default function AdminChatPage() {
                           <MessageBubble 
                             msg={msg} 
                             isMe={isMe} 
-                            isLastInGroup={isLastInGroup}
-                            showAvatar={isLastInGroup && !isMe}
                           />
                         </div>
                       );
@@ -377,4 +380,3 @@ export default function AdminChatPage() {
     </div>
   );
 }
-
