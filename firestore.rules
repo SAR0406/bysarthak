@@ -13,19 +13,16 @@ service cloud.firestore {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    // Check if the user is a member of a specific chat by checking the chatMemberships collection
-    // This assumes chatMemberships documents have an ID of `{chatId}_{userId}`
     function isChatMember(chatId) {
-      return isSignedIn() && exists(/databases/$(database)/documents/chatMemberships/$(chatId + '_' + request.auth.uid));
+      return isSignedIn() && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.memberIds;
     }
 
-    function getChatRole(chatId) {
-      let membershipDoc = get(/databases/$(database)/documents/chatMemberships/$(chatId + '_' + request.auth.uid));
-      return membershipDoc.data.role;
-    }
-    
     function isChatAdmin(chatId) {
-      return isChatMember(chatId) && getChatRole(chatId) == 'admin';
+      // For simplicity, we check the role in the chatMemberships collection
+      let membershipId = chatId + '_' + request.auth.uid;
+      return isSignedIn() && 
+             exists(/databases/$(database)/documents/chatMemberships/$(membershipId)) &&
+             get(/databases/$(database)/documents/chatMemberships/$(membershipId)).data.role == 'admin';
     }
     
     // --- Collections ---
@@ -36,11 +33,16 @@ service cloud.firestore {
       allow create, update: if isOwner(userId);
     }
 
-    // Chats and Messages
+    // Chats
     match /chats/{chatId} {
-      allow read, update: if isChatMember(chatId);
-      allow create: if isSignedIn(); // Any signed-in user can create a chat
-
+      // Allow reading if you are in the memberIds list
+      allow read: if isSignedIn() && request.auth.uid in resource.data.memberIds;
+      // Anyone signed in can create a chat
+      allow create: if isSignedIn();
+      // Only members can update (e.g., lastMessageId)
+      allow update: if isSignedIn() && request.auth.uid in resource.data.memberIds;
+      
+      // Messages
       match /messages/{messageId} {
         allow read, create: if isChatMember(chatId);
         allow update, delete: if isChatMember(chatId) && resource.data.senderId == request.auth.uid;
@@ -49,18 +51,26 @@ service cloud.firestore {
 
     // Chat Memberships (Document ID: {chatId}_{userId})
     match /chatMemberships/{membershipId} {
-        // A user can read their own membership doc. An admin of the chat can read any membership.
-        allow read: if (isSignedIn() && request.auth.uid == split(membershipId,'_')[1]) || isChatAdmin(split(membershipId,'_')[0]);
-        // A chat admin can add/remove users. A user can add/remove themselves.
-        allow write: if isChatAdmin(split(membershipId,'_')[0]) || (isSignedIn() && request.auth.uid == split(membershipId,'_')[1]);
+        // Allow list/get if it's your own membership
+        allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
+        
+        // Chat admins can read any membership in their chat
+        allow read: if isSignedIn() && isChatAdmin(resource.data.chatId);
+
+        // Allow creating/updating if you're joining yourself or if you're an admin
+        allow write: if isSignedIn() && (
+          request.resource.data.userId == request.auth.uid || 
+          isChatAdmin(request.resource.data.chatId) ||
+          (resource != null && isChatAdmin(resource.data.chatId))
+        );
     }
     
     // Reactions
     match /reactions/{reactionId} {
         // Only members of the chat can read reactions in that chat
-        allow list, get: if isChatMember(resource.data.chatId);
+        allow list, get: if isSignedIn() && isChatMember(resource.data.chatId);
         // User must be a member to create a reaction and can only create reactions for themselves
-        allow create: if isChatMember(request.resource.data.chatId) && request.auth.uid == request.resource.data.userId;
+        allow create: if isSignedIn() && isChatMember(request.resource.data.chatId) && request.auth.uid == request.resource.data.userId;
         // Only the user who created the reaction can delete it
         allow delete: if isOwner(resource.data.userId);
     }

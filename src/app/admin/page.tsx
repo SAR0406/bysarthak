@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect, useState, useRef, useCallback } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
@@ -17,13 +17,12 @@ import {
 } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/components/ui/use-toast';
-import { Send, ArrowLeft, Phone, Video, Smile, Paperclip, Check, CheckCheck, PlusCircle, Users, UserPlus } from 'lucide-react';
+import { Send, ArrowLeft, Phone, Video, Smile, Paperclip, PlusCircle } from 'lucide-react';
 import { useFirestore, useUser, useMemoFirebase, useCollection } from '@/firebase';
 import {
   collection,
   serverTimestamp,
   doc,
-  updateDoc,
   writeBatch,
   addDoc,
   where,
@@ -31,20 +30,16 @@ import {
   query,
   orderBy,
   Timestamp,
-  collectionGroup,
-  getDocs
 } from 'firebase/firestore';
 import { getStorage, ref as storageRef, uploadBytes, getDownloadURL } from "firebase/storage";
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { format, isToday, formatDistanceToNow } from 'date-fns';
+import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { Checkbox } from '@/components/ui/checkbox';
 import Image from 'next/image';
-import { v4 as uuidv4 } from 'uuid';
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from '@/components/ui/tooltip';
 
 // --- New Data Model Types ---
 type UserProfile = {
@@ -63,10 +58,10 @@ type Chat = {
     name?: string;
     description?: string;
     lastMessageId?: string;
+    memberIds: string[];
     // For UI purposes
     otherMember?: UserProfile; 
     lastMessage?: Message;
-    unreadCount?: number;
 }
 
 type Message = {
@@ -80,7 +75,6 @@ type Message = {
     replyToMessageId?: string;
     // For UI
     sender?: UserProfile;
-    reactions?: Reaction[];
 }
 
 type ChatMembership = {
@@ -91,16 +85,6 @@ type ChatMembership = {
     role: 'member' | 'admin';
     lastReadMessageId?: string;
 }
-
-type Reaction = {
-    id: string;
-    messageId: string;
-    chatId: string;
-    userId: string;
-    emoji: string;
-    createdAt: Timestamp;
-}
-
 
 const messageSchema = z.object({
   content: z.string().min(1, 'Message cannot be empty.').optional(),
@@ -113,7 +97,7 @@ const createChatSchema = z.object({
   members: z.array(z.string()).min(1, 'Select at least one member.'),
 });
 
-const EMOJIS = ['😀', '👍', '❤️', '😂', '😯', '😢', '😡'];
+const EMOJIS = ['😀', '👍', '❤️', '😂', '😯', '😢', '😡', '🔥', '🚀', '✨'];
 
 export default function ChatPage() {
   const { toast } = useToast();
@@ -139,11 +123,11 @@ export default function ChatPage() {
 
   // --- Data Fetching ---
 
-  // 1. Fetch user's chat memberships
+  // 1. Fetch user's chat memberships - properly memoized
   const membershipsQuery = useMemoFirebase(() => {
     if (!firestore || !user) return null;
     return query(collection(firestore, 'chatMemberships'), where('userId', '==', user.uid));
-  }, [firestore, user]);
+  }, [firestore, user?.uid]);
   const { data: memberships } = useCollection<ChatMembership>(membershipsQuery);
 
   // 2. Fetch full chat data based on memberships
@@ -158,17 +142,17 @@ export default function ChatPage() {
 
             let chatData: Chat = { id: chatDoc.id, ...chatDoc.data() } as Chat;
 
-            // If it's a private chat, find the other member
-            if (chatData.type === 'private') {
-                const membersSnapshot = await getDocs(query(collection(firestore, 'chatMemberships'), where('chatId', '==', chatData.id)));
-                const otherMemberDoc = membersSnapshot.docs.find(d => d.data().userId !== user.uid);
-                if (otherMemberDoc) {
-                    const userDoc = await getDoc(doc(firestore, 'users', otherMemberDoc.data().userId));
+            // If it's a private chat, find the other member UID from memberIds
+            if (chatData.type === 'private' && chatData.memberIds) {
+                const otherMemberId = chatData.memberIds.find(id => id !== user.uid);
+                if (otherMemberId) {
+                    const userDoc = await getDoc(doc(firestore, 'users', otherMemberId));
                     if(userDoc.exists()) {
                        chatData.otherMember = { id: userDoc.id, ...userDoc.data() } as UserProfile;
                     }
                 }
             }
+            
             // Fetch last message for display
             if(chatData.lastMessageId) {
                 const lastMessageDoc = await getDoc(doc(firestore, `chats/${chatData.id}/messages/${chatData.lastMessageId}`));
@@ -186,11 +170,11 @@ export default function ChatPage() {
     }
     fetchChatDetails();
 
-  }, [memberships, firestore, user]);
+  }, [memberships, firestore, user?.uid]);
 
   const selectedChat = chats.find(c => c.id === selectedChatId);
 
-  // 3. Fetch messages for the selected chat
+  // 3. Fetch messages for the selected chat - properly memoized
   const messagesQuery = useMemoFirebase(() => {
     if (!firestore || !selectedChatId) return null;
     return query(collection(firestore, `chats/${selectedChatId}/messages`), orderBy('createdAt', 'asc'));
@@ -214,9 +198,9 @@ export default function ChatPage() {
     if (!values.content && !values.attachment) return;
 
     const messagesColRef = collection(firestore, `chats/${selectedChatId}/messages`);
-    const messageDocRef = doc(messagesColRef); // Auto-generate ID
+    const messageDocRef = doc(messagesColRef);
 
-    const messageData: Omit<Message, 'id' | 'createdAt' | 'reactions' | 'sender'> = {
+    const messageData: Omit<Message, 'id' | 'createdAt' | 'sender'> = {
         chatId: selectedChatId,
         senderId: user.uid,
         content: values.content || '',
@@ -248,38 +232,33 @@ export default function ChatPage() {
     if (!firestore || !user) return;
     try {
         const batch = writeBatch(firestore);
-
-        // 1. Create the chat document
         const chatRef = doc(collection(firestore, 'chats'));
+        
+        // memberIds includes the creator and all selected members
+        const memberIds = Array.from(new Set([user.uid, ...values.members]));
+
         batch.set(chatRef, {
-            name: values.name,
+            name: values.type === 'group' ? values.name : 'Private Chat',
             type: values.type,
             createdAt: serverTimestamp(),
             description: '',
+            memberIds: memberIds,
         });
 
-        // 2. Add current user as a member (and admin)
-        const currentUserMembershipRef = doc(firestore, 'chatMemberships', `${chatRef.id}_${user.uid}`);
-        batch.set(currentUserMembershipRef, {
-            chatId: chatRef.id,
-            userId: user.uid,
-            role: 'admin',
-            joinedAt: serverTimestamp()
-        });
-
-        // 3. Add other members
-        values.members.forEach(memberId => {
-            const memberRef = doc(firestore, 'chatMemberships', `${chatRef.id}_${memberId}`);
-            batch.set(memberRef, {
+        // Create memberships for all users
+        memberIds.forEach(memberId => {
+            const role = memberId === user.uid ? 'admin' : 'member';
+            const membershipRef = doc(firestore, 'chatMemberships', `${chatRef.id}_${memberId}`);
+            batch.set(membershipRef, {
                 chatId: chatRef.id,
                 userId: memberId,
-                role: 'member',
+                role: role,
                 joinedAt: serverTimestamp()
             });
         });
 
         await batch.commit();
-        toast({ title: "Chat Created", description: `Chat "${values.name}" has been created.` });
+        toast({ title: "Chat Created", description: `Chat has been created.` });
         setChatModalOpen(false);
         createChatForm.reset();
     } catch (e: any) {
@@ -287,24 +266,12 @@ export default function ChatPage() {
     }
 }
 
-  const handleReaction = async (messageId: string, emoji: string) => {
-      // This is more complex with the new model and would require fetching reactions
-      // and checking if the user already reacted. For brevity, this is simplified.
-      if (!firestore || !user || !selectedChatId) return;
-
-      const reactionData: Omit<Reaction, 'id' | 'createdAt'> = {
-          messageId,
-          chatId: selectedChatId,
-          userId: user.uid,
-          emoji,
-      };
-      
-      // In a real app, you'd query to see if a reaction from this user with this emoji exists and delete it,
-      // or delete other reactions from the same user on the same message before adding a new one.
-      await addDoc(collection(firestore, 'reactions'), { ...reactionData, createdAt: serverTimestamp() });
+  const handleEmojiSelect = (emoji: string) => {
+      const current = messageForm.getValues('content') || '';
+      messageForm.setValue('content', current + emoji);
   };
   
-  // All users for the "create chat" modal
+  // All users for the "create chat" modal - properly memoized
   const allUsersQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return query(collection(firestore, 'users'));
@@ -334,38 +301,55 @@ export default function ChatPage() {
       <div className="h-full rounded-lg border bg-card text-card-foreground shadow-sm flex overflow-hidden">
         <div className={cn('w-full md:w-1/3 border-r transition-transform duration-300 ease-in-out flex flex-col', selectedChatId && 'hidden md:flex')}>
           <div className="p-4 border-b flex items-center justify-between">
-            <h2 className="font-headline text-xl font-bold">Chats</h2>
+            <h2 className="font-headline text-xl font-bold">Messages</h2>
             <Dialog open={isChatModalOpen} onOpenChange={setChatModalOpen}>
                 <DialogTrigger asChild>
                     <Button variant="ghost" size="icon" aria-label="Create New Chat"><PlusCircle className="w-5 h-5"/></Button>
                 </DialogTrigger>
                 <DialogContent>
                     <DialogHeader>
-                        <DialogTitle>Create New Chat</DialogTitle>
+                        <DialogTitle>Start a Conversation</DialogTitle>
                     </DialogHeader>
                      <Form {...createChatForm}>
                         <form onSubmit={createChatForm.handleSubmit(handleCreateChat)} className="space-y-4">
-                            <FormField control={createChatForm.control} name="name" render={({ field }) => (
+                            <FormField control={createChatForm.control} name="type" render={({ field }) => (
                                 <FormItem>
-                                    <FormLabel>Group Name</FormLabel>
-                                    <FormControl><Input placeholder="Enter group name..." {...field} /></FormControl>
-                                    <FormMessage />
+                                    <FormLabel>Chat Type</FormLabel>
+                                    <div className="flex gap-4">
+                                        <Button type="button" variant={field.value === 'private' ? 'default' : 'outline'} onClick={() => field.onChange('private')}>Private</Button>
+                                        <Button type="button" variant={field.value === 'group' ? 'default' : 'outline'} onClick={() => field.onChange('group')}>Group</Button>
+                                    </div>
                                 </FormItem>
                              )} />
+                            {createChatForm.watch('type') === 'group' && (
+                                <FormField control={createChatForm.control} name="name" render={({ field }) => (
+                                    <FormItem>
+                                        <FormLabel>Group Name</FormLabel>
+                                        <FormControl><Input placeholder="Enter group name..." {...field} /></FormControl>
+                                        <FormMessage />
+                                    </FormItem>
+                                )} />
+                            )}
                             <FormField control={createChatForm.control} name="members" render={() => (
                                 <FormItem>
-                                    <FormLabel>Members</FormLabel>
+                                    <FormLabel>Select Contacts</FormLabel>
                                     <ScrollArea className="h-48 border rounded-md p-2">
                                         {allUsers?.filter(u => u.id !== user.uid).map((u) => (
                                             <FormField key={u.id} control={createChatForm.control} name="members" render={({ field }) => (
-                                                <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-2 hover:bg-muted rounded-md">
+                                                <FormItem className="flex flex-row items-start space-x-3 space-y-0 p-2 hover:bg-muted rounded-md transition-colors">
                                                     <FormControl>
                                                         <Checkbox
                                                             checked={field.value?.includes(u.id)}
-                                                            onCheckedChange={(checked) => checked ? field.onChange([...(field.value || []), u.id]) : field.onChange(field.value?.filter(v => v !== u.id))}
+                                                            onCheckedChange={(checked) => {
+                                                                if (createChatForm.getValues('type') === 'private') {
+                                                                    field.onChange([u.id]);
+                                                                } else {
+                                                                    checked ? field.onChange([...(field.value || []), u.id]) : field.onChange(field.value?.filter(v => v !== u.id))
+                                                                }
+                                                            }}
                                                         />
                                                     </FormControl>
-                                                    <FormLabel className="font-normal w-full cursor-pointer">{u.displayName} ({u.email})</FormLabel>
+                                                    <FormLabel className="font-normal w-full cursor-pointer">{u.displayName}</FormLabel>
                                                 </FormItem>
                                             )} />
                                         ))}
@@ -373,7 +357,7 @@ export default function ChatPage() {
                                     <FormMessage />
                                 </FormItem>
                             )} />
-                            <Button type="submit" disabled={createChatForm.formState.isSubmitting}>Create Chat</Button>
+                            <Button type="submit" className="w-full" disabled={createChatForm.formState.isSubmitting}>Create Chat</Button>
                         </form>
                     </Form>
                 </DialogContent>
@@ -381,11 +365,11 @@ export default function ChatPage() {
           </div>
           <ScrollArea className="flex-1">
               {isChatsLoading && <p className="p-4 text-muted-foreground">Loading chats...</p>}
-              {!isChatsLoading && chats.length === 0 && <p className="p-4 text-muted-foreground">No chats yet. Create one!</p>}
+              {!isChatsLoading && chats.length === 0 && <p className="p-4 text-muted-foreground">No conversations yet.</p>}
               {chats.map(chat => {
                 const displayName = chat.type === 'private' ? chat.otherMember?.displayName : chat.name;
                 const displayImage = chat.type === 'private' ? chat.otherMember?.profilePictureUrl : undefined;
-                const lastMsgText = chat.lastMessage?.type === 'image' ? 'Image' : chat.lastMessage?.content;
+                const lastMsgText = chat.lastMessage?.type === 'image' ? 'Image attachment' : chat.lastMessage?.content;
 
                 return (
                   <button key={chat.id} onClick={() => setSelectedChatId(chat.id)} className={cn('w-full text-left p-4 border-b hover:bg-muted/50 transition-colors duration-200', selectedChatId === chat.id && 'bg-muted')}>
@@ -393,9 +377,9 @@ export default function ChatPage() {
                         <div className="flex-1 overflow-hidden flex items-center gap-3">
                            <Avatar>
                              <AvatarImage src={displayImage} />
-                             <AvatarFallback>{displayName?.charAt(0) || '?'}</AvatarFallback>
+                             <AvatarFallback className="bg-primary/10 text-primary">{displayName?.charAt(0) || '?'}</AvatarFallback>
                            </Avatar>
-                            <div>
+                            <div className="flex-1 min-w-0">
                                 <span className="font-semibold block truncate">{displayName}</span>
                                  <p className="text-sm text-muted-foreground truncate mt-1">{lastMsgText || 'No messages yet'}</p>
                             </div>
@@ -410,68 +394,81 @@ export default function ChatPage() {
         <div className={cn('w-full md:w-2/3 flex flex-col', !selectedChatId && 'hidden md:flex')}>
           {selectedChat ? (
             <>
-              <div className="p-4 border-b flex items-center gap-4">
+              <div className="p-4 border-b flex items-center gap-4 bg-card/50 backdrop-blur-sm">
                  <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSelectedChatId(null)}><ArrowLeft className="w-4 h-4" /></Button>
                  <Avatar>
                     <AvatarImage src={selectedChat.type === 'private' ? selectedChat.otherMember?.profilePictureUrl : undefined} />
-                    <AvatarFallback>{(selectedChat.type === 'private' ? selectedChat.otherMember?.displayName : selectedChat.name)?.charAt(0) || '?'}</AvatarFallback>
+                    <AvatarFallback className="bg-primary/10 text-primary">{(selectedChat.type === 'private' ? selectedChat.otherMember?.displayName : selectedChat.name)?.charAt(0) || '?'}</AvatarFallback>
                  </Avatar>
                 <div className="flex-1">
                   <h3 className="font-semibold">{selectedChat.type === 'private' ? selectedChat.otherMember?.displayName : selectedChat.name}</h3>
                 </div>
                 <div className="flex items-center gap-2">
-                  <Button variant="ghost" size="icon" onClick={showFeatureComingSoon}><Phone className="w-5 h-5 text-muted-foreground" /></Button>
-                  <Button variant="ghost" size="icon" onClick={showFeatureComingSoon}><Video className="w-5 h-5 text-muted-foreground" /></Button>
+                  <Button variant="ghost" size="icon" onClick={showFeatureComingSoon}><Phone className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" /></Button>
+                  <Button variant="ghost" size="icon" onClick={showFeatureComingSoon}><Video className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors" /></Button>
                 </div>
               </div>
 
               <ScrollArea className="flex-1 p-4 bg-muted/20" ref={scrollAreaRef}>
-                 <div className="space-y-1">
-                  {isLoadingMessages && <p>Loading messages...</p>}
+                 <div className="space-y-4">
+                  {isLoadingMessages && <p className="text-center text-muted-foreground">Loading messages...</p>}
                   {messages?.map((msg, index) => (
                     <div key={`${msg.id}-${index}`} className={cn("flex items-end gap-2.5 group", msg.senderId === user.uid && 'justify-end')}>
-                       <div className={cn("flex flex-col gap-1 w-full max-w-[320px]", msg.senderId === user.uid && 'items-end')}>
-                         <div className={cn("relative leading-1.5 p-2 rounded-xl", msg.senderId === user.uid ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none shadow-sm')}>
-                            {msg.imageUrl && <Image src={msg.imageUrl} alt="attachment" width={300} height={200} className="rounded-md mb-2" />}
-                            {msg.content && <p className="text-sm font-normal px-1">{msg.content}</p>}
-                            <div className="text-xs text-muted-foreground/80 flex items-center justify-end gap-1 mt-1">
+                       <div className={cn("flex flex-col gap-1 w-full max-w-[80%]", msg.senderId === user.uid && 'items-end')}>
+                         <div className={cn("relative leading-1.5 p-3 rounded-2xl shadow-sm", msg.senderId === user.uid ? 'bg-primary text-primary-foreground rounded-br-none' : 'bg-card rounded-bl-none')}>
+                            {msg.imageUrl && (
+                                <div className="relative aspect-video w-full mb-2 rounded-lg overflow-hidden border border-border/50">
+                                    <Image src={msg.imageUrl} alt="attachment" fill className="object-cover" />
+                                </div>
+                            )}
+                            {msg.content && <p className="text-sm font-normal break-words">{msg.content}</p>}
+                            <div className="text-[10px] text-muted-foreground/80 flex items-center justify-end gap-1 mt-1">
                                 <span>{msg.createdAt ? format(getSentAtDate(msg.createdAt), 'p') : ''}</span>
                             </div>
                          </div>
                        </div>
-                       <Popover>
-                            <PopoverTrigger asChild>
-                                <Button variant="ghost" size="icon" className="h-6 w-6 opacity-0 group-hover:opacity-100 transition-opacity"><Smile className="w-4 h-4" /></Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-40 p-1" align="end">
-                                <div className="grid grid-cols-4 gap-1">
-                                    {EMOJIS.map(emoji => <button key={emoji} type="button" onClick={() => handleReaction(msg.id, emoji)} className="text-lg p-1 rounded-md hover:bg-muted">{emoji}</button>)}
-                                </div>
-                            </PopoverContent>
-                        </Popover>
                     </div>
                   ))}
                 </div>
               </ScrollArea>
               
-              <div className="p-4 border-t">
+              <div className="p-4 border-t bg-card/50 backdrop-blur-sm">
                 <Form {...messageForm}>
                   <form onSubmit={messageForm.handleSubmit(handleSendMessage)} className="flex gap-2">
-                    <Button variant="ghost" size="icon" type="button" onClick={() => fileInputRef.current?.click()}><Paperclip className="h-5 w-5" /></Button>
+                    <Popover>
+                        <PopoverTrigger asChild>
+                            <Button variant="ghost" size="icon" type="button" className="hover:text-primary transition-colors"><Smile className="h-5 w-5" /></Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-64 p-2" align="start">
+                            <div className="grid grid-cols-5 gap-1">
+                                {EMOJIS.map(emoji => (
+                                    <button key={emoji} type="button" onClick={() => handleEmojiSelect(emoji)} className="text-xl p-2 rounded-md hover:bg-muted transition-colors">{emoji}</button>
+                                ))}
+                            </div>
+                        </PopoverContent>
+                    </Popover>
+                    <Button variant="ghost" size="icon" type="button" onClick={() => fileInputRef.current?.click()} className="hover:text-primary transition-colors"><Paperclip className="h-5 w-5" /></Button>
                     <Input type="file" ref={fileInputRef} className="hidden" accept="image/*" onChange={(e) => messageForm.setValue('attachment', e.target.files?.[0])} />
                     <FormField control={messageForm.control} name="content" render={({ field }) => (
                         <FormItem className="flex-grow">
-                          <FormControl><Input placeholder="Type your message..." {...field} autoComplete="off" /></FormControl>
-                          <FormMessage />
+                          <FormControl><Input placeholder="Type your message..." {...field} autoComplete="off" className="bg-background/50" /></FormControl>
                         </FormItem>
                     )}/>
-                    <Button type="submit" size="icon" disabled={messageForm.formState.isSubmitting}><Send className="h-4 w-4" /></Button>
+                    <Button type="submit" size="icon" disabled={messageForm.formState.isSubmitting} className="rounded-full shadow-lg"><Send className="h-4 w-4" /></Button>
                   </form>
                 </Form>
               </div>
             </>
           ) : (
-            <div className="flex-1 flex items-center justify-center"><p className="text-muted-foreground">Select a chat to start messaging</p></div>
+            <div className="flex-1 flex items-center justify-center text-center p-8">
+                <div className="max-w-sm space-y-4">
+                    <div className="bg-primary/10 w-16 h-16 rounded-full flex items-center justify-center mx-auto">
+                        <PlusCircle className="w-8 h-8 text-primary" />
+                    </div>
+                    <h3 className="text-xl font-bold">Your Inbox</h3>
+                    <p className="text-muted-foreground">Select a conversation from the list or start a new one to connect with others.</p>
+                </div>
+            </div>
           )}
         </div>
       </div>

@@ -63,9 +63,14 @@
         "lastMessageId": {
             "type": "string",
             "description": "The ID of the most recent message in the chat for sorting."
+        },
+        "memberIds": {
+          "type": "array",
+          "items": { "type": "string" },
+          "description": "Array of UIDs of users who are members of this chat."
         }
       },
-      "required": ["createdAt", "type"]
+      "required": ["createdAt", "type", "memberIds"]
     },
     "Message": {
       "title": "Message",
@@ -184,7 +189,7 @@
           "schema": {
             "$ref": "#/backend/entities/ChatMembership"
           },
-          "description": "Manages user roles and membership in chats. Can be queried to find all chats for a user."
+          "description": "Manages user roles and membership in chats."
         }
       },
       {
@@ -193,7 +198,7 @@
           "schema": {
             "$ref": "#/backend/entities/Reaction"
           },
-          "description": "Stores all reactions to messages. Can be queried to find all reactions for a message."
+          "description": "Stores all reactions to messages."
         }
       }
     ]
