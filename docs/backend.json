@@ -37,121 +37,50 @@
       },
       "required": ["username", "email", "createdAt", "displayName"]
     },
-    "Chat": {
-      "title": "Chat",
-      "description": "A conversation thread, which can be a private one-on-one or a group chat.",
+    "ConversationMessage": {
+      "title": "Conversation Message",
+      "description": "A single message within a conversation array.",
       "type": "object",
       "properties": {
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Timestamp of when the chat was created."
+        "id": { "type": "string" },
+        "text": { "type": "string" },
+        "imageUrl": { "type": "string", "format": "uri" },
+        "sentAt": { "type": "string", "format": "date-time" },
+        "sentBy": { "type": "string", "enum": ["admin", "visitor"] },
+        "senderName": { "type": "string" },
+        "senderEmail": { "type": "string" },
+        "readBy": { 
+          "type": "object",
+          "description": "Map of user email to read timestamp."
         },
-        "type": {
-          "type": "string",
-          "enum": ["private", "group"],
-          "description": "The type of chat."
-        },
-        "name": {
-          "type": "string",
-          "description": "The name of the chat, typically for group chats."
-        },
-        "description": {
-          "type": "string",
-          "description": "A short description for the chat."
-        },
-        "lastMessageId": {
-            "type": "string",
-            "description": "The ID of the most recent message in the chat for sorting."
-        },
-        "memberIds": {
-          "type": "array",
-          "items": { "type": "string" },
-          "description": "Array of UIDs of users who are members of this chat."
+        "reactions": {
+          "type": "object",
+          "description": "Map of user email to emoji string."
         }
-      },
-      "required": ["createdAt", "type", "memberIds"]
-    },
-    "Message": {
-      "title": "Message",
-      "description": "A single message within a chat.",
-      "type": "object",
-      "properties": {
-        "chatId": {
-          "type": "string",
-          "description": "The ID of the chat this message belongs to."
-        },
-        "senderId": {
-          "type": "string",
-          "description": "The UID of the user who sent the message."
-        },
-        "content": {
-          "type": "string",
-          "description": "The text content of the message."
-        },
-        "createdAt": {
-          "type": "string",
-          "format": "date-time",
-          "description": "Timestamp of when the message was sent."
-        },
-        "type": {
-          "type": "string",
-          "enum": ["text", "image", "video"],
-          "description": "The type of message content."
-        },
-        "imageUrl": {
-          "type": "string",
-          "format": "uri",
-          "description": "URL of an image attachment."
-        },
-        "replyToMessageId": {
-          "type": "string",
-          "description": "The ID of the message this one is replying to."
-        }
-      },
-      "required": ["chatId", "senderId", "content", "createdAt", "type"]
-    },
-    "ChatMembership": {
-      "title": "Chat Membership",
-      "description": "Links a user to a chat and defines their role within it.",
-      "type": "object",
-      "properties": {
-        "chatId": { "type": "string" },
-        "userId": { "type": "string" },
-        "joinedAt": {
-          "type": "string",
-          "format": "date-time"
-        },
-        "role": {
-          "type": "string",
-          "enum": ["member", "admin"]
-        },
-        "lastReadMessageId": {
-          "type": "string"
-        }
-      },
-      "required": ["chatId", "userId", "joinedAt", "role"]
-    },
-    "Reaction": {
-        "title": "Reaction",
-        "description": "An emoji reaction to a message.",
-        "type": "object",
-        "properties": {
-          "messageId": { "type": "string" },
-          "chatId": { "type": "string" },
-          "userId": { "type": "string" },
-          "emoji": { "type": "string" },
-          "createdAt": { "type": "string", "format": "date-time" }
-        },
-        "required": ["messageId", "chatId", "userId", "emoji", "createdAt"]
       }
+    },
+    "Conversation": {
+      "title": "Conversation",
+      "description": "A support or contact conversation thread.",
+      "type": "object",
+      "properties": {
+        "groupId": { "type": "string" },
+        "senderName": { "type": "string" },
+        "senderEmail": { "type": "string" },
+        "lastMessageAt": { "type": "string", "format": "date-time" },
+        "messages": {
+          "type": "array",
+          "items": { "$ref": "#/backend/entities/ConversationMessage" }
+        },
+        "typing": { "type": "object" },
+        "presence": { "type": "object" }
+      }
+    }
   },
   "auth": {
     "providers": [
       "password",
-      "anonymous",
-      "google.com",
-      "github.com"
+      "google.com"
     ]
   },
   "firestore": {
@@ -162,43 +91,16 @@
           "schema": {
             "$ref": "#/backend/entities/UserProfile"
           },
-          "description": "Stores public-facing user profile information."
+          "description": "Stores user profiles."
         }
       },
       {
-        "path": "/chats/{chatId}",
+        "path": "/conversations/{email}",
         "definition": {
           "schema": {
-            "$ref": "#/backend/entities/Chat"
+            "$ref": "#/backend/entities/Conversation"
           },
-          "description": "Stores chat threads (both private and group)."
-        }
-      },
-      {
-        "path": "/chats/{chatId}/messages/{messageId}",
-        "definition": {
-          "schema": {
-            "$ref": "#/backend/entities/Message"
-          },
-          "description": "Stores all messages for a specific chat."
-        }
-      },
-      {
-        "path": "/chatMemberships",
-        "definition": {
-          "schema": {
-            "$ref": "#/backend/entities/ChatMembership"
-          },
-          "description": "Manages user roles and membership in chats."
-        }
-      },
-      {
-        "path": "/reactions",
-        "definition": {
-          "schema": {
-            "$ref": "#/backend/entities/Reaction"
-          },
-          "description": "Stores all reactions to messages."
+          "description": "Stores support conversations, keyed by visitor email."
         }
       }
     ]

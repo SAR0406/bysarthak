@@ -9,22 +9,14 @@ service cloud.firestore {
       return request.auth != null;
     }
 
+    function isAdmin() {
+      return isSignedIn() && request.auth.token.email == 'sarthak040624@gmail.com';
+    }
+
     function isOwner(userId) {
       return isSignedIn() && request.auth.uid == userId;
     }
 
-    function isChatMember(chatId) {
-      return isSignedIn() && request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.memberIds;
-    }
-
-    function isChatAdmin(chatId) {
-      // For simplicity, we check the role in the chatMemberships collection
-      let membershipId = chatId + '_' + request.auth.uid;
-      return isSignedIn() && 
-             exists(/databases/$(database)/documents/chatMemberships/$(membershipId)) &&
-             get(/databases/$(database)/documents/chatMemberships/$(membershipId)).data.role == 'admin';
-    }
-    
     // --- Collections ---
 
     // User Profiles
@@ -33,46 +25,10 @@ service cloud.firestore {
       allow create, update: if isOwner(userId);
     }
 
-    // Chats
-    match /chats/{chatId} {
-      // Allow reading if you are in the memberIds list
-      allow read: if isSignedIn() && request.auth.uid in resource.data.memberIds;
-      // Anyone signed in can create a chat
-      allow create: if isSignedIn();
-      // Only members can update (e.g., lastMessageId)
-      allow update: if isSignedIn() && request.auth.uid in resource.data.memberIds;
-      
-      // Messages
-      match /messages/{messageId} {
-        allow read, create: if isChatMember(chatId);
-        allow update, delete: if isChatMember(chatId) && resource.data.senderId == request.auth.uid;
-      }
-    }
-
-    // Chat Memberships (Document ID: {chatId}_{userId})
-    match /chatMemberships/{membershipId} {
-        // Allow list/get if it's your own membership
-        allow read: if isSignedIn() && resource.data.userId == request.auth.uid;
-        
-        // Chat admins can read any membership in their chat
-        allow read: if isSignedIn() && isChatAdmin(resource.data.chatId);
-
-        // Allow creating/updating if you're joining yourself or if you're an admin
-        allow write: if isSignedIn() && (
-          request.resource.data.userId == request.auth.uid || 
-          isChatAdmin(request.resource.data.chatId) ||
-          (resource != null && isChatAdmin(resource.data.chatId))
-        );
-    }
-    
-    // Reactions
-    match /reactions/{reactionId} {
-        // Only members of the chat can read reactions in that chat
-        allow list, get: if isSignedIn() && isChatMember(resource.data.chatId);
-        // User must be a member to create a reaction and can only create reactions for themselves
-        allow create: if isSignedIn() && isChatMember(request.resource.data.chatId) && request.auth.uid == request.resource.data.userId;
-        // Only the user who created the reaction can delete it
-        allow delete: if isOwner(resource.data.userId);
+    // Conversations (as shown in screenshot)
+    match /conversations/{email} {
+      // Admin can do everything. Visitors can access their own thread.
+      allow read, write: if isAdmin() || (isSignedIn() && request.auth.token.email == email);
     }
   }
 }
