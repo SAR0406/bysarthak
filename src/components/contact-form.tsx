@@ -2,7 +2,7 @@
 
 /**
  * @fileOverview Minimalist Visitor Chat Component.
- * High-fidelity aesthetic with Indigo accents and smooth interactions.
+ * High-fidelity aesthetic with Indigo accents and solid surfaces.
  */
 
 import { useEffect, useState, useRef, useCallback, useMemo } from 'react';
@@ -117,7 +117,7 @@ export function ContactForm() {
                 <div>
                   <h3 className="font-bold text-slate-900 text-sm">{ADMIN_NAME}</h3>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 bg-emerald-500 rounded-full" />
+                    <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                     <span className="text-[10px] font-bold text-emerald-500 uppercase tracking-widest">Active</span>
                   </div>
                 </div>
@@ -127,10 +127,10 @@ export function ContactForm() {
               </Button>
             </div>
 
-            {/* Content */}
+            {/* Message Thread */}
             <ScrollArea className="flex-1 p-6 bg-[#FBFDFF]" ref={scrollAreaRef}>
               {isHistoryLoading ? (
-                <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary/10" /></div>
+                <div className="flex justify-center items-center h-full"><Loader2 className="h-8 w-8 animate-spin text-primary/20" /></div>
               ) : !user ? (
                 <div className="flex flex-col items-center justify-center h-full text-center px-8 space-y-6">
                   <div className="w-20 h-20 rounded-full bg-slate-50 flex items-center justify-center">
@@ -138,9 +138,9 @@ export function ContactForm() {
                   </div>
                   <div className="space-y-1">
                     <h4 className="font-black text-slate-900 text-lg font-headline uppercase italic">Secure Chat</h4>
-                    <p className="text-slate-400 text-xs font-medium">Please login to start a conversation.</p>
+                    <p className="text-slate-400 text-xs font-medium">Login to start a professional conversation.</p>
                   </div>
-                  <Button asChild className="rounded-full h-11 px-8 bg-primary text-white font-bold shadow-lg shadow-primary/20">
+                  <Button asChild className="rounded-full h-11 px-8 bg-primary text-white font-bold shadow-lg shadow-primary/20 hover:scale-105 transition-transform">
                     <Link href="/login">LOG IN</Link>
                   </Button>
                 </div>
@@ -179,7 +179,7 @@ export function ContactForm() {
               )}
             </ScrollArea>
 
-            {/* Footer */}
+            {/* Input Bar */}
             {user && (
               <div className="p-6 bg-white border-t border-slate-50">
                 <Form {...replyForm}>
@@ -194,13 +194,13 @@ export function ContactForm() {
                               placeholder="Message..." 
                               {...field} 
                               autoComplete="off"
-                              className="bg-slate-50 border-none rounded-full h-11 px-6 text-sm font-medium placeholder:text-slate-400"
+                              className="bg-slate-50 border border-transparent rounded-full h-11 px-6 text-sm font-medium placeholder:text-slate-400 focus:bg-white focus:border-primary/20 transition-all"
                             />
                           </FormControl>
                         </FormItem>
                       )}
                     />
-                    <Button type="submit" size="icon" disabled={replyForm.formState.isSubmitting || !replyForm.watch('replyMessage')} className="rounded-full h-11 w-11 shrink-0 bg-primary shadow-lg shadow-primary/20 active:scale-95 disabled:opacity-20">
+                    <Button type="submit" size="icon" disabled={replyForm.formState.isSubmitting || !replyForm.watch('replyMessage')} className="rounded-full h-11 w-11 shrink-0 bg-primary shadow-lg shadow-primary/20 active:scale-95 disabled:opacity-20 transition-all">
                       <Send className="h-4 w-4 text-white" />
                     </Button>
                   </form>

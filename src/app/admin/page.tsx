@@ -2,7 +2,7 @@
 
 /**
  * @fileOverview Production-grade Minimalist Admin Chat Panel.
- * Synchronized with the 'conversations' Firestore collection.
+ * Features a well-structured, high-fidelity UI synchronized with Firestore.
  */
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
@@ -14,7 +14,8 @@ import {
   MessageSquare,
   Loader2,
   Plus,
-  MoreVertical
+  MoreVertical,
+  User as UserIcon
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { format, isSameDay } from 'date-fns';
@@ -44,24 +45,24 @@ export default function AdminChatPage() {
   const firestore = useFirestore();
   const { user } = useUser();
 
-  // Handle mounting to prevent hydration mismatch for time/dates
+  // Defer rendering of time-sensitive data to avoid hydration mismatch
   useEffect(() => { setMounted(true); }, []);
 
-  // Fetch all conversations from Firestore
+  // Fetch all conversations
   const convsQuery = useMemoFirebase(() => {
     if (!firestore) return null;
     return collection(firestore, 'conversations');
   }, [firestore]);
   const { data: conversations, isLoading: isConvsLoading } = useCollection(convsQuery);
 
-  // Fetch selected conversation details in real-time
+  // Fetch selected conversation details
   const selectedDocRef = useMemoFirebase(() => {
     if (!firestore || !selectedEmail) return null;
     return doc(firestore, 'conversations', selectedEmail);
   }, [firestore, selectedEmail]);
   const { data: conversationData } = useDoc(selectedDocRef);
 
-  // Auto-scroll to bottom of thread
+  // Auto-scroll logic
   useEffect(() => {
     if (scrollRef.current) {
       const viewport = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]');
@@ -70,13 +71,15 @@ export default function AdminChatPage() {
   }, [conversationData?.messages, selectedEmail]);
 
   const filteredConvs = useMemo(() => {
-    return conversations?.filter(c => 
-      c.senderName?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      c.id.toLowerCase().includes(searchQuery.toLowerCase())
-    ).sort((a, b) => (b.lastMessageAt?.toMillis() || 0) - (a.lastMessageAt?.toMillis() || 0));
+    if (!conversations) return [];
+    return conversations
+      .filter(c => 
+        (c.senderName || c.id).toLowerCase().includes(searchQuery.toLowerCase())
+      )
+      .sort((a, b) => (b.lastMessageAt?.toMillis() || 0) - (a.lastMessageAt?.toMillis() || 0));
   }, [conversations, searchQuery]);
 
-  const handleSendMessage = async () => {
+  const handleSendMessage = () => {
     if (!firestore || !selectedEmail || !inputText.trim() || !user) return;
     
     const text = inputText;
@@ -104,23 +107,23 @@ export default function AdminChatPage() {
 
   return (
     <div className="h-screen w-full bg-[#F8FAFC] flex overflow-hidden font-body text-slate-900">
-      {/* Sidebar: Inbox */}
+      {/* Sidebar: Conversation List */}
       <aside className={cn(
-        "w-full md:w-[320px] lg:w-[380px] bg-white border-r border-slate-200 flex flex-col z-40 transition-all shrink-0",
+        "w-full md:w-[320px] lg:w-[380px] bg-white border-r border-slate-200 flex flex-col z-40 transition-all shrink-0 shadow-sm",
         selectedEmail && "hidden md:flex"
       )}>
-        <div className="p-6 pb-4">
+        <div className="p-6 border-b border-slate-50">
           <div className="flex items-center justify-between mb-6">
-            <h1 className="text-xl font-black tracking-tight font-headline uppercase italic">Inbox</h1>
-            <Button variant="ghost" size="icon" className="rounded-full">
-              <Plus className="w-5 h-5" />
+            <h1 className="text-xl font-black tracking-tight font-headline uppercase italic text-primary">Inbox</h1>
+            <Button variant="ghost" size="icon" className="rounded-full hover:bg-slate-50">
+              <Plus className="w-5 h-5 text-slate-400" />
             </Button>
           </div>
-          <div className="relative">
-            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+          <div className="relative group">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors" />
             <input 
-              placeholder="Search conversations..." 
-              className="w-full bg-slate-100 border-none rounded-2xl h-11 pl-10 pr-4 text-sm font-semibold focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+              placeholder="Search chats..." 
+              className="w-full bg-slate-50 border border-slate-100 rounded-2xl h-11 pl-10 pr-4 text-sm font-semibold focus:ring-2 focus:ring-primary/10 focus:bg-white focus:border-primary/20 transition-all outline-none"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
             />
@@ -130,19 +133,19 @@ export default function AdminChatPage() {
         <ScrollArea className="flex-1">
           <div className="p-3 space-y-1">
             {isConvsLoading ? (
-              <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-primary/10" /></div>
-            ) : filteredConvs?.map(conv => (
+              <div className="flex justify-center p-12"><Loader2 className="w-8 h-8 animate-spin text-primary/20" /></div>
+            ) : filteredConvs.map(conv => (
               <button
                 key={conv.id}
                 onClick={() => setSelectedEmail(conv.id)}
                 className={cn(
-                  "w-full p-4 rounded-3xl transition-all flex gap-3 items-center text-left group",
+                  "w-full p-4 rounded-[24px] transition-all flex gap-3 items-center text-left group active:scale-[0.98]",
                   selectedEmail === conv.id ? "bg-primary text-white shadow-lg shadow-primary/20" : "hover:bg-slate-50"
                 )}
               >
-                <Avatar className="w-12 h-12 shrink-0 border border-slate-100">
-                  <AvatarFallback className={cn("font-bold text-xs uppercase", selectedEmail === conv.id ? "bg-white/20 text-white" : "bg-primary/5 text-primary")}>
-                    {conv.senderName?.[0] || conv.id[0]}
+                <Avatar className="w-12 h-12 shrink-0 border-2 border-slate-50 group-hover:border-white transition-colors">
+                  <AvatarFallback className={cn("font-bold text-xs uppercase italic", selectedEmail === conv.id ? "bg-white/20 text-white" : "bg-primary/5 text-primary")}>
+                    {(conv.senderName?.[0] || conv.id[0])}
                   </AvatarFallback>
                 </Avatar>
                 <div className="flex-1 min-w-0">
@@ -164,7 +167,7 @@ export default function AdminChatPage() {
         </ScrollArea>
       </aside>
 
-      {/* Main Thread */}
+      {/* Main Chat Interface */}
       <main className={cn(
         "flex-1 flex flex-col bg-white relative",
         !selectedEmail && "hidden md:flex items-center justify-center bg-[#F8FAFC]"
@@ -176,7 +179,7 @@ export default function AdminChatPage() {
                 <Button variant="ghost" size="icon" className="md:hidden rounded-full" onClick={() => setSelectedEmail(null)}>
                   <ChevronLeft className="w-6 h-6" />
                 </Button>
-                <Avatar className="w-11 h-11 border border-slate-50">
+                <Avatar className="w-11 h-11 border-2 border-slate-50">
                   <AvatarFallback className="bg-primary/5 text-primary font-black text-xs uppercase italic">
                     {selectedEmail[0]}
                   </AvatarFallback>
@@ -184,13 +187,13 @@ export default function AdminChatPage() {
                 <div>
                   <h2 className="font-bold text-[15px] truncate max-w-[200px] md:max-w-xs">{selectedEmail}</h2>
                   <div className="flex items-center gap-1.5">
-                    <span className="w-2 h-2 bg-emerald-500 rounded-full" />
+                    <span className="w-2 h-2 bg-emerald-500 rounded-full animate-pulse" />
                     <p className="text-[10px] font-black text-emerald-500 uppercase tracking-widest">Active Now</p>
                   </div>
                 </div>
               </div>
-              <Button variant="ghost" size="icon" className="rounded-full">
-                <MoreVertical className="w-5 h-5 text-slate-400" />
+              <Button variant="ghost" size="icon" className="rounded-full text-slate-300 hover:text-slate-600">
+                <MoreVertical className="w-5 h-5" />
               </Button>
             </header>
 
@@ -233,9 +236,9 @@ export default function AdminChatPage() {
               </div>
             </ScrollArea>
 
-            <footer className="p-6 bg-white border-t border-slate-100">
+            <footer className="p-6 bg-white border-t border-slate-50">
               <div className="max-w-3xl mx-auto flex items-end gap-3">
-                <div className="flex-1 bg-slate-100 rounded-[28px] px-6 py-1 focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/10 transition-all">
+                <div className="flex-1 bg-slate-100 rounded-[28px] px-6 py-1 focus-within:bg-white focus-within:ring-2 focus-within:ring-primary/10 transition-all border border-transparent focus-within:border-primary/20">
                   <textarea 
                     placeholder="Type a message..."
                     rows={1}
@@ -265,7 +268,7 @@ export default function AdminChatPage() {
               <MessageSquare className="w-10 h-10 text-slate-200" />
             </div>
             <h3 className="font-black text-2xl text-slate-900 font-headline uppercase italic">Select a Chat</h3>
-            <p className="text-slate-400 text-sm max-w-[240px] mt-2 font-medium">Choose a conversation from the sidebar to start messaging.</p>
+            <p className="text-slate-400 text-sm max-w-[240px] mt-2 font-medium">Choose a conversation from the sidebar to start messaging with your visitors.</p>
           </div>
         )}
       </main>
