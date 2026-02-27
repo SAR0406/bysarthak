@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { 
   Search, 
   Plus, 
@@ -22,21 +22,16 @@ import { format, isToday, isYesterday, isSameDay } from 'date-fns';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 /**
  * MOCK DATA
- * Production-ready data shape as requested.
  */
 const mockConversations = [
   { id: '1', name: 'Sarthak Upadhyay', avatar: 'https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg', initials: 'SU', avatarColor: 'bg-indigo-500', lastMessage: 'Check out the new designs!', timestamp: new Date(), unreadCount: 2, isOnline: true, isPinned: true, isTyping: false },
   { id: '2', name: 'Design Team', avatar: null, initials: 'DT', avatarColor: 'bg-emerald-500', lastMessage: 'Weekly sync at 10 AM', timestamp: new Date(Date.now() - 3600000), unreadCount: 0, isOnline: false, isPinned: true, isTyping: true },
   { id: '3', name: 'Alex Rivera', avatar: 'https://picsum.photos/seed/alex/100/100', initials: 'AR', avatarColor: 'bg-amber-500', lastMessage: 'Can you send the PDF?', timestamp: new Date(Date.now() - 86400000), unreadCount: 0, isOnline: true, isPinned: false, isTyping: false },
   { id: '4', name: 'Marketing HQ', avatar: null, initials: 'MQ', avatarColor: 'bg-rose-500', lastMessage: 'Campaign live in 5 mins!', timestamp: new Date(Date.now() - 172800000), unreadCount: 5, isOnline: false, isPinned: false, isTyping: false },
-  { id: '5', name: 'Jordan Smith', avatar: 'https://picsum.photos/seed/jordan/100/100', initials: 'JS', avatarColor: 'bg-violet-500', lastMessage: 'See you there', timestamp: new Date(Date.now() - 259200000), unreadCount: 0, isOnline: true, isPinned: false, isTyping: false },
-  { id: '6', name: 'Freelance Client', avatar: null, initials: 'FC', avatarColor: 'bg-slate-500', lastMessage: 'Invoice approved', timestamp: new Date(Date.now() - 604800000), unreadCount: 0, isOnline: false, isPinned: false, isTyping: false },
-  { id: '7', name: 'Project Alpha', avatar: null, initials: 'PA', avatarColor: 'bg-cyan-500', lastMessage: 'New PR submitted', timestamp: new Date(Date.now() - 1209600000), unreadCount: 0, isOnline: true, isPinned: false, isTyping: false },
-  { id: '8', name: 'Support Bot', avatar: null, initials: 'SB', avatarColor: 'bg-orange-500', lastMessage: 'How can I help you today?', timestamp: new Date(Date.now() - 2592000000), unreadCount: 1, isOnline: true, isPinned: false, isTyping: false },
 ];
 
 const mockMessages: Record<string, any[]> = {
@@ -51,7 +46,6 @@ const mockMessages: Record<string, any[]> = {
     { id: 'm8', senderId: 'admin', text: 'Absolutely. What did you have in mind?', timestamp: new Date(Date.now() - 3400000), status: 'delivered' },
     { id: 'm9', senderId: 'visitor', text: 'Check out the new designs!', timestamp: new Date(Date.now() - 3000000), status: 'sent' },
     { id: 'm10', senderId: 'visitor', text: 'I sent them over via email as well.', timestamp: new Date(Date.now() - 2950000), status: 'sent' },
-    { id: 'm11', senderId: 'visitor', text: 'Looking forward to your thoughts.', timestamp: new Date(Date.now() - 2900000), status: 'sent' },
     { id: 'm12', senderId: 'admin', text: 'Perfect. I will review them right now.', timestamp: new Date(), status: 'sent' },
   ],
   '2': [
@@ -64,18 +58,13 @@ const mockMessages: Record<string, any[]> = {
  */
 
 const DateDivider = ({ date }: { date: Date }) => {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
-  if (!mounted) return <div className="h-10" />;
-
   let label = format(date, 'MMMM d, yyyy');
   if (isToday(date)) label = 'Today';
   else if (isYesterday(date)) label = 'Yesterday';
 
   return (
     <div className="flex justify-center my-6">
-      <time className="px-3 py-1 bg-muted/50 rounded-full text-[10px] font-bold uppercase tracking-wider text-muted-foreground border border-border/50">
+      <time className="px-4 py-1 bg-slate-200 text-slate-500 rounded-full text-[10px] font-black uppercase tracking-wider border border-slate-300">
         {label}
       </time>
     </div>
@@ -84,14 +73,14 @@ const DateDivider = ({ date }: { date: Date }) => {
 
 const TypingIndicator = () => (
   <div className="flex justify-start mb-4 animate-in slide-in-from-left-2 duration-200">
-    <div className="bg-muted text-foreground px-4 py-3 rounded-2xl rounded-bl-sm max-w-[72%] shadow-sm">
+    <div className="bg-white text-slate-900 px-4 py-3 rounded-2xl rounded-bl-none shadow-sm border border-slate-100">
       <div className="flex gap-1">
         {[0, 150, 300].map((delay) => (
           <motion.div
             key={delay}
-            animate={{ y: [0, -5, 0] }}
+            animate={{ y: [0, -4, 0] }}
             transition={{ duration: 0.6, repeat: Infinity, delay: delay / 1000 }}
-            className="w-1.5 h-1.5 bg-foreground/30 rounded-full"
+            className="w-1.5 h-1.5 bg-slate-300 rounded-full"
           />
         ))}
       </div>
@@ -102,56 +91,56 @@ const TypingIndicator = () => (
 const MessageBubble = ({ 
   msg, 
   isMe, 
+  mounted 
 }: { 
   msg: any; 
   isMe: boolean; 
+  mounted: boolean;
 }) => {
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
   return (
     <div className={cn("flex flex-col mb-1 group", isMe ? "items-end" : "items-start")}>
       <motion.div 
-        initial={{ opacity: 0, y: 8 }}
-        animate={{ opacity: 1, y: 0 }}
+        initial={{ opacity: 0, y: 8, scale: 0.95 }}
+        animate={{ opacity: 1, y: 0, scale: 1 }}
         className={cn(
-          "max-w-[72%] relative px-4 py-2.5 shadow-sm transition-all",
+          "max-w-[75%] relative px-4 py-3 shadow-md transition-all",
           isMe 
-            ? "bg-primary text-primary-foreground rounded-2xl rounded-br-sm" 
-            : "bg-white text-foreground border border-border/50 rounded-2xl rounded-bl-sm"
+            ? "bg-primary-gradient text-white rounded-[24px] rounded-br-none" 
+            : "bg-white text-slate-900 border border-slate-200 rounded-[24px] rounded-bl-none"
         )}
       >
         {msg.quotedMessage && (
           <div className={cn(
-            "mb-2 p-2 rounded-lg border-l-4 bg-black/5 text-[12px] opacity-80",
-            isMe ? "border-primary-foreground/50" : "border-primary/50"
+            "mb-3 p-2 rounded-xl border-l-4 text-[12px] overflow-hidden",
+            isMe ? "bg-black/10 border-white/30" : "bg-slate-50 border-primary/30"
           )}>
-            <div className="font-bold mb-1">
+            <div className="font-black mb-1 opacity-60">
               {msg.quotedMessage.senderId === 'admin' ? 'You' : 'Visitor'}
             </div>
-            <div className="truncate">{msg.quotedMessage.text}</div>
+            <div className="truncate font-medium">{msg.quotedMessage.text}</div>
           </div>
         )}
-        <p className="text-[14px] leading-relaxed font-medium whitespace-pre-wrap">{msg.text}</p>
+        <p className="text-[14px] leading-relaxed font-semibold whitespace-pre-wrap">{msg.text}</p>
         
         <div className={cn(
-          "flex items-center justify-end gap-1 mt-1 opacity-60",
-          isMe ? "text-primary-foreground" : "text-muted-foreground"
+          "flex items-center justify-end gap-1.5 mt-2 font-black uppercase tracking-tighter",
+          isMe ? "text-white/60" : "text-slate-400"
         )}>
-          {mounted && <span className="text-[10px] font-bold">{format(msg.timestamp, 'p')}</span>}
+          {mounted && <span className="text-[10px]">{format(msg.timestamp, 'p')}</span>}
           {isMe && (
-            msg.status === 'seen' ? <CheckCheck className="w-3 h-3 text-sky-400" /> :
-            msg.status === 'delivered' ? <CheckCheck className="w-3 h-3" /> :
-            <Check className="w-3 h-3" />
+            msg.status === 'seen' ? <CheckCheck className="w-3.5 h-3.5 text-sky-300" /> :
+            msg.status === 'delivered' ? <CheckCheck className="w-3.5 h-3.5" /> :
+            <Check className="w-3.5 h-3.5" />
           )}
         </div>
 
+        {/* Hover Actions */}
         <div className={cn(
-          "absolute -top-8 bg-background border border-border rounded-full px-2 py-1 shadow-lg opacity-0 group-hover:opacity-100 transition-opacity flex gap-2 z-10",
+          "absolute -top-10 bg-white border border-slate-200 rounded-full px-3 py-1.5 shadow-xl opacity-0 group-hover:opacity-100 transition-all flex gap-3 z-10",
           isMe ? "right-0" : "left-0"
         )}>
-           <Smile className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-primary transition-colors" />
-           <MessageSquare className="w-3.5 h-3.5 text-muted-foreground cursor-pointer hover:text-primary transition-colors" />
+           <Smile className="w-4 h-4 text-slate-400 cursor-pointer hover:text-primary transition-colors" />
+           <MessageSquare className="w-4 h-4 text-slate-400 cursor-pointer hover:text-primary transition-colors" />
         </div>
       </motion.div>
     </div>
@@ -170,12 +159,20 @@ export default function AdminChatPage() {
     setMounted(true);
   }, []);
 
-  const selectedConv = mockConversations.find(c => c.id === selectedId);
-  const messages = selectedId ? (mockMessages[selectedId] || []) : [];
+  const selectedConv = useMemo(() => 
+    mockConversations.find(c => c.id === selectedId), [selectedId]
+  );
+  
+  const messages = useMemo(() => 
+    selectedId ? (mockMessages[selectedId] || []) : [], [selectedId]
+  );
 
   useEffect(() => {
     if (scrollRef.current) {
-      scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+      const viewport = scrollRef.current.querySelector('[data-radix-scroll-area-viewport]');
+      if (viewport) {
+        viewport.scrollTop = viewport.scrollHeight;
+      }
     }
   }, [messages, selectedId]);
 
@@ -191,35 +188,35 @@ export default function AdminChatPage() {
   );
 
   return (
-    <div className="h-screen w-full bg-slate-100 flex items-center justify-center overflow-hidden p-0 md:p-4">
-      <div className="bg-background w-full h-full max-w-[1400px] flex shadow-2xl md:rounded-3xl border border-border overflow-hidden relative">
+    <div className="h-screen w-full bg-[#F1F5F9] flex items-center justify-center p-0 md:p-6 lg:p-10">
+      <div className="bg-white w-full h-full max-w-[1440px] flex shadow-2xl md:rounded-[40px] border border-slate-200 overflow-hidden relative">
         
         {/* SIDEBAR */}
         <aside className={cn(
-          "w-full md:w-[320px] lg:w-[380px] border-r border-border flex flex-col bg-white z-40",
+          "w-full md:w-[360px] lg:w-[420px] border-r border-slate-100 flex flex-col bg-white z-40 transition-all",
           selectedId && "hidden md:flex"
         )}>
           {/* Sidebar Header */}
-          <div className="p-6 pb-2 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <Avatar className="w-10 h-10 ring-2 ring-primary/10">
-                <AvatarFallback className="bg-primary text-primary-foreground font-black text-xs">SU</AvatarFallback>
+          <div className="p-8 pb-4 flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <Avatar className="w-12 h-12 ring-4 ring-primary/5">
+                <AvatarFallback className="bg-primary-gradient text-white font-black text-sm">SU</AvatarFallback>
               </Avatar>
-              <h1 className="font-black text-lg tracking-tight font-headline">Messages</h1>
+              <h1 className="font-black text-2xl tracking-tight font-headline text-slate-900">Inbox</h1>
             </div>
-            <div className="flex gap-1">
-              <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 text-muted-foreground hover:bg-muted"><Plus className="w-5 h-5" /></Button>
-              <Button variant="ghost" size="icon" className="rounded-full h-9 w-9 text-muted-foreground hover:bg-muted"><EllipsisVertical className="w-5 h-5" /></Button>
+            <div className="flex gap-2">
+              <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 text-slate-400 hover:bg-slate-50"><Plus className="w-6 h-6" /></Button>
+              <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 text-slate-400 hover:bg-slate-50"><EllipsisVertical className="w-6 h-6" /></Button>
             </div>
           </div>
 
           {/* Search */}
-          <div className="px-6 py-4">
+          <div className="px-8 py-6">
             <div className="relative group">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground group-focus-within:text-primary transition-colors" />
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 group-focus-within:text-primary transition-colors" />
               <input 
-                placeholder="Search conversations..." 
-                className="w-full bg-muted/50 border-none rounded-2xl h-10 pl-10 pr-4 text-sm font-medium focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                placeholder="Search messages..." 
+                className="w-full bg-slate-50 border border-slate-100 rounded-[20px] h-12 pl-12 pr-6 text-sm font-bold focus:ring-4 focus:ring-primary/10 transition-all outline-none"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
@@ -228,36 +225,36 @@ export default function AdminChatPage() {
 
           {/* Conv List */}
           <ScrollArea className="flex-1">
-            <div className="px-3 pb-8 space-y-1">
+            <div className="px-4 pb-12 space-y-2">
               {filteredConvs.map(conv => (
                 <button
                   key={conv.id}
                   onClick={() => setSelectedId(conv.id)}
                   className={cn(
-                    "w-full p-4 rounded-2xl transition-all flex gap-4 items-center group relative",
-                    selectedId === conv.id ? "bg-primary/5 ring-1 ring-primary/10 shadow-sm" : "hover:bg-muted/50"
+                    "w-full p-5 rounded-[30px] transition-all flex gap-4 items-center group relative",
+                    selectedId === conv.id ? "bg-primary/5 shadow-inner" : "hover:bg-slate-50"
                   )}
                 >
                   <div className="relative">
-                    <Avatar className="w-14 h-14 shadow-sm">
+                    <Avatar className="w-16 h-16 shadow-md border-2 border-white">
                       {conv.avatar && <AvatarImage src={conv.avatar} />}
-                      <AvatarFallback className={cn("font-black text-white", conv.avatarColor)}>{conv.initials}</AvatarFallback>
+                      <AvatarFallback className={cn("font-black text-white text-lg", conv.avatarColor)}>{conv.initials}</AvatarFallback>
                     </Avatar>
-                    {conv.isOnline && <span className="absolute bottom-1 right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full shadow-sm" />}
+                    {conv.isOnline && <span className="absolute bottom-1 right-1 w-4 h-4 bg-emerald-500 border-4 border-white rounded-full shadow-sm" />}
                   </div>
-                  <div className="flex-1 min-w-0">
+                  <div className="flex-1 min-w-0 text-left">
                     <div className="flex justify-between items-baseline mb-1">
-                      <span className="font-black text-sm tracking-tight truncate font-headline">{conv.name}</span>
-                      <span className="text-[10px] font-bold text-muted-foreground uppercase">
+                      <span className="font-black text-[15px] tracking-tight truncate font-headline text-slate-900">{conv.name}</span>
+                      <span className="text-[10px] font-black text-slate-400 uppercase tracking-widest">
                         {mounted ? format(conv.timestamp, 'p') : '--:--'}
                       </span>
                     </div>
                     <div className="flex items-center gap-2">
-                      <p className={cn("text-[13px] truncate flex-1 font-medium", conv.unreadCount > 0 ? "text-foreground font-bold" : "text-muted-foreground")}>
+                      <p className={cn("text-[13px] truncate flex-1 font-semibold", conv.unreadCount > 0 ? "text-slate-900" : "text-slate-400")}>
                         {conv.isTyping ? <span className="text-primary animate-pulse">Typing...</span> : conv.lastMessage}
                       </p>
                       {conv.unreadCount > 0 && (
-                        <span className="bg-primary text-primary-foreground text-[10px] font-black h-5 min-w-5 px-1 rounded-full flex items-center justify-center shadow-md shadow-primary/20 animate-in zoom-in-50">
+                        <span className="bg-primary-gradient text-white text-[10px] font-black h-5 min-w-5 px-1.5 rounded-full flex items-center justify-center shadow-lg shadow-primary/20 animate-in zoom-in-50">
                           {conv.unreadCount}
                         </span>
                       )}
@@ -277,35 +274,35 @@ export default function AdminChatPage() {
           {selectedConv ? (
             <>
               {/* Chat Header */}
-              <header className="h-20 px-6 border-b border-border/50 bg-white flex items-center justify-between z-10 shadow-sm">
-                <div className="flex items-center gap-4">
-                  <Button variant="ghost" size="icon" className="md:hidden -ml-2 text-muted-foreground" onClick={() => setSelectedId(null)}>
-                    <ChevronLeft className="w-6 h-6" />
+              <header className="h-24 px-10 border-b border-slate-100 bg-white flex items-center justify-between z-10 shadow-sm">
+                <div className="flex items-center gap-5">
+                  <Button variant="ghost" size="icon" className="md:hidden -ml-4 text-slate-400" onClick={() => setSelectedId(null)}>
+                    <ChevronLeft className="w-8 h-8" />
                   </Button>
                   <div className="relative">
-                    <Avatar className="w-11 h-11 ring-1 ring-border shadow-sm">
+                    <Avatar className="w-14 h-14 ring-2 ring-slate-100 shadow-md">
                       {selectedConv.avatar && <AvatarImage src={selectedConv.avatar} />}
-                      <AvatarFallback className={cn("font-black text-white", selectedConv.avatarColor)}>{selectedConv.initials}</AvatarFallback>
+                      <AvatarFallback className={cn("font-black text-white text-lg", selectedConv.avatarColor)}>{selectedConv.initials}</AvatarFallback>
                     </Avatar>
-                    {selectedConv.isOnline && <span className="absolute bottom-0 right-0 w-3.5 h-3.5 bg-emerald-500 border-2 border-white rounded-full" />}
+                    {selectedConv.isOnline && <span className="absolute bottom-0.5 right-0.5 w-4 h-4 bg-emerald-500 border-4 border-white rounded-full shadow-sm" />}
                   </div>
                   <div>
-                    <h2 className="font-black text-sm tracking-tight font-headline">{selectedConv.name}</h2>
-                    <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
-                      {selectedConv.isOnline ? "Active now" : "Last seen recently"}
+                    <h2 className="font-black text-lg tracking-tight font-headline text-slate-900">{selectedConv.name}</h2>
+                    <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.1em] mt-0.5">
+                      {selectedConv.isOnline ? <span className="text-emerald-500">Active Now</span> : "Last seen recently"}
                     </p>
                   </div>
                 </div>
-                <div className="flex gap-1">
-                  <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-primary transition-colors"><Phone className="w-5 h-5" /></Button>
-                  <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-primary transition-colors"><Video className="w-5 h-5" /></Button>
-                  <Button variant="ghost" size="icon" className="rounded-full text-muted-foreground hover:text-primary transition-colors"><Info className="w-5 h-5" /></Button>
+                <div className="flex gap-2">
+                  <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-400 hover:text-primary hover:bg-slate-50 transition-all"><Phone className="w-6 h-6" /></Button>
+                  <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-400 hover:text-primary hover:bg-slate-50 transition-all"><Video className="w-6 h-6" /></Button>
+                  <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-400 hover:text-primary hover:bg-slate-50 transition-all"><Info className="w-6 h-6" /></Button>
                 </div>
               </header>
 
               {/* Message Thread */}
-              <ScrollArea className="flex-1 p-6" ref={scrollRef}>
-                <div className="max-w-4xl mx-auto space-y-1 pb-10">
+              <ScrollArea className="flex-1 p-8" ref={scrollRef}>
+                <div className="max-w-4xl mx-auto space-y-1.5 pb-12">
                    {messages.map((msg, idx) => {
                       const isMe = msg.senderId === 'admin';
                       const prevMsg = messages[idx-1];
@@ -317,6 +314,7 @@ export default function AdminChatPage() {
                           <MessageBubble 
                             msg={msg} 
                             isMe={isMe} 
+                            mounted={mounted}
                           />
                         </div>
                       );
@@ -326,53 +324,53 @@ export default function AdminChatPage() {
               </ScrollArea>
 
               {/* Input Bar */}
-              <footer className="p-6 bg-white border-t border-border/50">
-                <div className="max-w-4xl mx-auto flex items-end gap-3">
-                  <div className="flex gap-1 mb-1">
-                    <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 text-muted-foreground hover:bg-muted"><Plus className="w-5 h-5" /></Button>
-                    <Button variant="ghost" size="icon" className="rounded-full h-10 w-10 text-muted-foreground hover:bg-muted"><Paperclip className="w-5 h-5" /></Button>
+              <footer className="p-8 bg-white border-t border-slate-100">
+                <div className="max-w-4xl mx-auto flex items-end gap-5">
+                  <div className="flex gap-2 mb-1.5">
+                    <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-400 hover:bg-slate-50 transition-colors"><Plus className="w-6 h-6" /></Button>
+                    <Button variant="ghost" size="icon" className="rounded-full h-12 w-12 text-slate-400 hover:bg-slate-50 transition-colors"><Paperclip className="w-6 h-6" /></Button>
                   </div>
 
                   <div className="flex-1 relative flex items-center">
                     <textarea 
                       ref={textareaRef}
-                      placeholder="Type a message..."
+                      placeholder="Write your message..."
                       rows={1}
-                      className="w-full bg-muted/50 border-none rounded-[24px] py-3 pl-6 pr-12 text-[14px] font-medium resize-none focus:ring-2 focus:ring-primary/20 transition-all outline-none"
+                      className="w-full bg-slate-50 border border-slate-100 rounded-[30px] py-4 pl-8 pr-16 text-[15px] font-bold resize-none focus:ring-4 focus:ring-primary/10 transition-all outline-none"
                       value={inputText}
                       onChange={(e) => setInputText(e.target.value)}
                     />
-                    <div className="absolute right-3 flex items-center">
-                       <Smile className="w-5 h-5 text-muted-foreground hover:text-primary transition-colors cursor-pointer" />
+                    <div className="absolute right-5 flex items-center">
+                       <Smile className="w-6 h-6 text-slate-300 hover:text-primary transition-colors cursor-pointer" />
                     </div>
                   </div>
 
                   <motion.button 
-                    whileTap={{ scale: 0.95 }}
+                    whileTap={{ scale: 0.9 }}
                     animate={{ scale: inputText.trim() ? 1.05 : 1 }}
                     className={cn(
-                      "h-12 w-12 rounded-full flex items-center justify-center shadow-lg transition-all duration-200 shrink-0 mb-0.5",
+                      "h-14 w-14 rounded-full flex items-center justify-center shadow-xl transition-all duration-300 shrink-0 mb-1",
                       inputText.trim() 
-                        ? "bg-primary text-primary-foreground shadow-primary/20" 
-                        : "bg-muted text-muted-foreground"
+                        ? "bg-primary-gradient text-white shadow-primary/30" 
+                        : "bg-slate-100 text-slate-300"
                     )}
                   >
-                    {inputText.trim() ? <Send className="w-5 h-5" /> : <Mic className="w-5 h-5" />}
+                    {inputText.trim() ? <Send className="w-6 h-6" /> : <Mic className="w-6 h-6" />}
                   </motion.button>
                 </div>
               </footer>
             </>
           ) : (
-            <div className="flex-1 flex flex-col items-center justify-center p-12 text-center animate-in fade-in zoom-in-95 duration-500">
-               <div className="w-32 h-32 bg-primary/5 rounded-full flex items-center justify-center mb-8 relative">
-                  <div className="absolute inset-0 bg-primary/10 blur-2xl rounded-full" />
-                  <MessageSquare className="w-16 h-16 text-primary/30 relative z-10" />
+            <div className="flex-1 flex flex-col items-center justify-center p-12 text-center animate-in fade-in zoom-in-95 duration-700">
+               <div className="w-40 h-40 bg-primary/5 rounded-full flex items-center justify-center mb-10 relative">
+                  <div className="absolute inset-0 bg-primary/10 blur-[80px] rounded-full" />
+                  <MessageSquare className="w-20 h-20 text-primary/30 relative z-10" />
                </div>
-               <h3 className="font-black text-2xl tracking-tight mb-3 font-headline">Your Messages</h3>
-               <p className="text-muted-foreground text-[15px] font-medium max-w-sm leading-relaxed">
-                 Select a conversation from the sidebar to start chatting or manage your support requests.
+               <h3 className="font-black text-3xl tracking-tight mb-4 font-headline text-slate-900">Your Conversations</h3>
+               <p className="text-slate-500 text-[16px] font-bold max-w-sm leading-relaxed">
+                 Select a visitor thread from the inbox to manage support requests or collaborate with your team.
                </p>
-               <Button className="mt-8 rounded-full h-12 px-8 bg-primary-gradient border-none shadow-xl shadow-primary/20 font-bold">New Chat</Button>
+               <Button className="mt-10 rounded-full h-14 px-10 bg-primary-gradient border-none shadow-2xl shadow-primary/30 font-black text-lg">New Thread</Button>
             </div>
           )}
         </main>
