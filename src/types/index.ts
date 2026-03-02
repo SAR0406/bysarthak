@@ -9,4 +9,5 @@ export type Repo = {
   language: string | null;
   topics: string[];
   homepage: string | null;
+  image_url?: string | null;
 };
