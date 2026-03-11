@@ -1,4 +1,3 @@
-
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -33,22 +32,13 @@ export function Hero() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    // This check ensures window is defined, for SSR compatibility
     if (typeof window !== 'undefined') {
       const checkMobile = () => {
         setIsMobile(window.innerWidth < 768);
       };
-
-      // Initial check
       checkMobile();
-
-      // Listener for window resize
       window.addEventListener('resize', checkMobile);
-
-      // Cleanup
-      return () => {
-        window.removeEventListener('resize', checkMobile);
-      };
+      return () => window.removeEventListener('resize', checkMobile);
     }
   }, []);
 
@@ -59,7 +49,7 @@ export function Hero() {
   const anotherVersionButton = isMobile ? (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <StarButton ariaLabel="Check another version of me">
+        <StarButton>
           Check another version
         </StarButton>
       </AlertDialogTrigger>
@@ -79,8 +69,8 @@ export function Hero() {
       </AlertDialogContent>
     </AlertDialog>
   ) : (
-    <Link href="/another-version" passHref>
-      <StarButton ariaLabel="Check another version of me">
+    <Link href="/another-version">
+      <StarButton>
         Check another version
       </StarButton>
     </Link>
@@ -98,7 +88,6 @@ export function Hero() {
 
   return (
     <section id="home" className="relative h-screen w-full flex items-center justify-center text-center">
-     
       <div className="relative z-10 flex flex-col items-center gap-8 px-4">
         <div className="flex flex-col items-center gap-6">
           <AnimatedText
@@ -119,8 +108,8 @@ export function Hero() {
             />
           </div>
           <div className="flex items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '1s' }}>
-            <Link href="#work" passHref>
-                <StarButton ariaLabel="Explore My World, scroll to work section">
+            <Link href="#work">
+                <StarButton>
                   Explore My World
                 </StarButton>
             </Link>
@@ -146,5 +135,3 @@ export function Hero() {
     </section>
   );
 }
-
-    

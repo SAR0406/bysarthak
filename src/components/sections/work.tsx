@@ -10,12 +10,21 @@ async function getGithubRepos(): Promise<Repo[]> {
     const res = await fetch(
       "https://api.github.com/users/SAR0406/repos?sort=pushed&per_page=100",
       {
+        headers: {
+          Authorization: `token ${process.env.GITHUB_ACCESS_TOKEN}`,
+        },
         next: { revalidate: 3600 }, // Revalidate every hour
       }
     );
 
     if (!res.ok) {
-      console.error("Failed to fetch GitHub repos");
+      const errorDetails = {
+        status: res.status,
+        statusText: res.statusText,
+        headers: Object.fromEntries(res.headers.entries()),
+        body: await res.text(),
+      };
+      console.error("Failed to fetch GitHub repos", errorDetails);
       return [];
     }
     
