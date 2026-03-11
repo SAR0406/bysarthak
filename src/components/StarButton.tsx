@@ -3,16 +3,18 @@
 import React from 'react';
 import { cn } from '@/lib/utils';
 
-interface StarButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+interface StarButtonProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
 }
 
-const StarButton = React.forwardRef<HTMLButtonElement, StarButtonProps>(
+const StarButton = React.forwardRef<HTMLDivElement, StarButtonProps>(
   ({ children, className, ...props }, ref) => {
     return (
-      <button
+      <div
         ref={ref}
-        className={cn("star-button", className)}
+        className={cn("star-button inline-flex", className)}
+        role="button"
+        tabIndex={0}
         {...props}
       >
         {children}
@@ -38,7 +40,7 @@ const StarButton = React.forwardRef<HTMLButtonElement, StarButtonProps>(
             </svg>
           </div>
         ))}
-      </button>
+      </div>
     );
   }
 );

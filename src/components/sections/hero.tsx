@@ -30,23 +30,25 @@ const techLogos = [
 
 export function Hero() {
   const [isMobile, setIsMobile] = useState(false);
+  const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const checkMobile = () => {
-        setIsMobile(window.innerWidth < 768);
-      };
-      checkMobile();
-      window.addEventListener('resize', checkMobile);
-      return () => window.removeEventListener('resize', checkMobile);
-    }
+    setMounted(true);
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    return () => window.removeEventListener('resize', checkMobile);
   }, []);
 
   const handleOpenInNewTab = () => {
     window.open('/another-version', '_blank');
   };
 
-  const anotherVersionButton = isMobile ? (
+  // We default to the Link version during SSR and first hydration to avoid mismatch.
+  // The mobile-specific AlertDialog only renders after mounting and detection.
+  const anotherVersionButton = (mounted && isMobile) ? (
     <AlertDialog>
       <AlertDialogTrigger asChild>
         <StarButton>
@@ -117,7 +119,7 @@ export function Hero() {
           </div>
         </div>
         <div className="w-full max-w-4xl animate-fade-in-up mt-12" style={{ animationDelay: '1.2s' }}>
-            {isMobile ? staticLogos : (
+            {(mounted && isMobile) ? staticLogos : (
               <LogoLoop
                   logos={techLogos}
                   speed={60}
