@@ -1,4 +1,3 @@
-
 import { Suspense } from 'react';
 import dynamic from 'next/dynamic';
 import { Hero } from "@/components/sections/hero";
@@ -8,7 +7,6 @@ const About = dynamic(() => import('@/components/sections/about').then(mod => mo
 const Work = dynamic(() => import('@/components/sections/work').then(mod => mod.Work));
 const Gallery = dynamic(() => import('@/components/sections/gallery').then(mod => mod.Gallery));
 const Contact = dynamic(() => import('@/components/sections/contact').then(mod => mod.Contact));
-
 
 export default function Home() {
   return (

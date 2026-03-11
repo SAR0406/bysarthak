@@ -46,12 +46,20 @@ export function Hero() {
     window.open('/another-version', '_blank');
   };
 
-  // We default to the Link version during SSR and first hydration to avoid mismatch.
-  // The mobile-specific AlertDialog only renders after mounting and detection.
-  const anotherVersionButton = (mounted && isMobile) ? (
+  if (!mounted) {
+    return (
+      <section id="home" className="relative h-screen w-full flex items-center justify-center text-center">
+        <div className="relative z-10 flex flex-col items-center gap-8 px-4 opacity-0">
+          Loading...
+        </div>
+      </section>
+    );
+  }
+
+  const anotherVersionButton = isMobile ? (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <StarButton>
+        <StarButton ariaLabel="Check another version of the portfolio">
           Check another version
         </StarButton>
       </AlertDialogTrigger>
@@ -72,7 +80,7 @@ export function Hero() {
     </AlertDialog>
   ) : (
     <Link href="/another-version">
-      <StarButton>
+      <StarButton ariaLabel="Check another version of the portfolio">
         Check another version
       </StarButton>
     </Link>
@@ -111,7 +119,7 @@ export function Hero() {
           </div>
           <div className="flex items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '1s' }}>
             <Link href="#work">
-                <StarButton>
+                <StarButton ariaLabel="Explore My World, scroll to work section">
                   Explore My World
                 </StarButton>
             </Link>
@@ -119,7 +127,7 @@ export function Hero() {
           </div>
         </div>
         <div className="w-full max-w-4xl animate-fade-in-up mt-12" style={{ animationDelay: '1.2s' }}>
-            {(mounted && isMobile) ? staticLogos : (
+            {isMobile ? staticLogos : (
               <LogoLoop
                   logos={techLogos}
                   speed={60}

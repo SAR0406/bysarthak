@@ -5,16 +5,18 @@ import { cn } from '@/lib/utils';
 
 interface StarButtonProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
+  ariaLabel?: string;
 }
 
 const StarButton = React.forwardRef<HTMLDivElement, StarButtonProps>(
-  ({ children, className, ...props }, ref) => {
+  ({ children, className, ariaLabel, ...props }, ref) => {
     return (
       <div
         ref={ref}
         className={cn("star-button inline-flex", className)}
         role="button"
         tabIndex={0}
+        aria-label={ariaLabel}
         {...props}
       >
         {children}
@@ -24,6 +26,7 @@ const StarButton = React.forwardRef<HTMLDivElement, StarButtonProps>(
               xmlns="http://www.w3.org/2000/svg"
               xmlSpace="preserve"
               version="1.1"
+              className="w-full h-auto"
               style={{
                 shapeRendering: 'geometricPrecision',
                 textRendering: 'geometricPrecision',
