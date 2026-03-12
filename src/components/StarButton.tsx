@@ -7,18 +7,20 @@ import { cn } from '@/lib/utils';
 interface StarButtonProps extends React.HTMLAttributes<HTMLDivElement> {
   children: React.ReactNode;
   ariaLabel?: string;
+  variant?: 'primary' | 'secondary';
 }
 
 /**
  * StarButton component refactored to use a <div> to prevent hydration mismatches
- * when nested inside <Link> components (which render as <a>).
+ * when nested inside <Link> components. 
+ * Optimized sizing for a more UI-friendly, compact look.
  */
 const StarButton = React.forwardRef<HTMLDivElement, StarButtonProps>(
-  ({ children, className, ariaLabel, ...props }, ref) => {
+  ({ children, className, ariaLabel, variant = 'primary', ...props }, ref) => {
     return (
       <div
         ref={ref}
-        className={cn("star-button inline-flex", className)}
+        className={cn("star-button select-none", className)}
         role="button"
         tabIndex={0}
         aria-label={ariaLabel}

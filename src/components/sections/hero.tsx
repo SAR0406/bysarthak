@@ -59,9 +59,9 @@ export function Hero() {
   const anotherVersionButton = isMobile ? (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <StarButton ariaLabel="Check another version of the portfolio" className="border-secondary/50 bg-background/10 backdrop-blur-sm !text-secondary hover:!bg-secondary/10">
+        <div className="star-button star-button-secondary">
           Version 2
-        </StarButton>
+        </div>
       </AlertDialogTrigger>
       <AlertDialogContent className="bg-background/95 backdrop-blur-2xl border-primary/20">
         <AlertDialogHeader>
@@ -80,7 +80,7 @@ export function Hero() {
     </AlertDialog>
   ) : (
     <Link href="/another-version">
-      <StarButton ariaLabel="Check another version of the portfolio" className="border-secondary/50 bg-background/10 backdrop-blur-sm !text-secondary hover:!bg-secondary/10">
+      <StarButton variant="secondary" ariaLabel="Check another version of the portfolio">
         Version 2
       </StarButton>
     </Link>
