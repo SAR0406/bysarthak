@@ -5,26 +5,26 @@
 
 @layer base {
   :root {
-    --background: 240 10% 2.5%;
+    --background: 240 10% 3.9%;
     --foreground: 0 0% 98%;
 
     --card: 240 10% 4%;
     --card-foreground: 0 0% 98%;
 
-    --popover: 240 10% 4%;
+    --popover: 240 10% 3.9%;
     --popover-foreground: 0 0% 98%;
 
-    --primary: 255 100% 65.7%; /* #5227FF */
-    --primary-foreground: 0 0% 98%;
+    --primary: 47.9 95.8% 53.1%;
+    --primary-foreground: 26 83.3% 14.1%;
 
-    --secondary: 326 100% 80%; /* #FF9FFC */
-    --secondary-foreground: 240 10% 2.5%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
 
     --muted: 240 5% 15%;
     --muted-foreground: 240 5% 65%;
 
-    --accent: 255 100% 65.7%;
-    --accent-foreground: 0 0% 98%;
+    --accent: 47.9 95.8% 53.1%;
+    --accent-foreground: 26 83.3% 14.1%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
@@ -32,7 +32,7 @@
     --border: 240 5% 15%;
     --input: 240 5% 15%;
 
-    --ring: 255 100% 65.7%;
+    --ring: 47.9 95.8% 53.1%;
     --radius: 0.75rem;
   }
 }
@@ -49,7 +49,7 @@
   }
 }
 
-/* Star Button Styles — Digital Twilight */
+/* Premium Star Button Styles — Themed to Midnight Gold */
 .star-button {
   position: relative;
   padding: 8px 24px;
@@ -57,8 +57,8 @@
   font-size: 15px;
   font-weight: 600;
   color: hsl(var(--primary-foreground));
-  border: 2px solid hsl(var(--primary));
-  border-radius: 9999px;
+  border: 3px solid hsl(var(--primary));
+  border-radius: 8px;
   box-shadow: 0 0 0 hsla(var(--primary) / 0.4);
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   cursor: pointer;
@@ -85,19 +85,18 @@
 .star-button:hover {
   background: transparent;
   color: hsl(var(--primary));
-  box-shadow: 0 0 20px hsla(var(--primary) / 0.5);
-  transform: translateY(-1px);
+  box-shadow: 0 0 25px hsla(var(--primary) / 0.5);
 }
 
-.star-button:hover .star-1 { top: -80%; left: -30%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
-.star-button:hover .star-2 { top: -25%; left: 10%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
-.star-button:hover .star-3 { top: 55%; left: 25%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
-.star-button:hover .star-4 { top: 30%; left: 80%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
-.star-button:hover .star-5 { top: 25%; left: 115%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
-.star-button:hover .star-6 { top: 5%; left: 60%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
+.star-button:hover .star-1 { top: -80%; left: -30%; filter: drop-shadow(0 0 10px hsl(var(--secondary))); z-index: 2; }
+.star-button:hover .star-2 { top: -25%; left: 10%; filter: drop-shadow(0 0 10px hsl(var(--secondary))); z-index: 2; }
+.star-button:hover .star-3 { top: 55%; left: 25%; filter: drop-shadow(0 0 10px hsl(var(--secondary))); z-index: 2; }
+.star-button:hover .star-4 { top: 30%; left: 80%; filter: drop-shadow(0 0 10px hsl(var(--secondary))); z-index: 2; }
+.star-button:hover .star-5 { top: 25%; left: 115%; filter: drop-shadow(0 0 10px hsl(var(--secondary))); z-index: 2; }
+.star-button:hover .star-6 { top: 5%; left: 60%; filter: drop-shadow(0 0 10px hsl(var(--secondary))); z-index: 2; }
 
 .fil0 {
-  fill: #fffdef;
+  fill: hsl(var(--secondary));
 }
 
 @layer utilities {

@@ -50,18 +50,18 @@ export default function RootLayout({
       </head>
       <body className='font-body antialiased selection:bg-primary/30 selection:text-primary bg-background text-foreground'>
         <FirebaseClientProvider>
-            <div className="fixed top-0 left-0 w-full h-screen -z-10 opacity-70">
+            <div className="fixed top-0 left-0 w-full h-screen -z-10 opacity-30">
               <LightPillar
-                topColor="#5227FF"
-                bottomColor="#FF9FFC"
-                intensity={1}
-                rotationSpeed={0.3}
+                topColor="#eab308"
+                bottomColor="#000000"
+                intensity={0.4}
+                rotationSpeed={0.1}
                 interactive={false}
-                glowAmount={0.002}
-                pillarWidth={3}
-                pillarHeight={0.4}
-                noiseIntensity={0.5}
-                pillarRotation={25}
+                glowAmount={0.003}
+                pillarWidth={2.8}
+                pillarHeight={0.35}
+                noiseIntensity={0.15}
+                pillarRotation={15}
                 mixBlendMode="screen"
               />
             </div>
@@ -69,7 +69,7 @@ export default function RootLayout({
               <PillNav
                 logo={logoUrl}
                 items={navLinks}
-                baseColor="hsl(var(--card))"
+                baseColor="hsl(var(--secondary))"
                 pillColor="hsl(var(--primary))"
                 hoveredPillTextColor="hsl(var(--primary-foreground))"
                 pillTextColor="hsl(var(--primary-foreground))"
