@@ -17,7 +17,7 @@
     --primary: 250 100% 58%; /* Electric Indigo #5227FF */
     --primary-foreground: 0 0% 100%;
 
-    --secondary: 290 100% 80%; /* Cyber Pink #FF9FFC */
+    --secondary: 290 100% 80%; /* Cyber Pink */
     --secondary-foreground: 240 10% 3.9%;
 
     --muted: 240 5% 15%;
@@ -49,10 +49,10 @@
   }
 }
 
-/* Premium Star Button Styles — Themed to Electric Indigo */
+/* Premium Star Button Styles — Digital Twilight Edition */
 .star-button {
   position: relative;
-  padding: 8px 22px; /* Slightly smaller for UI friendliness */
+  padding: 8px 22px; /* Refined compact sizing */
   background: hsl(var(--primary));
   font-size: 13px;
   font-weight: 700;
