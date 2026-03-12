@@ -59,20 +59,20 @@ export function Hero() {
   const anotherVersionButton = isMobile ? (
     <AlertDialog>
       <AlertDialogTrigger asChild>
-        <StarButton ariaLabel="Check another version of the portfolio">
-          Check another version
+        <StarButton ariaLabel="Check another version of the portfolio" className="border-secondary/50 bg-background/10 backdrop-blur-sm !text-secondary hover:!bg-secondary/10">
+          Version 2
         </StarButton>
       </AlertDialogTrigger>
-      <AlertDialogContent>
+      <AlertDialogContent className="bg-background/95 backdrop-blur-2xl border-primary/20">
         <AlertDialogHeader>
-          <AlertDialogTitle>Mobile Experience Notice</AlertDialogTitle>
-          <AlertDialogDescription>
-            This portfolio version is designed for a desktop experience. For the best view, please open it in a browser on a larger screen.
+          <AlertDialogTitle className="text-white">Mobile Experience Notice</AlertDialogTitle>
+          <AlertDialogDescription className="text-white/60">
+            This portfolio version is optimized for desktop interaction. For the best experience, please view it on a larger screen.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>
-          <AlertDialogCancel>Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleOpenInNewTab}>
+          <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Cancel</AlertDialogCancel>
+          <AlertDialogAction onClick={handleOpenInNewTab} className="bg-primary text-white hover:bg-primary/90">
             Open Anyway
           </AlertDialogAction>
         </AlertDialogFooter>
@@ -80,16 +80,16 @@ export function Hero() {
     </AlertDialog>
   ) : (
     <Link href="/another-version">
-      <StarButton ariaLabel="Check another version of the portfolio">
-        Check another version
+      <StarButton ariaLabel="Check another version of the portfolio" className="border-secondary/50 bg-background/10 backdrop-blur-sm !text-secondary hover:!bg-secondary/10">
+        Version 2
       </StarButton>
     </Link>
   );
 
   const staticLogos = (
-    <div className="flex items-center justify-center gap-10 flex-wrap">
+    <div className="flex items-center justify-center gap-8 flex-wrap">
       {techLogos.map((logo, index) => (
-        <div key={index} title={logo.title} className="text-5xl text-white/80">
+        <div key={index} title={logo.title} className="text-4xl text-white/60 transition-colors hover:text-primary">
           {logo.node}
         </div>
       ))}
@@ -104,7 +104,7 @@ export function Hero() {
             text="Hi, I’m Sarthak 👋"
             className="font-headline text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white"
           />
-          <div className="w-full max-w-4xl text-lg md:text-xl text-white animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+          <div className="w-full max-w-4xl text-lg md:text-xl text-white/80 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
             <RotatingText
               texts={['Creative Coder', 'Explorer of Modern Web Experiences']}
               staggerFrom={"last"}
@@ -120,7 +120,7 @@ export function Hero() {
           <div className="flex items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '1s' }}>
             <Link href="#work">
                 <StarButton ariaLabel="Explore My World, scroll to work section">
-                  Explore My World
+                  Explore World
                 </StarButton>
             </Link>
             {anotherVersionButton}
@@ -132,12 +132,12 @@ export function Hero() {
                   logos={techLogos}
                   speed={60}
                   direction="left"
-                  logoHeight={60}
+                  logoHeight={50}
                   gap={40}
                   hoverSpeed={0}
                   scaleOnHover={false}
                   fadeOut
-                  className="text-white/80"
+                  className="text-white/60"
               />
             )}
         </div>
