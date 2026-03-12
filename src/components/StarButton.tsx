@@ -9,6 +9,10 @@ interface StarButtonProps extends React.HTMLAttributes<HTMLDivElement> {
   ariaLabel?: string;
 }
 
+/**
+ * StarButton component refactored to use a <div> to prevent hydration mismatches
+ * when nested inside <Link> components (which render as <a>).
+ */
 const StarButton = React.forwardRef<HTMLDivElement, StarButtonProps>(
   ({ children, className, ariaLabel, ...props }, ref) => {
     return (
@@ -22,7 +26,7 @@ const StarButton = React.forwardRef<HTMLDivElement, StarButtonProps>(
       >
         <span className="relative z-10">{children}</span>
         {[1, 2, 3, 4, 5, 6].map((i) => (
-          <div key={i} className={`star-${i}`}>
+          <div key={i} className={`star-${i}`} aria-hidden="true">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               xmlSpace="preserve"
