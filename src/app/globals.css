@@ -1,39 +1,38 @@
-
 @tailwind base;
 @tailwind utilities;
 @tailwind components;
 
 @layer base {
   :root {
-    --background: 240 4% 10%;
+    --background: 240 10% 2.5%;
     --foreground: 0 0% 98%;
 
-    --card: 0 0% 100%;
-    --card-foreground: 222 47% 11%;
+    --card: 240 10% 4%;
+    --card-foreground: 0 0% 98%;
 
-    --popover: 0 0% 100%;
-    --popover-foreground: 222 47% 11%;
+    --popover: 240 10% 4%;
+    --popover-foreground: 0 0% 98%;
 
-    --primary: 0 84% 60%;
+    --primary: 255 100% 65.7%; /* #5227FF */
     --primary-foreground: 0 0% 98%;
 
-    --secondary: 25 95% 53%;
-    --secondary-foreground: 0 0% 98%;
+    --secondary: 326 100% 80%; /* #FF9FFC */
+    --secondary-foreground: 240 10% 2.5%;
 
-    --muted: 210 40% 96.1%;
-    --muted-foreground: 215.4 16.3% 46.9%;
+    --muted: 240 5% 15%;
+    --muted-foreground: 240 5% 65%;
 
-    --accent: 45 96% 56%;
-    --accent-foreground: 240 4% 10%;
+    --accent: 255 100% 65.7%;
+    --accent-foreground: 0 0% 98%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 214.3 31.8% 91.4%;
-    --input: 214.3 31.8% 91.4%;
+    --border: 240 5% 15%;
+    --input: 240 5% 15%;
 
-    --ring: 0 84% 60%;
-    --radius: 0.5rem;
+    --ring: 255 100% 65.7%;
+    --radius: 0.75rem;
   }
 }
 
@@ -49,17 +48,64 @@
   }
 }
 
+/* Star Button Styles — Digital Twilight */
+.star-button {
+  position: relative;
+  padding: 8px 24px;
+  background: hsl(var(--primary));
+  font-size: 15px;
+  font-weight: 600;
+  color: hsl(var(--primary-foreground));
+  border: 2px solid hsl(var(--primary));
+  border-radius: 9999px;
+  box-shadow: 0 0 0 hsla(var(--primary) / 0.4);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.star-1, .star-2, .star-3, .star-4, .star-5, .star-6 {
+  position: absolute;
+  height: auto;
+  filter: drop-shadow(0 0 0 #fffdef);
+  z-index: -5;
+  transition: all 1s cubic-bezier(0.05, 0.83, 0.43, 0.96);
+}
+
+.star-1 { top: 20%; left: 20%; width: 20px; }
+.star-2 { top: 45%; left: 45%; width: 12px; }
+.star-3 { top: 40%; left: 40%; width: 4px; }
+.star-4 { top: 20%; left: 40%; width: 6px; }
+.star-5 { top: 25%; left: 45%; width: 12px; }
+.star-6 { top: 5%; left: 50%; width: 4px; }
+
+.star-button:hover {
+  background: transparent;
+  color: hsl(var(--primary));
+  box-shadow: 0 0 20px hsla(var(--primary) / 0.5);
+  transform: translateY(-1px);
+}
+
+.star-button:hover .star-1 { top: -80%; left: -30%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
+.star-button:hover .star-2 { top: -25%; left: 10%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
+.star-button:hover .star-3 { top: 55%; left: 25%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
+.star-button:hover .star-4 { top: 30%; left: 80%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
+.star-button:hover .star-5 { top: 25%; left: 115%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
+.star-button:hover .star-6 { top: 5%; left: 60%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
+
+.fil0 {
+  fill: #fffdef;
+}
+
 @layer utilities {
   .bg-primary-gradient {
-    background: linear-gradient(135deg, #6EE7E6 0%, #7C4DFF 100%);
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
   }
   
   .glass-card {
-    @apply bg-white/70 backdrop-blur-xl border border-white/20 shadow-[0_8px_32px_rgba(0,0,0,0.04)];
-  }
-
-  .bubble-shadow {
-    box-shadow: 0 2px 4px rgba(2, 6, 23, 0.04);
+    @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.2)];
   }
 
   @keyframes char-in {
@@ -103,59 +149,3 @@
     animation-fill-mode: forwards;
   }
 }
-
-/* Star Button Styles */
-.star-button {
-  position: relative;
-  padding: 12px 35px;
-  background: #fec195;
-  font-size: 17px;
-  font-weight: 500;
-  color: #181818;
-  border: 3px solid #fec195;
-  border-radius: 8px;
-  box-shadow: 0 0 0 #fec1958c;
-  transition: all 0.3s ease-in-out;
-  cursor: pointer;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-}
-
-<<<<<<< HEAD
-=======
-.star-1, .star-2, .star-3, .star-4, .star-5, .star-6 {
-  position: absolute;
-  height: auto;
-  filter: drop-shadow(0 0 0 #fffdef);
-  z-index: -5;
-  transition: all 1s cubic-bezier(0.05, 0.83, 0.43, 0.96);
-}
-
-.star-1 { top: 20%; left: 20%; width: 25px; transition-duration: 1s; }
-.star-2 { top: 45%; left: 45%; width: 15px; transition-duration: 1s; transition-timing-function: cubic-bezier(0, 0.4, 0, 1.01); }
-.star-3 { top: 40%; left: 40%; width: 5px;  transition-duration: 1s; transition-timing-function: cubic-bezier(0, 0.4, 0, 1.01); }
-.star-4 { top: 20%; left: 40%; width: 8px;  transition-duration: 0.8s; transition-timing-function: cubic-bezier(0, 0.4, 0, 1.01); }
-.star-5 { top: 25%; left: 45%; width: 15px; transition-duration: 0.6s; transition-timing-function: cubic-bezier(0, 0.4, 0, 1.01); }
-.star-6 { top: 5%;  left: 50%; width: 5px;  transition-duration: 0.8s; transition-timing-function: ease; }
-
->>>>>>> 299195c (hero section both buttons)
-.star-button:hover {
-  background: transparent;
-  color: #fec195;
-  box-shadow: 0 0 25px #fec1958c;
-}
-<<<<<<< HEAD
-=======
-
-.star-button:hover .star-1 { top: -80%; left: -30%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
-.star-button:hover .star-2 { top: -25%; left: 10%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
-.star-button:hover .star-3 { top: 55%; left: 25%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
-.star-button:hover .star-4 { top: 30%; left: 80%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
-.star-button:hover .star-5 { top: 25%; left: 115%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
-.star-button:hover .star-6 { top: 5%; left: 60%; filter: drop-shadow(0 0 10px #fffdef); z-index: 2; }
-
-.star-button .fil0 {
-  fill: #fffdef;
-}
->>>>>>> 299195c (hero section both buttons)

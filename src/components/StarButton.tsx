@@ -19,7 +19,7 @@ const StarButton = React.forwardRef<HTMLDivElement, StarButtonProps>(
         aria-label={ariaLabel}
         {...props}
       >
-        {children}
+        <span className="relative z-10">{children}</span>
         {[1, 2, 3, 4, 5, 6].map((i) => (
           <div key={i} className={`star-${i}`}>
             <svg
