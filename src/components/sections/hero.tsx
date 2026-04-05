@@ -19,7 +19,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
-import { motion } from 'framer-motion';
+import { motion, useMotionValue, useTransform } from 'framer-motion';
 
 const techLogos = [
   { node: <SiReact />, title: "React" },
@@ -33,6 +33,11 @@ const techLogos = [
 export function Hero() {
   const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const orbX = useTransform(mouseX, [0, 1], ['-6%', '6%']);
+  const orbY = useTransform(mouseY, [0, 1], ['-10%', '10%']);
 
   useEffect(() => {
     setMounted(true);
@@ -88,103 +93,162 @@ export function Hero() {
     </Link>
   );
 
-  const staticLogos = (
-    <div className="flex items-center justify-center gap-8 flex-wrap">
-      {techLogos.map((logo, index) => (
-        <div key={index} title={logo.title} className="text-4xl text-white/60 transition-colors hover:text-primary">
-          {logo.node}
-        </div>
-      ))}
-    </div>
-  );
-
   return (
-    <section id="home" className="relative h-screen w-full flex items-center justify-center text-center overflow-hidden">
-      {/* Animated gradient orbs */}
+    <section
+      id="home"
+      className="relative min-h-screen w-full overflow-hidden pt-28 pb-20"
+      onMouseMove={(e) => {
+        const { innerWidth, innerHeight } = window;
+        mouseX.set(e.clientX / innerWidth);
+        mouseY.set(e.clientY / innerHeight);
+      }}
+    >
+      <div className="absolute inset-0 grid-overlay opacity-40" />
       <motion.div
-        className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/30 rounded-full blur-3xl"
-        animate={{
-          scale: [1, 1.2, 1],
-          opacity: [0.3, 0.5, 0.3],
+        className="absolute -left-32 top-12 h-[38rem] w-[38rem] rounded-full blur-3xl"
+        style={{
+          x: orbX,
+          y: orbY,
+          background:
+            'radial-gradient(circle at 30% 30%, hsla(var(--secondary) / 0.25), transparent 60%), radial-gradient(circle at 70% 70%, hsla(var(--primary) / 0.22), transparent 55%)',
         }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
+        aria-hidden
       />
       <motion.div
-        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/30 rounded-full blur-3xl"
-        animate={{
-          scale: [1.2, 1, 1.2],
-          opacity: [0.3, 0.5, 0.3],
+        className="absolute bottom-[-10%] right-[-8%] h-[32rem] w-[32rem] rounded-full blur-3xl opacity-80"
+        animate={{ scale: [1, 1.08, 1] }}
+        transition={{ duration: 10, repeat: Infinity, ease: "easeInOut" }}
+        style={{
+          background:
+            'radial-gradient(circle at 40% 40%, hsla(var(--accent) / 0.35), transparent 60%), radial-gradient(circle at 60% 60%, hsla(var(--primary) / 0.16), transparent 70%)',
         }}
-        transition={{
-          duration: 8,
-          repeat: Infinity,
-          ease: "easeInOut"
-        }}
+        aria-hidden
       />
 
-      <div className="relative z-10 flex flex-col items-center gap-8 px-4">
-        <div className="flex flex-col items-center gap-6">
-          <AnimatedText
-            text="Hi, I'm Sarthak 👋"
-            className="font-headline text-5xl md:text-7xl lg:text-9xl font-bold tracking-tighter text-white drop-shadow-2xl"
-          />
-          <div className="w-full max-w-4xl text-xl md:text-2xl text-white/90 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
-            <RotatingText
-              texts={['Creative Coder', 'Explorer of Modern Web Experiences', 'Digital Artist', 'Innovation Enthusiast']}
-              staggerFrom={"last"}
-              initial={{ y: 25, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -25, opacity: 0 }}
-              staggerDuration={0.025}
-              splitLevelClassName="pb-0.5 sm:pb-1 md:pb-1"
-              transition={{ type: "spring", damping: 30, stiffness: 400 }}
-              rotationInterval={3000}
+      <div className="relative z-10 container mx-auto flex flex-col gap-12">
+        <div className="flex flex-col gap-6 max-w-6xl">
+          <motion.div
+            className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-white/60"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10">High-End</span>
+            <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10">Web / Motion / 3D</span>
+            <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10">Neo-Brutal. Cinematic.</span>
+          </motion.div>
+
+          <motion.div
+            className="space-y-3 md:space-y-4 hero-text-shadow"
+            initial={{ opacity: 0, y: 80 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.35, type: "spring", stiffness: 120, damping: 20 }}
+          >
+            <AnimatedText
+              text="Sarthak Sharma"
+              className="font-headline text-5xl md:text-7xl lg:text-8xl font-bold tracking-tight text-gradient"
             />
-          </div>
-          <div className="flex items-center justify-center gap-6 animate-fade-in-up" style={{ animationDelay: '1s' }}>
-            <Link href="#work" scroll={false}>
+            <motion.h1
+              className="font-headline text-3xl md:text-5xl lg:text-6xl font-bold leading-tight"
+              initial={{ y: 50, opacity: 0 }}
+              animate={{ y: 0, opacity: 1 }}
+              transition={{ delay: 0.45, type: 'spring', stiffness: 140, damping: 22 }}
+            >
+              Designing <span className="text-gradient">kinetic frontends</span> that feel tactile, cinematic, and alive.
+            </motion.h1>
+            <div className="w-full max-w-4xl text-lg md:text-xl text-white/80">
+              <RotatingText
+                texts={[
+                  'Front-end director crafting WebGL, GSAP, Framer Motion experiences',
+                  'Adaptive layouts, fluid type, and fearless neo-brutalist edges',
+                  'Interactive stories with smooth-scroll, parallax, and micro-interactions'
+                ]}
+                staggerFrom={"last"}
+                initial={{ y: 25, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                exit={{ y: -25, opacity: 0 }}
+                staggerDuration={0.03}
+                splitLevelClassName="pb-0.5 sm:pb-1 md:pb-1"
+                transition={{ type: "spring", damping: 30, stiffness: 400 }}
+                rotationInterval={2800}
+              />
+            </div>
+          </motion.div>
+
+          <div className="flex flex-wrap items-center gap-4 md:gap-6">
+            <Link href="#work" scroll={false} data-cursor-variant="project" data-cursor-label="Scroll">
               <MagneticButton className="star-button">
-                Explore World
+                Enter Portfolio
               </MagneticButton>
             </Link>
             {anotherVersionButton}
+            <div className="flex items-center gap-3 text-sm text-white/70">
+              <span className="inline-flex h-2 w-2 rounded-full bg-primary shadow-[0_0_0_6px_rgba(161,255,125,0.12)] animate-pulse" />
+              Accepting immersive web collabs for 2025.
+            </div>
           </div>
+        </div>
+
+        <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+          {[
+            { label: 'Interactive Systems', detail: 'Parallax, smooth-scroll, WebGL particles, physics-inspired micro-interactions.' },
+            { label: 'Design Languages', detail: 'Neo-brutal bento grids, glass/frost surfaces, adaptive type scales, cinematic palettes.' },
+            { label: 'Delivery', detail: 'Performance-minded Next.js, TypeScript rigor, accessibility-first motion choreography.' },
+          ].map((item, idx) => (
+            <motion.div
+              key={item.label}
+              className="section-shell p-6 mask-shine"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.5 + idx * 0.08, type: 'spring', stiffness: 140, damping: 18 }}
+              data-cursor-variant="project"
+              data-cursor-label="Inspect"
+            >
+              <p className="text-xs uppercase tracking-[0.25em] text-white/50 mb-3">{item.label}</p>
+              <p className="text-white/90 leading-relaxed">{item.detail}</p>
+            </motion.div>
+          ))}
         </div>
 
         {/* Scroll indicator */}
         <motion.div
-          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          className="flex items-center gap-4"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >
-          <span className="text-white/60 text-sm uppercase tracking-wider">Scroll</span>
-          <div className="w-6 h-10 border-2 border-white/40 rounded-full flex justify-center p-1">
+          <div className="flex items-center gap-3 text-white/60 uppercase tracking-[0.25em] text-xs">
+            <span className="w-10 h-[1px] bg-white/40" />
+            Scroll to reveal
+          </div>
+          <div className="relative h-12 w-12 rounded-full border border-white/20 flex items-center justify-center">
             <motion.div
-              className="w-1.5 h-1.5 bg-white/60 rounded-full"
-              animate={{ y: [0, 12, 0] }}
-              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+              className="h-2 w-2 rounded-full bg-white/70"
+              animate={{ y: [0, 8, 0], opacity: [1, 0.5, 1] }}
+              transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
             />
           </div>
         </motion.div>
 
-        <div className="w-full max-w-4xl animate-fade-in-up mt-12" style={{ animationDelay: '1.2s' }}>
-            {isMobile ? staticLogos : (
-              <LogoLoop
-                  logos={techLogos}
-                  speed={60}
-                  direction="left"
-                  logoHeight={50}
-                  gap={40}
-                  hoverSpeed={0}
-                  scaleOnHover={false}
-                  fadeOut
-                  className="text-white/60"
-              />
-            )}
+        <div className="w-full max-w-5xl">
+          {isMobile ? (
+            <div className="flex items-center justify-center gap-6 flex-wrap text-white/60">
+              {techLogos.map((logo, idx) => (
+                <div key={idx} className="text-3xl">{logo.node}</div>
+              ))}
+            </div>
+          ) : (
+            <LogoLoop
+              logos={techLogos}
+              speed={50}
+              direction="left"
+              logoHeight={46}
+              gap={48}
+              hoverSpeed={0}
+              scaleOnHover={false}
+              fadeOut
+              className="text-white/60"
+            />
+          )}
         </div>
       </div>
     </section>

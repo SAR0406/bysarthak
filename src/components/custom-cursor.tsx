@@ -6,44 +6,42 @@ import { motion, useMotionValue, useSpring } from 'framer-motion';
 export function CustomCursor() {
   const cursorRef = useRef<HTMLDivElement>(null);
   const [isHovering, setIsHovering] = useState(false);
-  const [isPointer, setIsPointer] = useState(false);
+  const [label, setLabel] = useState<string | null>(null);
+  const [variant, setVariant] = useState<'default' | 'link' | 'project'>('default');
 
   const cursorX = useMotionValue(-100);
   const cursorY = useMotionValue(-100);
 
-  const springConfig = { damping: 25, stiffness: 700 };
+  const springConfig = { damping: 22, stiffness: 800 };
   const cursorXSpring = useSpring(cursorX, springConfig);
   const cursorYSpring = useSpring(cursorY, springConfig);
 
   useEffect(() => {
     const moveCursor = (e: MouseEvent) => {
-      cursorX.set(e.clientX - 16);
-      cursorY.set(e.clientY - 16);
+      cursorX.set(e.clientX - 24);
+      cursorY.set(e.clientY - 24);
     };
 
-    const handleMouseEnter = (e: MouseEvent) => {
+    const handleIntent = (e: MouseEvent) => {
       const target = e.target as HTMLElement;
-      if (target.closest('a, button, [role="button"], .hoverable, .project-card')) {
-        setIsHovering(true);
-      }
-      if (window.getComputedStyle(target).cursor === 'pointer') {
-        setIsPointer(true);
-      }
-    };
+      const labelled = target.closest<HTMLElement>('[data-cursor-label]');
+      const project = target.closest<HTMLElement>('[data-cursor-variant="project"], .project-card');
+      const clickable = target.closest('a, button, [role="button"], .hoverable');
 
-    const handleMouseLeave = () => {
-      setIsHovering(false);
-      setIsPointer(false);
+      const nextLabel = labelled?.getAttribute('data-cursor-label') || (project ? 'View' : null);
+      const nextVariant = (labelled?.getAttribute('data-cursor-variant') as 'project' | 'link' | null) || (project ? 'project' : clickable ? 'link' : 'default');
+
+      setLabel(nextLabel);
+      setVariant(nextVariant);
+      setIsHovering(Boolean(project || clickable || labelled));
     };
 
     window.addEventListener('mousemove', moveCursor);
-    document.addEventListener('mouseenter', handleMouseEnter, true);
-    document.addEventListener('mouseleave', handleMouseLeave, true);
+    document.addEventListener('mousemove', handleIntent, true);
 
     return () => {
       window.removeEventListener('mousemove', moveCursor);
-      document.removeEventListener('mouseenter', handleMouseEnter, true);
-      document.removeEventListener('mouseleave', handleMouseLeave, true);
+      document.removeEventListener('mousemove', handleIntent, true);
     };
   }, [cursorX, cursorY]);
 
@@ -60,26 +58,36 @@ export function CustomCursor() {
         <motion.div
           className="relative flex items-center justify-center"
           animate={{
-            width: isHovering ? 80 : 32,
-            height: isHovering ? 80 : 32,
+            width: variant === 'project' ? 120 : isHovering ? 80 : 38,
+            height: variant === 'project' ? 120 : isHovering ? 80 : 38,
+            scale: isHovering ? 1 : 0.85,
           }}
-          transition={{ type: 'spring', damping: 20, stiffness: 300 }}
+          transition={{ type: 'spring', damping: 18, stiffness: 320 }}
         >
-          <div className="absolute inset-0 rounded-full bg-white" />
-          {isHovering && (
+          <div className="absolute inset-0 rounded-full bg-white/90 mix-blend-difference" />
+          <div className="absolute inset-0 rounded-full bg-[radial-gradient(circle_at_center,_hsla(var(--primary)/0.4),_transparent_65%)] blur-md" />
+          <motion.div
+            className="absolute inset-0 rounded-full border border-white/30"
+            animate={{ scale: isHovering ? 1.15 : 0.9, opacity: isHovering ? 0.85 : 0.35 }}
+            transition={{ type: 'spring', stiffness: 260, damping: 24 }}
+          />
+          {(label || variant === 'link') && (
             <motion.span
-              initial={{ opacity: 0, scale: 0.5 }}
+              initial={{ opacity: 0, scale: 0.85 }}
               animate={{ opacity: 1, scale: 1 }}
-              className="relative z-10 text-xs font-bold text-black uppercase tracking-wider"
+              exit={{ opacity: 0 }}
+              className="relative z-10 text-[10px] font-black uppercase tracking-[0.2em] text-black"
             >
-              View
+              {label || (variant === 'project' ? 'View' : 'Go')}
             </motion.span>
           )}
         </motion.div>
       </motion.div>
       <style jsx global>{`
-        * {
-          cursor: none !important;
+        @media (pointer: fine) {
+          * {
+            cursor: none !important;
+          }
         }
       `}</style>
     </>

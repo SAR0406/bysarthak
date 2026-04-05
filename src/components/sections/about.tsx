@@ -1,4 +1,6 @@
 
+'use client';
+
 import Image from 'next/image';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Rocket, Handshake, BrainCircuit, Zap } from 'lucide-react';
@@ -34,82 +36,101 @@ const skills = [
 export function About() {
   return (
     <section id="about" className="container mx-auto py-24 relative">
-      {/* Skills Marquee Background */}
-      <div className="absolute top-1/2 left-0 w-full -translate-y-1/2 opacity-10 pointer-events-none">
-        <InfiniteMarquee items={skills} speed={40} direction="left" />
+      <div className="absolute inset-0 opacity-10 pointer-events-none">
+        <InfiniteMarquee items={skills} speed={36} direction="left" />
       </div>
 
-      <div className="grid md:grid-cols-3 gap-12 items-start relative z-10">
-        <ScrollReveal className="flex justify-center md:col-span-1" delay={0.2}>
-          <PixelCard variant="pink" className="rounded-full">
-            <Image
-              src="https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg"
-              alt="Sarthak"
-              fill
-              priority
-              className="absolute inset-0 w-full h-full object-cover rounded-full"
-            />
-          </PixelCard>
-        </ScrollReveal>
+      <div className="relative z-10 section-shell p-8 md:p-12 space-y-10">
+        <div className="grid lg:grid-cols-[1.05fr_1.1fr] gap-10 items-start">
+          <ScrollReveal className="relative" delay={0.15}>
+            <div className="relative">
+              <div className="absolute -inset-6 rounded-[28px] bg-gradient-to-br from-primary/10 via-secondary/10 to-transparent blur-2xl" aria-hidden />
+              <PixelCard variant="pink" className="rounded-[28px] overflow-hidden h-full">
+                <Image
+                  src="https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg"
+                  alt="Sarthak"
+                  fill
+                  priority
+                  className="absolute inset-0 w-full h-full object-cover"
+                  data-cursor-variant="project"
+                  data-cursor-label="Move"
+                />
+              </PixelCard>
+              <div className="absolute -bottom-6 left-6 bg-white/10 backdrop-blur-xl border border-white/15 px-4 py-2 rounded-full text-xs uppercase tracking-[0.3em]">
+                Frontend / Motion / AI
+              </div>
+            </div>
+          </ScrollReveal>
 
-        <div className="md:col-span-2 space-y-8">
-          <ScrollFloat className="font-headline text-4xl md:text-5xl font-bold text-white">
-            💫 About Me
+          <div className="space-y-6">
+            <ScrollFloat className="font-headline text-4xl md:text-5xl font-bold text-white">
+              About the Studio
+            </ScrollFloat>
+
+            <TextSplitReveal
+              className="text-white/80 text-lg leading-relaxed"
+              delay={0.25}
+            >
+              I craft atmospheric digital stories—interfaces with personality, choreography, and intent. Every screen is a stage:
+              glassy layers, brutalist edges, fluid type, and motion that reacts to you.
+            </TextSplitReveal>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {aboutSections.map((item, index) => (
+                <ScrollReveal key={index} delay={0.12 * index} direction="up">
+                  <Card className="bg-card/60 backdrop-blur-md border-white/10 hover:border-primary/50 transition-all duration-300 h-full mask-shine">
+                    <CardHeader className="flex flex-row items-center gap-4">
+                      {item.icon}
+                      <CardTitle className="text-lg">{item.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent>
+                      <p className="text-muted-foreground leading-relaxed">{item.content}</p>
+                    </CardContent>
+                  </Card>
+                </ScrollReveal>
+              ))}
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-4 pt-4">
+              {[
+                { icon: <Zap className="h-5 w-5" />, title: 'Micro-interactions', copy: 'Spring physics, cursor spotlights, tactile haptics for every hover.' },
+                { icon: <BrainCircuit className="h-5 w-5" />, title: 'Systems Thinking', copy: 'Atomic components, adaptive grids, content-aware breakpoints.' },
+                { icon: <Handshake className="h-5 w-5" />, title: 'Co-Creation', copy: 'I storyboard with you—moodboards, prototypes, and shipping with intent.' },
+              ].map((item, idx) => (
+                <ScrollReveal key={item.title} delay={0.15 * idx} direction="up">
+                  <Card className="bg-gradient-to-br from-primary/10 via-card/40 to-secondary/10 border border-white/10 h-full">
+                    <CardHeader className="flex items-center gap-3">
+                      <div className="h-10 w-10 rounded-full bg-white/10 grid place-items-center text-primary">
+                        {item.icon}
+                      </div>
+                      <CardTitle>{item.title}</CardTitle>
+                    </CardHeader>
+                    <CardContent className="text-white/80">{item.copy}</CardContent>
+                  </Card>
+                </ScrollReveal>
+              ))}
+            </div>
+          </div>
+        </div>
+
+        <div id="skills" className="relative z-10">
+          <ScrollFloat className="text-center font-headline text-3xl md:text-4xl font-bold mb-8 text-white">
+            What we can riff on together
           </ScrollFloat>
-
-          <TextSplitReveal
-            className="text-white/80 text-lg leading-relaxed"
-            delay={0.3}
-          >
-            Building the future, one line of code at a time. I combine creativity with technical expertise to craft exceptional digital experiences that push boundaries and inspire innovation.
-          </TextSplitReveal>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
-            {aboutSections.map((item, index) => (
-              <ScrollReveal key={index} delay={0.1 * index} direction="up">
-                <Card className="bg-card/50 backdrop-blur-sm border-white/10 hover:border-primary/50 transition-all duration-300 hover:scale-[1.02] h-full">
-                  <CardHeader className="flex flex-row items-center gap-4">
-                    {item.icon}
-                    <CardTitle className="text-lg">{item.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-muted-foreground leading-relaxed">{item.content}</p>
-                  </CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+            {[
+              'Motion-first hero concepts with cinematic reveals',
+              'Horizontal bento case studies and immersive scrolls',
+              'Interactive WebGL canvases, particles, and parallax worlds',
+              'Full-stack delivery: Next.js, TypeScript, Firebase ops'
+            ].map((topic, index) => (
+              <ScrollReveal key={index} delay={0.08 * index} direction="up">
+                <Card className="bg-card/40 backdrop-blur-sm text-center p-6 border-white/10 hover:border-primary/50 transition-all duration-300 hover:translate-y-[-6px] mask-shine">
+                  <p className="text-white/90">{topic}</p>
                 </Card>
               </ScrollReveal>
             ))}
-            <ScrollReveal delay={0.4} direction="up" className="md:col-span-2">
-              <Card className="bg-gradient-to-br from-primary/10 to-secondary/10 backdrop-blur-sm border-primary/30">
-                <CardHeader className="flex flex-row items-center gap-4">
-                  <Zap className="h-6 w-6 text-primary" />
-                  <CardTitle className="text-lg">Fun Fact</CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-white/90 leading-relaxed">I'm building Iron Man–level ideas with student-level resources — limitations don't stop innovation.</p>
-                </CardContent>
-              </Card>
-            </ScrollReveal>
           </div>
-        </div>
-      </div>
-
-      <div id="skills" className="mt-32 relative z-10">
-        <ScrollFloat className="text-center font-headline text-3xl md:text-4xl font-bold mb-12 text-white">
-          Ask Me About
-        </ScrollFloat>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-          {[
-            'Python projects for beginners → intermediate',
-            'Camera-based detection systems',
-            'Study-tech balance as a Class 10 student',
-            'How to think like an engineer, not just a coder'
-          ].map((topic, index) => (
-            <ScrollReveal key={index} delay={0.1 * index} direction="up">
-              <Card className="bg-card/30 backdrop-blur-sm text-center p-6 border-white/10 hover:border-primary/50 transition-all duration-300 hover:scale-105 hover:bg-card/50">
-                <p className="text-white/90">{topic}</p>
-              </Card>
-            </ScrollReveal>
-          ))}
         </div>
       </div>
     </section>

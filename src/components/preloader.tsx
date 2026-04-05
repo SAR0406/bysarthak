@@ -8,23 +8,26 @@ export function Preloader() {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Counter animation from 0 to 100
-    const duration = 2000; // 2 seconds
-    const steps = 100;
-    const stepTime = duration / steps;
+    const duration = 2400;
+    const start = performance.now();
 
-    const interval = setInterval(() => {
-      setCount((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
-          setTimeout(() => setIsLoading(false), 500);
-          return 100;
-        }
-        return prev + 1;
-      });
-    }, stepTime);
+    const easeOutExpo = (t: number) => 1 - Math.pow(2, -10 * t);
 
-    return () => clearInterval(interval);
+    const tick = (now: number) => {
+      const elapsed = now - start;
+      const t = Math.min(1, elapsed / duration);
+      const eased = easeOutExpo(t);
+      setCount(Math.min(100, Math.round(eased * 100)));
+
+      if (t < 1) {
+        requestAnimationFrame(tick);
+      } else {
+        setTimeout(() => setIsLoading(false), 420);
+      }
+    };
+
+    const raf = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(raf);
   }, []);
 
   return (
