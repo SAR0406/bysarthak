@@ -6,10 +6,10 @@
  */
 
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import { 
-  Search, 
-  ChevronLeft, 
-  Send, 
+import {
+  Search,
+  ChevronLeft,
+  Send,
   CheckCheck,
   MessageSquare,
   Loader2,
@@ -23,15 +23,18 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import { useFirestore, useCollection, useDoc, useUser, useMemoFirebase } from '@/firebase';
-import { 
-  doc, 
-  updateDoc, 
-  arrayUnion, 
-  Timestamp, 
+import {
+  doc,
+  updateDoc,
+  arrayUnion,
+  Timestamp,
   collection,
   serverTimestamp
 } from 'firebase/firestore';
 import { v4 as uuidv4 } from 'uuid';
+
+// Force dynamic rendering to avoid SSR issues with Firebase
+export const dynamic = 'force-dynamic';
 
 const ADMIN_EMAIL = 'sarthak040624@gmail.com';
 
