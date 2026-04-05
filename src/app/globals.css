@@ -5,34 +5,36 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 225 25% 4%;
+    --foreground: 220 14% 96%;
+    --font-inter: 'Inter', 'Space Grotesk', system-ui, -apple-system, sans-serif;
+    --font-space-grotesk: 'Space Grotesk', 'Inter', system-ui, sans-serif;
 
-    --card: 240 10% 4%;
-    --card-foreground: 0 0% 98%;
+    --card: 224 16% 8%;
+    --card-foreground: 0 0% 100%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 225 25% 4%;
+    --popover-foreground: 0 0% 100%;
 
-    --primary: 250 100% 58%; /* Electric Indigo #5227FF */
-    --primary-foreground: 0 0% 100%;
+    --primary: 94 100% 60%; /* Acid neon */
+    --primary-foreground: 230 20% 6%;
 
-    --secondary: 290 100% 80%; /* Cyber Pink */
-    --secondary-foreground: 240 10% 3.9%;
+    --secondary: 258 95% 70%; /* Vivid violet */
+    --secondary-foreground: 0 0% 100%;
 
-    --muted: 240 5% 15%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 230 12% 18%;
+    --muted-foreground: 230 12% 68%;
 
-    --accent: 47.9 95.8% 53.1%;
-    --accent-foreground: 26 83.3% 14.1%;
+    --accent: 173 83% 52%;
+    --accent-foreground: 220 14% 8%;
 
-    --destructive: 0 84.2% 60.2%;
+    --destructive: 0 84% 60%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 240 5% 15%;
-    --input: 240 5% 15%;
+    --border: 228 12% 18%;
+    --input: 228 12% 18%;
 
-    --ring: 47.9 95.8% 53.1%;
+    --ring: 94 100% 60%;
     --radius: 0.75rem;
   }
 }
@@ -46,6 +48,19 @@
   }
   body {
     @apply bg-background text-foreground font-body antialiased;
+    background: radial-gradient(circle at 20% 20%, rgba(158, 240, 26, 0.05), transparent 28%),
+      radial-gradient(circle at 80% 0%, rgba(82, 39, 255, 0.08), transparent 30%),
+      #04060a;
+  }
+
+  .custom-cursor-active *:not(input):not(textarea) {
+    cursor: none;
+  }
+
+  @media (max-width: 768px) {
+    .custom-cursor-active * {
+      cursor: auto;
+    }
   }
 }
 
@@ -122,6 +137,27 @@
 @layer utilities {
   .bg-primary-gradient {
     background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+  }
+
+  .grain-overlay {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160' viewBox='0 0 160 160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.3'/%3E%3C/svg%3E");
+  }
+
+  .marquee-mask {
+    mask-image: linear-gradient(90deg, transparent, black 10%, black 90%, transparent);
+  }
+
+  @keyframes marquee {
+    0% {
+      transform: translateX(0%);
+    }
+    100% {
+      transform: translateX(-50%);
+    }
+  }
+
+  .animate-marquee {
+    animation: marquee 18s linear infinite;
   }
   
   .glass-card {

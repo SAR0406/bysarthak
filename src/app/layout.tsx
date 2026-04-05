@@ -1,6 +1,5 @@
 
 import type { Metadata } from 'next';
-import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import PillNav from '@/components/PillNav';
 import { Toaster } from '@/components/ui/toaster';
@@ -9,18 +8,6 @@ import LightPillar from '@/components/LightPillar';
 import { navLinks } from '@/lib/data';
 import { FirebaseClientProvider } from '@/firebase';
 import Script from 'next/script';
-
-const inter = Inter({
-  subsets: ['latin'],
-  variable: '--font-inter',
-  display: 'swap',
-});
-
-const spaceGrotesk = Space_Grotesk({
-  subsets: ['latin'],
-  variable: '--font-space-grotesk',
-  display: 'swap',
-});
 
 export const metadata: Metadata = {
   title: "Sarthak's Spectrum",
@@ -35,7 +22,7 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${inter.variable} ${spaceGrotesk.variable} dark`} suppressHydrationWarning>
+    <html lang="en" className="dark" suppressHydrationWarning>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
@@ -52,16 +39,16 @@ export default function RootLayout({
         <FirebaseClientProvider>
             <div className="fixed top-0 left-0 w-full h-screen -z-10 opacity-30">
               <LightPillar
-                topColor="#eab308"
-                bottomColor="#000000"
-                intensity={0.4}
-                rotationSpeed={0.1}
+                topColor="#9ef01a"
+                bottomColor="#1a102f"
+                intensity={0.36}
+                rotationSpeed={0.08}
                 interactive={false}
-                glowAmount={0.003}
-                pillarWidth={2.8}
-                pillarHeight={0.35}
-                noiseIntensity={0.15}
-                pillarRotation={15}
+                glowAmount={0.004}
+                pillarWidth={2.6}
+                pillarHeight={0.4}
+                noiseIntensity={0.12}
+                pillarRotation={12}
                 mixBlendMode="screen"
               />
             </div>

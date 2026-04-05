@@ -47,6 +47,7 @@ export function Gallery() {
               <div
                 className="flex-[1.618] relative rounded-lg overflow-hidden group cursor-pointer border border-white/5"
                 onClick={() => setSelectedImage(images[0])}
+                data-cursor="project"
               >
                 <Image
                   src={images[0].imageUrl}
@@ -69,6 +70,7 @@ export function Gallery() {
                     <div
                       className="relative rounded-lg overflow-hidden group cursor-pointer border border-white/5"
                       onClick={() => setSelectedImage(images[1])}
+                      data-cursor="project"
                     >
                       <Image
                         src={images[1].imageUrl}
@@ -85,6 +87,7 @@ export function Gallery() {
                     <div
                       className="relative rounded-lg overflow-hidden group cursor-pointer border border-white/5"
                       onClick={() => setSelectedImage(images[2])}
+                      data-cursor="project"
                     >
                       <Image
                         src={images[2].imageUrl}
@@ -103,6 +106,7 @@ export function Gallery() {
                     <div
                       className="relative rounded-lg overflow-hidden group cursor-pointer border border-white/5"
                       onClick={() => setSelectedImage(images[3])}
+                      data-cursor="project"
                     >
                       <Image
                         src={images[3].imageUrl}
@@ -119,6 +123,7 @@ export function Gallery() {
                     <div
                       className="relative rounded-lg overflow-hidden group cursor-pointer border border-white/5"
                       onClick={() => setSelectedImage(images[4])}
+                      data-cursor="project"
                     >
                       <Image
                         src={images[4].imageUrl}
