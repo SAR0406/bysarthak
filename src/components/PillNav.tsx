@@ -62,9 +62,6 @@ const PillNav: React.FC<PillNavProps> = ({
     router.push('/');
     if(isMobileMenuOpen) setIsMobileMenuOpen(false);
   };
-  
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [activeLink, setActiveLink] = useState(activeHref);
 
   const toggleMobileMenu = () => {
     setIsMobileMenuOpen(!isMobileMenuOpen);
@@ -89,7 +86,7 @@ const PillNav: React.FC<PillNavProps> = ({
     ['--base']: baseColor,
     ['--pill-bg']: pillColor,
     ['--hover-text']: hoveredPillTextColor,
-    ['--pill-text']: resolvedPillTextColor,
+    ['--pill-text']: pillTextColor,
   } as React.CSSProperties;
 
   // Render items with stable attributes to prevent hydration mismatch
