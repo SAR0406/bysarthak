@@ -9,6 +9,11 @@ import LightPillar from '@/components/LightPillar';
 import { navLinks } from '@/lib/data';
 import { FirebaseClientProvider } from '@/firebase';
 import Script from 'next/script';
+import { Preloader } from '@/components/preloader';
+import { CustomCursor } from '@/components/custom-cursor';
+import { SmoothScrollProvider } from '@/components/smooth-scroll-provider';
+import { FilmGrain } from '@/components/film-grain';
+import { WebGLBackground } from '@/components/webgl-background';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -50,6 +55,11 @@ export default function RootLayout({
       </head>
       <body className='font-body antialiased selection:bg-primary/30 selection:text-primary bg-background text-foreground'>
         <FirebaseClientProvider>
+          <SmoothScrollProvider>
+            <Preloader />
+            <CustomCursor />
+            <FilmGrain />
+            <WebGLBackground />
             <div className="fixed top-0 left-0 w-full h-screen -z-10 opacity-30">
               <LightPillar
                 topColor="#eab308"
@@ -78,6 +88,7 @@ export default function RootLayout({
             <main>{children}</main>
             <Footer />
             <Toaster />
+          </SmoothScrollProvider>
         </FirebaseClientProvider>
       </body>
     </html>

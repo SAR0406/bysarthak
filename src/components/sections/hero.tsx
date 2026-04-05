@@ -7,6 +7,7 @@ import RotatingText from '../RotatingText';
 import LogoLoop from "../LogoLoop";
 import { SiReact, SiNextdotjs, SiTypescript, SiTailwindcss, SiFirebase, SiNodedotjs } from 'react-icons/si';
 import StarButton from "../StarButton";
+import { MagneticButton } from "../magnetic-button";
 import {
   AlertDialog,
   AlertDialogAction,
@@ -18,6 +19,7 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog";
+import { motion } from 'framer-motion';
 
 const techLogos = [
   { node: <SiReact />, title: "React" },
@@ -97,16 +99,42 @@ export function Hero() {
   );
 
   return (
-    <section id="home" className="relative h-screen w-full flex items-center justify-center text-center">
+    <section id="home" className="relative h-screen w-full flex items-center justify-center text-center overflow-hidden">
+      {/* Animated gradient orbs */}
+      <motion.div
+        className="absolute top-1/4 left-1/4 w-96 h-96 bg-primary/30 rounded-full blur-3xl"
+        animate={{
+          scale: [1, 1.2, 1],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+      <motion.div
+        className="absolute bottom-1/4 right-1/4 w-96 h-96 bg-secondary/30 rounded-full blur-3xl"
+        animate={{
+          scale: [1.2, 1, 1.2],
+          opacity: [0.3, 0.5, 0.3],
+        }}
+        transition={{
+          duration: 8,
+          repeat: Infinity,
+          ease: "easeInOut"
+        }}
+      />
+
       <div className="relative z-10 flex flex-col items-center gap-8 px-4">
         <div className="flex flex-col items-center gap-6">
           <AnimatedText
-            text="Hi, I’m Sarthak 👋"
-            className="font-headline text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white"
+            text="Hi, I'm Sarthak 👋"
+            className="font-headline text-5xl md:text-7xl lg:text-9xl font-bold tracking-tighter text-white drop-shadow-2xl"
           />
-          <div className="w-full max-w-4xl text-lg md:text-xl text-white/80 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
+          <div className="w-full max-w-4xl text-xl md:text-2xl text-white/90 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
             <RotatingText
-              texts={['Creative Coder', 'Explorer of Modern Web Experiences']}
+              texts={['Creative Coder', 'Explorer of Modern Web Experiences', 'Digital Artist', 'Innovation Enthusiast']}
               staggerFrom={"last"}
               initial={{ y: 25, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
@@ -114,18 +142,35 @@ export function Hero() {
               staggerDuration={0.025}
               splitLevelClassName="pb-0.5 sm:pb-1 md:pb-1"
               transition={{ type: "spring", damping: 30, stiffness: 400 }}
-              rotationInterval={2000}
+              rotationInterval={3000}
             />
           </div>
-          <div className="flex items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '1s' }}>
-            <Link href="#work">
-                <StarButton ariaLabel="Explore My World, scroll to work section">
-                  Explore World
-                </StarButton>
+          <div className="flex items-center justify-center gap-6 animate-fade-in-up" style={{ animationDelay: '1s' }}>
+            <Link href="#work" scroll={false}>
+              <MagneticButton className="star-button">
+                Explore World
+              </MagneticButton>
             </Link>
             {anotherVersionButton}
           </div>
         </div>
+
+        {/* Scroll indicator */}
+        <motion.div
+          className="absolute bottom-12 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2"
+          animate={{ y: [0, 10, 0] }}
+          transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+        >
+          <span className="text-white/60 text-sm uppercase tracking-wider">Scroll</span>
+          <div className="w-6 h-10 border-2 border-white/40 rounded-full flex justify-center p-1">
+            <motion.div
+              className="w-1.5 h-1.5 bg-white/60 rounded-full"
+              animate={{ y: [0, 12, 0] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+            />
+          </div>
+        </motion.div>
+
         <div className="w-full max-w-4xl animate-fade-in-up mt-12" style={{ animationDelay: '1.2s' }}>
             {isMobile ? staticLogos : (
               <LogoLoop

@@ -38,6 +38,9 @@ import { useRouter } from 'next/navigation';
 import Stepper, { Step } from '@/components/ui/stepper';
 import { Github, ToyBrick, LogIn, UserPlus } from 'lucide-react';
 
+// Force dynamic rendering to avoid SSR issues with Firebase
+export const dynamic = 'force-dynamic';
+
 const signUpSchema = z.object({
   email: z.string().email('Invalid email address.'),
   password: z.string().min(6, 'Password must be at least 6 characters.'),
