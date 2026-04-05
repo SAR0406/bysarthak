@@ -46,19 +46,38 @@
   }
   body {
     @apply bg-background text-foreground font-body antialiased;
+    overflow-x: hidden;
+  }
+
+  /* Custom scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.05);
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    border-radius: 4px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--primary)) 100%);
   }
 }
 
 /* Premium Star Button Styles — Digital Twilight Edition */
 .star-button {
   position: relative;
-  padding: 8px 22px; /* Refined compact sizing */
+  padding: 12px 32px;
   background: hsl(var(--primary));
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 700;
   color: hsl(var(--primary-foreground));
   border: 2px solid hsl(var(--primary));
-  border-radius: 8px;
+  border-radius: 12px;
   box-shadow: 0 0 0 hsla(var(--primary) / 0.4);
   transition: all 0.3s ease-in-out;
   cursor: pointer;
@@ -66,7 +85,21 @@
   align-items: center;
   justify-content: center;
   text-transform: uppercase;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
+  overflow: hidden;
+}
+
+.star-button::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, transparent, hsla(var(--secondary) / 0.2), transparent);
+  transform: translateX(-100%);
+  transition: transform 0.6s;
+}
+
+.star-button:hover::before {
+  transform: translateX(100%);
 }
 
 .star-button-secondary {
@@ -94,7 +127,7 @@
 .star-button:hover {
   background: transparent;
   color: hsl(var(--primary-foreground));
-  box-shadow: 0 0 30px hsla(var(--primary) / 0.5);
+  box-shadow: 0 0 40px hsla(var(--primary) / 0.6), 0 0 80px hsla(var(--secondary) / 0.3);
   border-color: hsl(var(--secondary));
   transform: translateY(-2px) scale(1.02);
 }
@@ -123,9 +156,16 @@
   .bg-primary-gradient {
     background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
   }
-  
+
   .glass-card {
     @apply bg-white/5 backdrop-blur-xl border border-white/10 shadow-[0_8px_32px_rgba(0,0,0,0.2)];
+  }
+
+  .text-gradient {
+    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--secondary)) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
   }
 
   @keyframes char-in {
@@ -160,12 +200,35 @@
       transform: translateY(0);
     }
   }
-  
+
   .animate-fade-in-up {
     opacity: 0;
     animation-name: fade-in-up;
     animation-duration: 0.5s;
     animation-timing-function: ease-out;
     animation-fill-mode: forwards;
+  }
+
+  @keyframes glow {
+    0%, 100% {
+      text-shadow: 0 0 20px rgba(82, 39, 255, 0.5),
+                   0 0 40px rgba(82, 39, 255, 0.3),
+                   0 0 60px rgba(82, 39, 255, 0.2);
+    }
+    50% {
+      text-shadow: 0 0 30px rgba(82, 39, 255, 0.8),
+                   0 0 60px rgba(82, 39, 255, 0.5),
+                   0 0 90px rgba(82, 39, 255, 0.3);
+    }
+  }
+
+  .animate-glow {
+    animation: glow 3s ease-in-out infinite;
+  }
+
+  /* Glassmorphism styles */
+  .glass {
+    @apply bg-white/10 backdrop-blur-md border border-white/20
+           shadow-[0_8px_32px_0_rgba(31,38,135,0.37)];
   }
 }
