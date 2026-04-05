@@ -1,146 +1,180 @@
 'use client';
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
-import { AnimatedText } from "../animated-text";
-import RotatingText from '../RotatingText';
-import LogoLoop from "../LogoLoop";
-import { SiReact, SiNextdotjs, SiTypescript, SiTailwindcss, SiFirebase, SiNodedotjs } from 'react-icons/si';
-import StarButton from "../StarButton";
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
+import { useEffect, useMemo, useState } from 'react';
+import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
+import { ArrowDown, Sparkles, Zap, Compass } from 'lucide-react';
+import LightPillar from '../LightPillar';
+import StarButton from '../StarButton';
 
-const techLogos = [
-  { node: <SiReact />, title: "React" },
-  { node: <SiNextdotjs />, title: "Next.js" },
-  { node: <SiTypescript />, title: "TypeScript" },
-  { node: <SiTailwindcss />, title: "Tailwind CSS" },
-  { node: <SiFirebase />, title: "Firebase" },
-  { node: <SiNodedotjs />, title: "Node.js" },
+const heroLines = [
+  'Sarthak Sharma',
+  'Frontend Designer & Creative Technologist',
+  'Building cinematic, tactile web moments.',
 ];
 
 export function Hero() {
-  const [isMobile, setIsMobile] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const parallaxX = useSpring(useTransform(mouseX, (v) => v * 0.3), { stiffness: 180, damping: 30 });
+  const parallaxY = useSpring(useTransform(mouseY, (v) => v * 0.25), { stiffness: 180, damping: 30 });
 
   useEffect(() => {
     setMounted(true);
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
-  }, []);
 
-  const handleOpenInNewTab = () => {
-    window.open('/another-version', '_blank');
-  };
+    const handleMove = (event: MouseEvent) => {
+      const { innerWidth, innerHeight } = window;
+      const x = event.clientX - innerWidth / 2;
+      const y = event.clientY - innerHeight / 2;
+      mouseX.set(x / innerWidth * 100);
+      mouseY.set(y / innerHeight * 100);
+    };
+
+    window.addEventListener('mousemove', handleMove);
+    return () => window.removeEventListener('mousemove', handleMove);
+  }, [mouseX, mouseY]);
+
+  const metrics = useMemo(
+    () => [
+      { label: 'Experiments', value: '120+', icon: <Sparkles className="h-5 w-5" /> },
+      { label: 'Live Products', value: '14', icon: <Zap className="h-5 w-5" /> },
+      { label: 'Studios', value: 'Remote / India', icon: <Compass className="h-5 w-5" /> },
+    ],
+    []
+  );
+
+  const [magnet, setMagnet] = useState({ x: 0, y: 0 });
 
   if (!mounted) {
     return (
-      <section id="home" className="relative h-screen w-full flex items-center justify-center text-center">
-        <div className="relative z-10 flex flex-col items-center gap-8 px-4 opacity-0">
-          Loading...
-        </div>
+      <section id="home" className="relative flex min-h-screen items-center justify-center">
+        <div className="h-24 w-24 rounded-full border border-white/10 animate-pulse" />
       </section>
     );
   }
 
-  const anotherVersionButton = isMobile ? (
-    <AlertDialog>
-      <AlertDialogTrigger asChild>
-        <div className="star-button star-button-secondary">
-          Version 2
-        </div>
-      </AlertDialogTrigger>
-      <AlertDialogContent className="bg-background/95 backdrop-blur-2xl border-primary/20">
-        <AlertDialogHeader>
-          <AlertDialogTitle className="text-white">Mobile Experience Notice</AlertDialogTitle>
-          <AlertDialogDescription className="text-white/60">
-            This portfolio version is optimized for desktop interaction. For the best experience, please view it on a larger screen.
-          </AlertDialogDescription>
-        </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel className="bg-white/5 border-white/10 text-white hover:bg-white/10">Cancel</AlertDialogCancel>
-          <AlertDialogAction onClick={handleOpenInNewTab} className="bg-primary text-white hover:bg-primary/90">
-            Open Anyway
-          </AlertDialogAction>
-        </AlertDialogFooter>
-      </AlertDialogContent>
-    </AlertDialog>
-  ) : (
-    <Link href="/another-version">
-      <StarButton variant="secondary" ariaLabel="Check another version of the portfolio">
-        Version 2
-      </StarButton>
-    </Link>
-  );
-
-  const staticLogos = (
-    <div className="flex items-center justify-center gap-8 flex-wrap">
-      {techLogos.map((logo, index) => (
-        <div key={index} title={logo.title} className="text-4xl text-white/60 transition-colors hover:text-primary">
-          {logo.node}
-        </div>
-      ))}
-    </div>
-  );
-
   return (
-    <section id="home" className="relative h-screen w-full flex items-center justify-center text-center">
-      <div className="relative z-10 flex flex-col items-center gap-8 px-4">
-        <div className="flex flex-col items-center gap-6">
-          <AnimatedText
-            text="Hi, I’m Sarthak 👋"
-            className="font-headline text-5xl md:text-7xl lg:text-8xl font-bold tracking-tighter text-white"
-          />
-          <div className="w-full max-w-4xl text-lg md:text-xl text-white/80 animate-fade-in-up" style={{ animationDelay: '0.8s' }}>
-            <RotatingText
-              texts={['Creative Coder', 'Explorer of Modern Web Experiences']}
-              staggerFrom={"last"}
-              initial={{ y: 25, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: -25, opacity: 0 }}
-              staggerDuration={0.025}
-              splitLevelClassName="pb-0.5 sm:pb-1 md:pb-1"
-              transition={{ type: "spring", damping: 30, stiffness: 400 }}
-              rotationInterval={2000}
-            />
+    <section id="home" className="relative isolate flex min-h-screen items-center overflow-hidden px-6 pt-28">
+      <div className="pointer-events-none absolute inset-0">
+        <LightPillar
+          interactive
+          topColor="#9ef01a"
+          bottomColor="#5227ff"
+          intensity={0.5}
+          rotationSpeed={0.05}
+          glowAmount={0.006}
+          pillarWidth={3.2}
+          pillarHeight={0.46}
+          noiseIntensity={0.08}
+          pillarRotation={-8}
+          mixBlendMode="screen"
+        />
+        <motion.div
+          style={{ x: parallaxX, y: parallaxY }}
+          className="absolute left-1/2 top-1/2 h-[480px] w-[480px] -translate-x-1/2 -translate-y-1/2 rounded-[32%] bg-[radial-gradient(circle_at_30%_20%,rgba(158,240,26,0.18),transparent_40%),radial-gradient(circle_at_80%_20%,rgba(82,39,255,0.2),transparent_32%)] blur-[60px]"
+        />
+      </div>
+
+      <div className="relative z-10 mx-auto flex w-full max-w-6xl flex-col gap-10">
+        <div className="flex flex-col gap-6">
+          <div className="flex items-center gap-3 text-xs uppercase tracking-[0.2em] text-white/60">
+            <div className="h-7 w-7 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center border border-white/10">
+              <Sparkles className="h-4 w-4 text-primary" />
+            </div>
+            <span>Neo-brutalist / cinematic web direction</span>
           </div>
-          <div className="flex items-center justify-center gap-4 animate-fade-in-up" style={{ animationDelay: '1s' }}>
-            <Link href="#work">
-                <StarButton ariaLabel="Explore My World, scroll to work section">
-                  Explore World
-                </StarButton>
+          <div className="space-y-2">
+            {heroLines.map((line, index) => (
+              <motion.p
+                key={line}
+                className="font-headline text-4xl leading-[1.05] sm:text-5xl md:text-6xl lg:text-7xl"
+                initial={{ y: 60, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: 0.15 * index, duration: 0.7, ease: [0.33, 1, 0.68, 1] }}
+              >
+                {line}
+              </motion.p>
+            ))}
+          </div>
+          <motion.p
+            className="max-w-3xl text-base text-white/70 md:text-lg"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.4, duration: 0.6 }}
+          >
+            I design and code tactile web experiences that feel alive — kinetic typography, playful micro-interactions,
+            and cinematic atmospheres crafted with motion, WebGL light, and intentional negative space.
+          </motion.p>
+          <motion.div
+            className="flex flex-wrap items-center gap-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.55, duration: 0.6 }}
+          >
+            <Link href="#work" data-cursor="link">
+              <StarButton ariaLabel="Jump to work">See the work</StarButton>
             </Link>
-            {anotherVersionButton}
+            <Link href="#about" data-cursor="link">
+              <StarButton variant="secondary" ariaLabel="Learn about Sarthak">
+                About the craft
+              </StarButton>
+            </Link>
+            <Link href="/another-version" data-cursor="link">
+              <div className="star-button star-button-secondary">Alt experience</div>
+            </Link>
+          </motion.div>
+        </div>
+
+        <motion.div
+          className="grid gap-4 rounded-3xl border border-white/10 bg-white/5 p-6 backdrop-blur-xl shadow-[0_30px_120px_rgba(0,0,0,0.45)] sm:grid-cols-2 lg:grid-cols-3"
+          initial={{ opacity: 0, y: 30 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.65, duration: 0.6 }}
+        >
+          {metrics.map((metric) => (
+            <div
+              key={metric.label}
+              className="group flex items-center justify-between rounded-2xl border border-white/5 bg-black/10 px-5 py-4 transition duration-300 hover:border-white/20"
+              data-cursor="link"
+            >
+              <div className="space-y-1">
+                <div className="text-xs uppercase tracking-[0.16em] text-white/60">{metric.label}</div>
+                <div className="text-2xl font-semibold text-white">{metric.value}</div>
+              </div>
+              <div className="flex h-11 w-11 items-center justify-center rounded-xl bg-white/10 text-primary transition duration-300 group-hover:scale-110 group-hover:bg-primary/20">
+                {metric.icon}
+              </div>
+            </div>
+          ))}
+        </motion.div>
+
+        <motion.button
+          className="group relative inline-flex w-fit items-center gap-3 rounded-full border border-white/10 bg-white/5 px-4 py-2 text-xs uppercase tracking-[0.24em] text-white/80 backdrop-blur-md"
+          data-cursor="link"
+          onMouseMove={(event) => {
+            const rect = event.currentTarget.getBoundingClientRect();
+            setMagnet({
+              x: (event.clientX - rect.left - rect.width / 2) / 4,
+              y: (event.clientY - rect.top - rect.height / 2) / 4,
+            });
+          }}
+          onMouseLeave={() => setMagnet({ x: 0, y: 0 })}
+          style={{ transform: `translate(${magnet.x}px, ${magnet.y}px)` }}
+        >
+          <span className="relative z-10">Scroll Down</span>
+          <div className="relative h-8 w-8 overflow-hidden rounded-full border border-white/10 bg-primary/20">
+            <motion.div
+              className="absolute inset-0 grid place-items-center text-sm text-white"
+              animate={{ y: ['0%', '-100%'] }}
+              transition={{ repeat: Infinity, duration: 1.6, ease: 'easeInOut' }}
+            >
+              <ArrowDown className="h-4 w-4" />
+              <ArrowDown className="h-4 w-4" />
+            </motion.div>
           </div>
-        </div>
-        <div className="w-full max-w-4xl animate-fade-in-up mt-12" style={{ animationDelay: '1.2s' }}>
-            {isMobile ? staticLogos : (
-              <LogoLoop
-                  logos={techLogos}
-                  speed={60}
-                  direction="left"
-                  logoHeight={50}
-                  gap={40}
-                  hoverSpeed={0}
-                  scaleOnHover={false}
-                  fadeOut
-                  className="text-white/60"
-              />
-            )}
-        </div>
+          <span className="absolute inset-0 rounded-full bg-white/10 opacity-0 blur-md transition duration-300 group-hover:opacity-100" aria-hidden />
+        </motion.button>
       </div>
     </section>
   );
