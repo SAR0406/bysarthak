@@ -5,35 +5,35 @@
 
 @layer base {
   :root {
-    --background: 240 10% 3.9%;
-    --foreground: 0 0% 98%;
+    --background: 225 10% 4%; /* Obsidian charcoal */
+    --foreground: 210 18% 96%;
 
-    --card: 240 10% 4%;
-    --card-foreground: 0 0% 98%;
+    --card: 220 12% 7%;
+    --card-foreground: 210 18% 96%;
 
-    --popover: 240 10% 3.9%;
-    --popover-foreground: 0 0% 98%;
+    --popover: 220 12% 6%;
+    --popover-foreground: 210 18% 96%;
 
-    --primary: 250 100% 58%; /* Electric Indigo #5227FF */
-    --primary-foreground: 0 0% 100%;
+    --primary: 100 100% 65%; /* Acid lime */
+    --primary-foreground: 230 15% 8%;
 
-    --secondary: 290 100% 80%; /* Cyber Pink */
-    --secondary-foreground: 240 10% 3.9%;
+    --secondary: 270 85% 68%; /* Ultraviolet glow */
+    --secondary-foreground: 220 12% 6%;
 
-    --muted: 240 5% 15%;
-    --muted-foreground: 240 5% 65%;
+    --muted: 225 8% 16%;
+    --muted-foreground: 225 10% 72%;
 
-    --accent: 47.9 95.8% 53.1%;
-    --accent-foreground: 26 83.3% 14.1%;
+    --accent: 190 86% 60%; /* Cyan haze */
+    --accent-foreground: 220 12% 8%;
 
     --destructive: 0 84.2% 60.2%;
     --destructive-foreground: 210 40% 98%;
 
-    --border: 240 5% 15%;
-    --input: 240 5% 15%;
+    --border: 225 8% 18%;
+    --input: 225 8% 18%;
 
-    --ring: 47.9 95.8% 53.1%;
-    --radius: 0.75rem;
+    --ring: 100 100% 65%;
+    --radius: 0.9rem;
   }
 }
 
@@ -45,7 +45,12 @@
     @apply scroll-smooth;
   }
   body {
-    @apply bg-background text-foreground font-body antialiased;
+    @apply text-foreground font-body antialiased;
+    background-color: hsl(var(--background));
+    background-image:
+      radial-gradient(1200px 1200px at 20% 20%, hsla(var(--secondary) / 0.08), transparent),
+      radial-gradient(900px 900px at 80% 0%, hsla(var(--primary) / 0.08), transparent),
+      linear-gradient(135deg, hsla(var(--muted) / 0.3), hsla(var(--background) / 0.95));
     overflow-x: hidden;
   }
 
@@ -168,6 +173,34 @@
     background-clip: text;
   }
 
+  .border-glow {
+    box-shadow:
+      0 0 0 1px hsla(var(--border) / 0.8),
+      0 20px 50px hsla(var(--primary) / 0.05),
+      0 0 80px hsla(var(--secondary) / 0.06);
+  }
+
+  .grid-overlay {
+    background-image:
+      linear-gradient(hsla(var(--border) / 0.35) 1px, transparent 1px),
+      linear-gradient(90deg, hsla(var(--border) / 0.35) 1px, transparent 1px);
+    background-size: 120px 120px;
+    mask-image: radial-gradient(circle at 50% 50%, rgba(0,0,0,0.8), rgba(0,0,0,0));
+  }
+
+  .section-shell {
+    @apply relative overflow-hidden rounded-[32px] border border-white/5 bg-card/70 backdrop-blur-2xl;
+    box-shadow:
+      0 20px 60px rgba(0, 0, 0, 0.5),
+      inset 0 1px 0 hsla(var(--foreground) / 0.06);
+  }
+
+  .hero-text-shadow {
+    text-shadow:
+      0 10px 60px rgba(0,0,0,0.45),
+      0 0 40px hsla(var(--primary) / 0.5);
+  }
+
   @keyframes char-in {
     from {
       opacity: 0;
@@ -230,5 +263,23 @@
   .glass {
     @apply bg-white/10 backdrop-blur-md border border-white/20
            shadow-[0_8px_32px_0_rgba(31,38,135,0.37)];
+  }
+
+  .mask-shine {
+    position: relative;
+    overflow: hidden;
+  }
+  .mask-shine::after {
+    content: "";
+    position: absolute;
+    inset: -50%;
+    background: radial-gradient(circle at 0% 0%, hsla(var(--foreground) / 0.18), transparent 45%);
+    transform: rotate(12deg);
+    opacity: 0;
+    transition: opacity 0.6s ease, transform 0.8s ease;
+  }
+  .mask-shine:hover::after {
+    opacity: 1;
+    transform: translate3d(4%, -6%, 0) rotate(8deg);
   }
 }

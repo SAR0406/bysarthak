@@ -24,6 +24,8 @@ export function ProjectCard({ repo }: ProjectCardProps) {
       onHoverEnd={() => setIsHovered(false)}
       whileHover={{ scale: 1.03, y: -8 }}
       transition={{ type: "spring", stiffness: 300, damping: 20 }}
+      data-cursor-variant="project"
+      data-cursor-label="View"
     >
       <Card className="h-full flex flex-col group border border-white/10 bg-gradient-to-br from-card/50 to-card/30 backdrop-blur-xl hover:border-primary/50 transition-all duration-500 relative overflow-hidden">
         {/* Gradient overlay on hover */}
@@ -109,4 +111,3 @@ export function ProjectCard({ repo }: ProjectCardProps) {
     </motion.div>
   );
 }
-
