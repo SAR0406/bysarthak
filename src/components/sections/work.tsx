@@ -129,12 +129,12 @@ export function Work() {
         </ScrollReveal>
       </div>
 
-      <div className="relative section-shell p-4 md:p-8 overflow-hidden">
-        <div className="flex gap-4 md:gap-6 overflow-x-auto snap-x snap-mandatory pb-6">
+      <div className="relative section-shell p-3 md:p-8 overflow-hidden">
+        <div className="flex gap-3 md:gap-6 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide scroll-touch">
           {featuredProjects.map((project, index) => (
             <motion.div
               key={project.title}
-              className="snap-start min-w-[280px] md:min-w-[360px] lg:min-w-[420px] flex-shrink-0 section-shell bg-card/80 border-white/10 mask-shine"
+              className="snap-start min-w-[260px] sm:min-w-[320px] md:min-w-[360px] lg:min-w-[420px] flex-shrink-0 section-shell bg-card/80 border-white/10 mask-shine"
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: 0.05 * index }}

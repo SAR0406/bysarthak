@@ -1,5 +1,5 @@
 
-import type { Metadata } from 'next';
+import type { Metadata, Viewport } from 'next';
 import { Inter, Space_Grotesk } from 'next/font/google';
 import './globals.css';
 import PillNav from '@/components/PillNav';
@@ -14,6 +14,7 @@ import { CustomCursor } from '@/components/custom-cursor';
 import { SmoothScrollProvider } from '@/components/smooth-scroll-provider';
 import { FilmGrain } from '@/components/film-grain';
 import { WebGLBackground } from '@/components/webgl-background';
+import { FloatingModelLoader } from '@/components/floating-model-loader';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -27,9 +28,29 @@ const spaceGrotesk = Space_Grotesk({
   display: 'swap',
 });
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  maximumScale: 3,
+  viewportFit: 'cover',
+  themeColor: [
+    { media: '(prefers-color-scheme: dark)', color: '#050508' },
+    { media: '(prefers-color-scheme: light)', color: '#050508' },
+  ],
+};
+
 export const metadata: Metadata = {
   title: "Sarthak's Spectrum",
   description: 'Creative Coder & Explorer of Modern Web Experiences',
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: 'black-translucent',
+    title: "Sarthak's Spectrum",
+  },
+  other: {
+    'mobile-web-app-capable': 'yes',
+    'format-detection': 'telephone=no',
+  },
 };
 
 const logoUrl = `💫`;
@@ -75,7 +96,7 @@ export default function RootLayout({
                 mixBlendMode="screen"
               />
             </div>
-            <header className='fixed top-0 left-0 z-[1000] w-full py-2 bg-background/30 backdrop-blur-sm'>
+            <header className='fixed top-0 left-0 z-[1000] w-full py-2 safe-area-header bg-background/30 backdrop-blur-sm'>
               <PillNav
                 logo={logoUrl}
                 items={navLinks}
@@ -86,6 +107,7 @@ export default function RootLayout({
               />
             </header>
             <main>{children}</main>
+            <FloatingModelLoader />
             <Footer />
             <Toaster />
           </SmoothScrollProvider>
