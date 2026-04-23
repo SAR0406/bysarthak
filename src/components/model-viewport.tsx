@@ -2,6 +2,7 @@
 
 import { useEffect, useRef } from 'react';
 import * as THREE from 'three';
+import type { OrbitControls as OrbitControlsType } from 'three/examples/jsm/controls/OrbitControls.js';
 
 type ModelViewportProps = {
   modelUrl?: string;
@@ -39,7 +40,7 @@ export function ModelViewport({ modelUrl, className = '', autoRotate = true }: M
     let activeObject: THREE.Object3D | null = null;
     let fallbackMesh: THREE.Mesh | null = null;
     let frame = 0;
-    let controls: { update: () => void; dispose: () => void } | null = null;
+    let controls: OrbitControlsType | null = null;
     let isDisposed = false;
 
     const fitToView = (obj: THREE.Object3D) => {
