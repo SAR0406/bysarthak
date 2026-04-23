@@ -4,8 +4,12 @@ import { type PointerEvent as ReactPointerEvent, useCallback, useEffect, useMemo
 import { GripHorizontal, Minimize2, MoveDiagonal2, Sparkles } from 'lucide-react';
 import { ModelViewport } from './model-viewport';
 
+// Keeps controls usable on smaller phones while preserving viewport room.
 const MIN_SIZE = 240;
+// Caps panel width to avoid covering the whole desktop viewport.
 const MAX_SIZE = 560;
+// Aspect ratio tuned to keep header/input/slider plus a useful 3D canvas area.
+const PANEL_HEIGHT_RATIO = 0.78;
 
 export function FloatingModelLoader() {
   const [isOpen, setIsOpen] = useState(true);
@@ -16,7 +20,7 @@ export function FloatingModelLoader() {
   const [isDragging, setIsDragging] = useState(false);
   const dragOffsetRef = useRef({ x: 0, y: 0 });
 
-  const panelHeight = useMemo(() => Math.round(size * 0.78), [size]);
+  const panelHeight = useMemo(() => Math.round(size * PANEL_HEIGHT_RATIO), [size]);
 
   const clampPosition = useCallback(
     (x: number, y: number) => {

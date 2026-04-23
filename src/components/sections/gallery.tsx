@@ -104,7 +104,7 @@ export function Gallery() {
                         src={images[0].imageUrl}
                         alt={images[0].description}
                         fill
-                        sizes="(max-width: 768px) 96vw, 70vw"
+                        sizes="(max-width: 768px) 92vw, (max-width: 1024px) 70vw, 44vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-110 saturate-125"
                         data-ai-hint={images[0].imageHint}
                       />
@@ -192,7 +192,7 @@ export function Gallery() {
                         src={images[0].imageUrl}
                         alt={images[0].description}
                         fill
-                        sizes="(max-width: 1024px) 62vw, 48vw"
+                        sizes="(max-width: 768px) 92vw, (max-width: 1024px) 58vw, 44vw"
                         className="object-cover transition-transform duration-500 group-hover:scale-110 saturate-125"
                         data-ai-hint={images[0].imageHint}
                       />

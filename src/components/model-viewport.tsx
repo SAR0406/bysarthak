@@ -70,7 +70,7 @@ export function ModelViewport({ modelUrl, className = '', autoRotate = true }: M
       activeObject = fallbackMesh;
     };
 
-    const clearActive = () => {
+    const disposeActiveObject = () => {
       if (!activeObject) return;
       scene.remove(activeObject);
       activeObject.traverse((child) => {
@@ -103,7 +103,7 @@ export function ModelViewport({ modelUrl, className = '', autoRotate = true }: M
     };
 
     const loadModel = async () => {
-      clearActive();
+      disposeActiveObject();
       if (!modelUrl?.trim()) {
         mountFallback();
         return;
@@ -169,7 +169,7 @@ export function ModelViewport({ modelUrl, className = '', autoRotate = true }: M
       cancelAnimationFrame(frame);
       observer.disconnect();
       controls?.dispose();
-      clearActive();
+      disposeActiveObject();
       renderer.dispose();
       container.removeChild(renderer.domElement);
     };
