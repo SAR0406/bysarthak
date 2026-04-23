@@ -130,7 +130,7 @@ export function Work() {
       </div>
 
       <div className="relative section-shell p-3 md:p-8 overflow-hidden">
-        <div className="flex gap-3 md:gap-6 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide scroll-touch" style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="flex gap-3 md:gap-6 overflow-x-auto snap-x snap-mandatory pb-4 scrollbar-hide scroll-touch">
           {featuredProjects.map((project, index) => (
             <motion.div
               key={project.title}

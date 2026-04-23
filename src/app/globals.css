@@ -315,6 +315,5 @@
   /* Smooth scrolling momentum on iOS */
   .scroll-touch {
     -webkit-overflow-scrolling: touch;
-    overflow-scrolling: touch;
   }
 }
