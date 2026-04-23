@@ -14,6 +14,7 @@ import { CustomCursor } from '@/components/custom-cursor';
 import { SmoothScrollProvider } from '@/components/smooth-scroll-provider';
 import { FilmGrain } from '@/components/film-grain';
 import { WebGLBackground } from '@/components/webgl-background';
+import { FloatingModelLoader } from '@/components/floating-model-loader';
 
 const inter = Inter({
   subsets: ['latin'],
@@ -106,6 +107,7 @@ export default function RootLayout({
               />
             </header>
             <main>{children}</main>
+            <FloatingModelLoader />
             <Footer />
             <Toaster />
           </SmoothScrollProvider>

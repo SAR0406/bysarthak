@@ -50,6 +50,7 @@ export function About() {
                   src="https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg"
                   alt="Sarthak"
                   fill
+                  sizes="(max-width: 768px) 90vw, 300px"
                   priority
                   className="absolute inset-0 w-full h-full object-cover"
                   data-cursor-variant="project"
