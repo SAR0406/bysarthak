@@ -40,12 +40,12 @@ export function About() {
         <InfiniteMarquee items={skills} speed={36} direction="left" />
       </div>
 
-      <div className="relative z-10 section-shell p-8 md:p-12 space-y-10">
-        <div className="grid lg:grid-cols-[1.05fr_1.1fr] gap-10 items-start">
+      <div className="relative z-10 section-shell p-6 md:p-8 lg:p-12 space-y-10">
+        <div className="grid lg:grid-cols-[1.05fr_1.1fr] gap-8 lg:gap-10 items-start">
           <ScrollReveal className="relative" delay={0.15}>
-            <div className="relative">
+            <div className="relative flex justify-center lg:block">
               <div className="absolute -inset-6 rounded-[28px] bg-gradient-to-br from-primary/10 via-secondary/10 to-transparent blur-2xl" aria-hidden />
-              <PixelCard variant="pink" className="rounded-[28px] overflow-hidden h-full">
+              <PixelCard variant="pink" className="rounded-[28px] overflow-hidden h-full max-w-[300px] w-full">
                 <Image
                   src="https://i.ibb.co/wrMzQqgD/IMG-20251229-190558-670-2.jpg"
                   alt="Sarthak"

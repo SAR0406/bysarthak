@@ -47,7 +47,7 @@ export function Preloader() {
               className="text-center"
             >
               <motion.h1
-                className="font-headline text-8xl md:text-9xl font-bold text-white mb-4"
+                className="font-headline text-7xl sm:text-8xl md:text-9xl font-bold text-white mb-4"
                 animate={{
                   textShadow: [
                     '0 0 20px rgba(82, 39, 255, 0.5)',

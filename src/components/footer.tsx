@@ -19,7 +19,7 @@ export function Footer() {
   return (
     <footer className="relative bg-black overflow-hidden">
       {/* Massive unfolding section */}
-      <div className="relative py-32 md:py-48">
+      <div className="relative py-20 md:py-32 lg:py-48">
         <motion.div
           initial={{ opacity: 0, y: 100 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -28,7 +28,7 @@ export function Footer() {
           className="container mx-auto px-4"
         >
           <motion.h2
-            className="font-headline text-6xl md:text-8xl lg:text-[12rem] font-bold text-center leading-none tracking-tighter"
+            className="font-headline text-5xl sm:text-7xl md:text-8xl lg:text-[10rem] xl:text-[12rem] font-bold text-center leading-none tracking-tighter"
             style={{
               background: 'linear-gradient(135deg, #5227FF 0%, #E879F9 100%)',
               WebkitBackgroundClip: 'text',
@@ -55,7 +55,7 @@ export function Footer() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.5, duration: 0.8 }}
-            className="flex items-center justify-center gap-6 mt-16"
+            className="flex flex-wrap items-center justify-center gap-4 md:gap-6 mt-12 md:mt-16"
           >
             {socialLinks.map((link, index) => (
               <Link key={index} href={link.href} target="_blank" rel="noopener noreferrer">
@@ -76,7 +76,7 @@ export function Footer() {
       </div>
 
       {/* Footer bottom */}
-      <div className="border-t border-white/10 py-8">
+      <div className="border-t border-white/10 py-6 safe-area-footer">
         <div className="container mx-auto px-4">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4">
             <p className="text-white/40 text-sm">

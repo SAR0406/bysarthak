@@ -27,9 +27,11 @@ export function WebGLBackground() {
     renderer.setSize(window.innerWidth, window.innerHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
+    const isMobile = window.innerWidth < 768;
+    const particlesCount = isMobile ? 500 : 1500;
+
     // Create particle system
     const particlesGeometry = new THREE.BufferGeometry();
-    const particlesCount = 1500;
     const positions = new Float32Array(particlesCount * 3);
 
     for (let i = 0; i < particlesCount * 3; i++) {
@@ -52,13 +54,20 @@ export function WebGLBackground() {
     const particles = new THREE.Points(particlesGeometry, particlesMaterial);
     scene.add(particles);
 
-    // Mouse interaction
+    // Mouse / touch interaction
     const mouse = { x: 0, y: 0 };
     const handleMouseMove = (event: MouseEvent) => {
       mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
       mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
     };
+    const handleTouchMove = (event: TouchEvent) => {
+      if (event.touches.length > 0) {
+        mouse.x = (event.touches[0].clientX / window.innerWidth) * 2 - 1;
+        mouse.y = -(event.touches[0].clientY / window.innerHeight) * 2 + 1;
+      }
+    };
     window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('touchmove', handleTouchMove, { passive: true });
 
     // Animation
     const clock = new THREE.Clock();
@@ -102,6 +111,7 @@ export function WebGLBackground() {
     // Cleanup
     return () => {
       window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('touchmove', handleTouchMove);
       window.removeEventListener('resize', handleResize);
       renderer.dispose();
       particlesGeometry.dispose();

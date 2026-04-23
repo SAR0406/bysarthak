@@ -128,14 +128,14 @@ export function Hero() {
       <div className="relative z-10 container mx-auto flex flex-col gap-12">
         <div className="flex flex-col gap-6 max-w-6xl">
           <motion.div
-            className="flex items-center gap-3 text-xs uppercase tracking-[0.3em] text-white/60"
+            className="flex flex-wrap items-center gap-2 text-xs uppercase tracking-[0.25em] text-white/60"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
           >
-            <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10">High-End</span>
-            <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10">Web / Motion / 3D</span>
-            <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10">Neo-Brutal. Cinematic.</span>
+            <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 whitespace-nowrap">High-End</span>
+            <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 whitespace-nowrap">Web / Motion / 3D</span>
+            <span className="hidden sm:inline-flex px-3 py-1 rounded-full bg-white/5 border border-white/10 whitespace-nowrap">Neo-Brutal. Cinematic.</span>
           </motion.div>
 
           <motion.div
@@ -175,7 +175,7 @@ export function Hero() {
             </div>
           </motion.div>
 
-          <div className="flex flex-wrap items-center gap-4 md:gap-6">
+          <div className="flex flex-wrap items-center gap-3 md:gap-6">
             <Link href="#work" scroll={false} data-cursor-variant="project" data-cursor-label="Scroll">
               <MagneticButton className="star-button">
                 Enter Portfolio
@@ -184,12 +184,13 @@ export function Hero() {
             {anotherVersionButton}
             <div className="flex items-center gap-3 text-sm text-white/70">
               <span className="inline-flex h-2 w-2 rounded-full bg-primary shadow-[0_0_0_6px_rgba(161,255,125,0.12)] animate-pulse" />
-              Accepting immersive web collabs for 2025.
+              <span className="hidden sm:inline">Accepting immersive web collabs for 2025.</span>
+              <span className="sm:hidden">Available 2025</span>
             </div>
           </div>
         </div>
 
-        <div className="grid md:grid-cols-3 gap-4 md:gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3 md:gap-6">
           {[
             { label: 'Interactive Systems', detail: 'Parallax, smooth-scroll, WebGL particles, physics-inspired micro-interactions.' },
             { label: 'Design Languages', detail: 'Neo-brutal bento grids, glass/frost surfaces, adaptive type scales, cinematic palettes.' },
@@ -212,7 +213,7 @@ export function Hero() {
 
         {/* Scroll indicator */}
         <motion.div
-          className="flex items-center gap-4"
+          className="hidden sm:flex items-center gap-4"
           animate={{ y: [0, 10, 0] }}
           transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
         >

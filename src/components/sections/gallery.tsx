@@ -43,7 +43,56 @@ export function Gallery() {
 
       <div className="section-shell p-4 md:p-8">
         <Dialog>
-          <div className="flex flex-col md:flex-row gap-4" style={{ height: 'calc(80vh)', maxHeight: '700px' }}>
+          {/* Mobile layout: responsive 2-column grid */}
+          <div className="grid grid-cols-2 gap-3 md:hidden">
+            {images[0] && (
+              <DialogTrigger asChild>
+                <motion.div
+                  className="col-span-2 relative aspect-video rounded-2xl overflow-hidden group cursor-pointer border border-white/10 bg-card/60 mask-shine"
+                  onClick={() => setSelectedImage(images[0])}
+                  whileHover={{ scale: 0.99 }}
+                  data-cursor-variant="project"
+                  data-cursor-label="View"
+                >
+                  <Image
+                    src={images[0].imageUrl}
+                    alt={images[0].description}
+                    fill
+                    className="object-cover transition-transform duration-500 group-hover:scale-110 saturate-125"
+                    data-ai-hint={images[0].imageHint}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-black/20 via-transparent to-black/30 opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-center justify-center">
+                    <span className="text-white font-medium tracking-widest uppercase text-xs">View Archive</span>
+                  </div>
+                </motion.div>
+              </DialogTrigger>
+            )}
+            {images.slice(1, 5).map((image) => (
+              image && (
+                <DialogTrigger asChild key={image.imageUrl}>
+                  <motion.div
+                    className="relative aspect-square rounded-2xl overflow-hidden group cursor-pointer border border-white/10 bg-card/60"
+                    onClick={() => setSelectedImage(image)}
+                    whileHover={{ scale: 1.02 }}
+                    transition={{ type: 'spring', stiffness: 200, damping: 18 }}
+                    data-cursor-variant="project"
+                    data-cursor-label="Zoom"
+                  >
+                    <Image
+                      src={image.imageUrl}
+                      alt={image.description}
+                      fill
+                      className="object-cover transition-transform duration-500 group-hover:scale-110"
+                      data-ai-hint={image.imageHint}
+                    />
+                  </motion.div>
+                </DialogTrigger>
+              )
+            ))}
+          </div>
+
+          {/* Desktop / tablet layout: bento flex */}
+          <div className="hidden md:flex flex-row gap-4" style={{ height: 'calc(80vh)', maxHeight: '700px' }}>
             {images[0] && (
               <DialogTrigger asChild>
                 <motion.div
@@ -69,7 +118,7 @@ export function Gallery() {
 
             <div className="flex-1 flex flex-col gap-4">
               <div className="flex-1 grid grid-cols-2 gap-4">
-                {images.slice(1, 3).map((image, idx) => (
+                {images.slice(1, 3).map((image) => (
                   image && (
                     <DialogTrigger asChild key={image.imageUrl}>
                       <motion.div
@@ -120,7 +169,7 @@ export function Gallery() {
           </div>
 
           {selectedImage && (
-              <DialogContent className="max-w-4xl p-0 bg-background/95 backdrop-blur-2xl border-white/10">
+              <DialogContent className="w-[95vw] max-w-4xl p-0 bg-background/95 backdrop-blur-2xl border-white/10">
                   <DialogHeader className="p-4 sr-only">
                       <DialogTitle>{selectedImage.description}</DialogTitle>
                       <DialogDescription>
@@ -130,8 +179,8 @@ export function Gallery() {
                   <div className="aspect-video relative">
                       <Image src={selectedImage.imageUrl} alt={selectedImage.description} fill className="object-contain rounded-md p-4"/>
                   </div>
-                  <div className="p-6 border-t border-white/5 bg-black/20">
-                    <p className="text-white/80 font-medium tracking-wide">{selectedImage.description}</p>
+                  <div className="p-4 md:p-6 border-t border-white/5 bg-black/20">
+                    <p className="text-white/80 font-medium tracking-wide text-sm md:text-base">{selectedImage.description}</p>
                   </div>
               </DialogContent>
           )}
